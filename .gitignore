@@ -1,0 +1,8 @@
+*.classpath
+.gradle/**
+*.prefs
+*.xtendbin
+*._trace
+*.class
+*.project
+xtend-gen/**
