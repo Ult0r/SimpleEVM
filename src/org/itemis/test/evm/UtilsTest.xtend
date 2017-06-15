@@ -25,8 +25,7 @@ class UtilsTest {
 
 	@Test
 	def void testToHexString() {
-		val Byte test = 229 as byte
-		Assert.assertEquals(test.toHexString, "E5")
+		Assert.assertEquals((229 as byte).toHexString, "E5")
 	}
 	
 	@Test
