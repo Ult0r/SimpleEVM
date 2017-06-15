@@ -24,7 +24,7 @@ class UtilsTest {
 
 	@Test
 	def void testToHexString() {
-		Assert.assertEquals((229 as byte).toHexString, "E5")
+		Assert.assertEquals((0xE5 as byte).toHexString, "E5")
 	}
 	
 	@Test
