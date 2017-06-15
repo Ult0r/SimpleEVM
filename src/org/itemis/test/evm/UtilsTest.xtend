@@ -49,5 +49,8 @@ class UtilsTest {
 		Assert.assertEquals((16 as byte).toHex, "10")
 	}
 	
-	
+	@Test
+	def void testToBitString() {
+		Assert.assertEquals((42 as byte).toBitString, "00101010")
+	}
 }
