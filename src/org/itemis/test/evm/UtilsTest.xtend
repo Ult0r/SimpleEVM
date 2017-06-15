@@ -1,12 +1,11 @@
 package org.itemis.test.evm
 
-import javax.inject.Inject
 import org.itemis.evm.Utils
 import org.junit.Test
 import org.junit.Assert
 
 class UtilsTest {
-	@Inject extension Utils
+	extension Utils u = new Utils
 
 	@Test
 	def void testGetNthByteOfInteger() {
