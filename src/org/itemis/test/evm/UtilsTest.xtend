@@ -22,4 +22,10 @@ class UtilsTest {
 		Assert.assertEquals(test.getNthByteOfInteger(2 as byte), 2)
 		Assert.assertEquals(test.getNthByteOfInteger(3 as byte), 3)
 	}
+
+	@Test
+	def void testToHexString() {
+		val Byte test = 229 as byte
+		Assert.assertEquals(test.toHexString, "E5")
+	}
 }
