@@ -1,6 +1,16 @@
 package org.itemis.evm
 
 class Utils {
+	//TODO: build wrapper class for unsigned byte
+	def int normalizeNegativeByte(Byte b) {
+		var int _b = b
+		if (_b < 0) {
+			_b *= -1
+			_b = 256 - _b
+		}
+		_b
+	}
+	
 	//if n = 0, results in bits 0-7
 	//if n = 1, bits 8-15
 	//etc.
