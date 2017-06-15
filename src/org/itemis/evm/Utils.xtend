@@ -24,6 +24,7 @@ class Utils {
 			case 13: "D"
 			case 14: "E"
 			case 15: "F"
+			default: b.toHexString()
 		}
 	}
 	
