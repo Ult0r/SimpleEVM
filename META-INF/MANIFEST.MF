@@ -8,3 +8,8 @@ Export-Package: org.itemis.evm,
  org.itemis.test.evm
 Import-Package: com.google.inject;version="1.4.0",
  javax.inject;version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Bundle: com.google.guava,
+ org.eclipse.xtext.xbase.lib,
+ org.eclipse.xtend.lib,
+ org.eclipse.xtend.lib.macro
