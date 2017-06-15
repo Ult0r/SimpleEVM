@@ -19,8 +19,9 @@ class Utils {
 	}
 	
 	def String toHexString(Byte b) {
-		val lowerHalf = (b % 16) as byte
-		val upperHalf = (b / 16) as byte
+		var int _b = b.normalizeNegativeByte
+		val lowerHalf = (_b % 16) as byte
+		val upperHalf = (_b >> 4) as byte
 		upperHalf.toHex + lowerHalf.toHex
 	}
 	
