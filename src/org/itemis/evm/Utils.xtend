@@ -50,9 +50,10 @@ class Utils {
 	}
 	
 	def String toBitString(Byte b) {
+		var int _b = b.normalizeNegativeByte
 		var result = ""
 		for (i : 7..0) {
-			result += (b >> i).toString()	
+			result += ((_b >> i).bitwiseAnd(1)).toString()
 		}
 		result
 	}
