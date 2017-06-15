@@ -15,7 +15,7 @@ class Utils {
 	//if n = 1, bits 8-15
 	//etc.
 	def Byte getNthByteOfInteger(Integer i, byte n) {
-		((i >> (n * 8)) % 255).byteValue
+		((i >> (n * 8)) % 256).byteValue
 	}
 	
 	def String toHexString(Byte b) {
