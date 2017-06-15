@@ -10,16 +10,16 @@ class UtilsTest {
 	@Test
 	def void testGetNthByteOfInteger() {
 		val Integer zero = 0
-		Assert.assertEquals(zero.getNthByteOfInteger(0 as byte), 0)
-		Assert.assertEquals(zero.getNthByteOfInteger(1 as byte), 0)
-		Assert.assertEquals(zero.getNthByteOfInteger(2 as byte), 0)
-		Assert.assertEquals(zero.getNthByteOfInteger(3 as byte), 0)
+		Assert.assertEquals(zero.getNthByteOfInteger(0 as byte), 0 as byte)
+		Assert.assertEquals(zero.getNthByteOfInteger(1 as byte), 0 as byte)
+		Assert.assertEquals(zero.getNthByteOfInteger(2 as byte), 0 as byte)
+		Assert.assertEquals(zero.getNthByteOfInteger(3 as byte), 0 as byte)
 
-		val Integer test = ((3 * 255 + 2) * 255 + 1) * 255
-		Assert.assertEquals(test.getNthByteOfInteger(0 as byte), 0)
-		Assert.assertEquals(test.getNthByteOfInteger(1 as byte), 1)
-		Assert.assertEquals(test.getNthByteOfInteger(2 as byte), 2)
-		Assert.assertEquals(test.getNthByteOfInteger(3 as byte), 3)
+		var Integer _0x03020100 = ((3 << 8) + 2 << 8) + 1 << 8
+		Assert.assertEquals(_0x03020100.getNthByteOfInteger(0 as byte), 0 as byte)
+		Assert.assertEquals(_0x03020100.getNthByteOfInteger(1 as byte), 1 as byte)
+		Assert.assertEquals(_0x03020100.getNthByteOfInteger(2 as byte), 2 as byte)
+		Assert.assertEquals(_0x03020100.getNthByteOfInteger(3 as byte), 3 as byte)
 	}
 
 	@Test
