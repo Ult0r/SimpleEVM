@@ -11,5 +11,19 @@ class EVMStack {
 	//index 0 = top
 	private final List<EVMWord> elements = new ArrayList(EVM_MAX_STACK_SIZE)
 	
+	def void push(EVMWord word) {
+		elements.add(0, word)
+	}
 	
+	def EVMWord pop() {
+		elements.remove(0)
+	}
+	
+	def void clear() {
+		elements.clear
+	}
+	
+	def EVMWord get(int index) {
+		elements.get(index)
+	}
 }
