@@ -13,25 +13,24 @@ class Utils {
 	}
 	
 	//must be between 0 and 15
-	def String toHex(Byte b) {
-		var int _b = b.normalizeNegativeByte
-		switch _b {
-			case 0 as byte,
-			case 1 as byte,
-			case 2 as byte,
-			case 3 as byte,
-			case 4 as byte,
-			case 5 as byte,
-			case 6 as byte,
-			case 7 as byte,
-			case 8 as byte,
-			case 9 as byte: b.toString()
-			case 10 as byte: "A"
-			case 11 as byte: "B"
-			case 12 as byte: "C"
-			case 13 as byte: "D"
-			case 14 as byte: "E"
-			case 15 as byte: "F"
+	def String toHex(UnsignedByte b) {
+		switch b.value as int {
+			case 0,
+			case 1,
+			case 2,
+			case 3,
+			case 4,
+			case 5,
+			case 6,
+			case 7,
+			case 8,
+			case 9: b.toString()
+			case 10: "A"
+			case 11: "B"
+			case 12: "C"
+			case 13: "D"
+			case 14: "E"
+			case 15: "F"
 			default: b.toHexString()
 		}
 	}
