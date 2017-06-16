@@ -1,5 +1,7 @@
 package org.itemis.evm
 
+import org.itemis.evm.types.UnsignedByte
+
 class Utils {
 	//if n = 0, results in bits 0-7
 	//if n = 1, bits 8-15
