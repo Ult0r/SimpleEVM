@@ -28,6 +28,14 @@ class EVMWord {
 	def UnsignedByte[] toByteArray() {
 		value
 	}
+	
+	def setNthField(Integer n, int newValue) {
+		setNthField(n, newValue as short)
+	}
+	
+	def setNthField(Integer n, short newValue) {
+		value.get(n).setValue(newValue)
+	}
 
 	def setNthField(Integer n, UnsignedByte newValue) {
 		value.set(n, newValue)
