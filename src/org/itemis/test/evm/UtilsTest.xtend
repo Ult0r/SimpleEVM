@@ -3,6 +3,7 @@ package org.itemis.test.evm
 import org.itemis.evm.Utils
 import org.junit.Test
 import org.junit.Assert
+import org.itemis.evm.types.UnsignedByte
 
 class UtilsTest {
 	extension Utils u = new Utils
@@ -10,16 +11,16 @@ class UtilsTest {
 	@Test
 	def void testGetNthByteOfInteger() {
 		val Integer zero = 0
-		Assert.assertEquals(zero.getNthByteOfInteger(0 as byte), 0 as byte)
-		Assert.assertEquals(zero.getNthByteOfInteger(1 as byte), 0 as byte)
-		Assert.assertEquals(zero.getNthByteOfInteger(2 as byte), 0 as byte)
-		Assert.assertEquals(zero.getNthByteOfInteger(3 as byte), 0 as byte)
+		Assert.assertEquals(zero.getNthByteOfInteger(0), new UnsignedByte(0))
+		Assert.assertEquals(zero.getNthByteOfInteger(1), new UnsignedByte(0))
+		Assert.assertEquals(zero.getNthByteOfInteger(2), new UnsignedByte(0))
+		Assert.assertEquals(zero.getNthByteOfInteger(3), new UnsignedByte(0))
 
 		var Integer _0x03020100 = ((3 << 8) + 2 << 8) + 1 << 8
-		Assert.assertEquals(_0x03020100.getNthByteOfInteger(0 as byte), 0 as byte)
-		Assert.assertEquals(_0x03020100.getNthByteOfInteger(1 as byte), 1 as byte)
-		Assert.assertEquals(_0x03020100.getNthByteOfInteger(2 as byte), 2 as byte)
-		Assert.assertEquals(_0x03020100.getNthByteOfInteger(3 as byte), 3 as byte)
+		Assert.assertEquals(_0x03020100.getNthByteOfInteger(0), new UnsignedByte(0))
+		Assert.assertEquals(_0x03020100.getNthByteOfInteger(1), new UnsignedByte(1))
+		Assert.assertEquals(_0x03020100.getNthByteOfInteger(2), new UnsignedByte(2))
+		Assert.assertEquals(_0x03020100.getNthByteOfInteger(3), new UnsignedByte(3))
 	}
 
 	@Test
