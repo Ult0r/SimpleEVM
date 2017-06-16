@@ -7,11 +7,7 @@ class UnsignedByte extends Number implements Comparable<UnsignedByte> {
 	private short value = 0 as short
 	
 	new(int i) {
-		if (i >= 0 && i <= 255) {
-			value = i as short
-		} else {
-			throw new InvalidParameterException(i + " is not a value between 0 and 255")
-		}
+		setValue(i)
 	}
 	
 	override byteValue() {
@@ -56,6 +52,14 @@ class UnsignedByte extends Number implements Comparable<UnsignedByte> {
 
 	def short getValue() {
 		value
+	}
+	
+	def void setValue(int v) {
+		if (v >= 0 && v <= 255) {
+			value = v as short
+		} else {
+			throw new InvalidParameterException(v + " is not a value between 0 and 255")
+		}
 	}
 	
 	def UnsignedByte getHigherNibble() {
