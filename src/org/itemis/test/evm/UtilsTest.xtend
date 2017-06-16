@@ -51,6 +51,6 @@ class UtilsTest {
 	
 	@Test
 	def void testToBitString() {
-		Assert.assertEquals((42 as byte).toBitString, "00101010")
+		Assert.assertEquals(new UnsignedByte(42).toBitString, "00101010")
 	}
 }
