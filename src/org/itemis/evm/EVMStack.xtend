@@ -8,6 +8,8 @@ import java.util.ArrayList
 class EVMStack {
 	public final static int EVM_MAX_STACK_SIZE = 1024
 	
+	//index 0 = top
 	private final List<EVMWord> elements = new ArrayList(EVM_MAX_STACK_SIZE)
+	
 	
 }
