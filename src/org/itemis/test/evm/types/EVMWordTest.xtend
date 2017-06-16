@@ -50,7 +50,8 @@ class EVMWordTest {
 	
 	@Test
 	def void testToHexString() {
-		
+		Assert.assertEquals(zero.toHexString,    "0000000000000000000000000000000000000000000000000000000000000000")
+		Assert.assertEquals(various.toHexString, "CAFEBABEDEADBEEFFFEEDDCCBBAA99887766554433221100FEDCBA9876543210")
 	}
 	
 	@Test
