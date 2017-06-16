@@ -8,11 +8,8 @@ class Utils {
 		new UnsignedByte((i >> (n * 8)).bitwiseAnd(0xFF))
 	}
 	
-	def String toHexString(Byte b) {
-		var int _b = b.normalizeNegativeByte
-		val lowerHalf = (_b % 16) as byte
-		val upperHalf = (_b >> 4) as byte
-		upperHalf.toHex + lowerHalf.toHex
+	def String toHexString(UnsignedByte b) {
+		b.higherNibble.toHex + b.lowerNibble.toHex
 	}
 	
 	//must be between 0 and 15
