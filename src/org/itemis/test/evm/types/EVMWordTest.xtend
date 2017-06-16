@@ -3,6 +3,7 @@ package org.itemis.test.evm.types
 import org.junit.Test
 import org.itemis.evm.types.EVMWord
 import org.junit.Before
+import org.junit.Assert
 
 class EVMWordTest {
 	private val EVMWord zero = new EVMWord()
@@ -37,14 +38,14 @@ class EVMWordTest {
 		various.setNthField(22, 0xEE)
 		various.setNthField(23, 0xFF)
 		
-		various.setNthField(24, 0xDE)
-		various.setNthField(25, 0xAD)
-		various.setNthField(26, 0xBE)
-		various.setNthField(27, 0xEF)
-		various.setNthField(28, 0xCA)
-		various.setNthField(29, 0xFE)
-		various.setNthField(30, 0xBA)
-		various.setNthField(31, 0xBE)
+		various.setNthField(24, 0xEF)
+		various.setNthField(25, 0xBE)
+		various.setNthField(26, 0xAD)
+		various.setNthField(27, 0xDE)
+		various.setNthField(28, 0xBE)
+		various.setNthField(29, 0xBA)
+		various.setNthField(30, 0xFE)
+		various.setNthField(31, 0xCA)
 	}
 	
 	@Test
