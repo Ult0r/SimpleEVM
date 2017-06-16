@@ -11,14 +11,14 @@ class EVMWordTest {
 	
 	@Before
 	def void init() {
-		various.setNthField(0, 0x01)
-		various.setNthField(1, 0x23)
-		various.setNthField(2, 0x45)
-		various.setNthField(3, 0x67)
-		various.setNthField(4, 0x89)
-		various.setNthField(5, 0xAB)
-		various.setNthField(6, 0xCD)
-		various.setNthField(7, 0xEF)
+		various.setNthField(0, 0x10)
+		various.setNthField(1, 0x32)
+		various.setNthField(2, 0x54)
+		various.setNthField(3, 0x76)
+		various.setNthField(4, 0x98)
+		various.setNthField(5, 0xBA)
+		various.setNthField(6, 0xDC)
+		various.setNthField(7, 0xFE)
 		
 		various.setNthField(8, 0x00)
 		various.setNthField(9, 0x11)
