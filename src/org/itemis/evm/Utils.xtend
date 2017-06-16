@@ -35,11 +35,10 @@ class Utils {
 		}
 	}
 	
-	def String toBitString(Byte b) {
-		var int _b = b.normalizeNegativeByte
+	def String toBitString(UnsignedByte b) {
 		var result = ""
 		for (i : 7..0) {
-			result += ((_b >> i).bitwiseAnd(1)).toString()
+			result += if (b.getBit(i)) "1" else "0" 
 		}
 		result
 	}
