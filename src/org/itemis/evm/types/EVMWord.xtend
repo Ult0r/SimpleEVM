@@ -20,7 +20,7 @@ class EVMWord {
 		}
 	}
 
-	// n must be between (including) 0 and 7
+	// n must be between (including) 0 and 31
 	def UnsignedByte getNthField(Integer n) {
 		value.get(n)
 	}
