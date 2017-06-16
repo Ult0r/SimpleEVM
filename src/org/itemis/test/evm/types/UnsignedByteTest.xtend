@@ -22,8 +22,8 @@ class UnsignedByteTest {
 	
 	@Test
 	def void testGetLowerNibble() {
-		Assert.assertEquals(zero.higherNibble, zero)
-		Assert.assertEquals(_0xE5.higherNibble, new UnsignedByte(0x5))
+		Assert.assertEquals(zero.lowerNibble, zero)
+		Assert.assertEquals(_0xE5.lowerNibble, new UnsignedByte(0x5))
 	}
 	
 	@Test
