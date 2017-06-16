@@ -8,7 +8,7 @@ import org.itemis.evm.Utils
 class EVMWord {
 	extension Utils u = new Utils()
 	
-	private Byte[] value = newArrayOfSize(32)
+	private UnsignedByte[] value = newArrayOfSize(32)
 
 	new() {
 		setToZero
@@ -16,20 +16,20 @@ class EVMWord {
 
 	def setToZero() {
 		for (i : 0 .. 31) {
-			value.set(i, 0 as byte)
+			value.set(i, new UnsignedByte(0))
 		}
 	}
 
 	// n must be between (including) 0 and 7
-	def Byte getNthField(Integer n) {
+	def UnsignedByte getNthField(Integer n) {
 		value.get(n)
 	}
 	
-	def Byte[] toByteArray() {
+	def UnsignedByte[] toByteArray() {
 		value
 	}
 
-	def setNthField(Integer n, Byte newValue) {
+	def setNthField(Integer n, UnsignedByte newValue) {
 		value.set(n, newValue)
 	}
 
