@@ -4,8 +4,8 @@ class Utils {
 	//if n = 0, results in bits 0-7
 	//if n = 1, bits 8-15
 	//etc.
-	def Byte getNthByteOfInteger(Integer i, byte n) {
-		((i >> (n * 8)) % 256).byteValue
+	def UnsignedByte getNthByteOfInteger(Integer i, int n) {
+		new UnsignedByte((i >> (n * 8)).bitwiseAnd(0xFF))
 	}
 	
 	def String toHexString(Byte b) {
