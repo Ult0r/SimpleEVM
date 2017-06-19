@@ -24,7 +24,7 @@ class EVMWord {
 
 	// n must be between (including) 0 and 31
 	def UnsignedByte getNthField(Integer n) {
-		if (n >= 0 && n <= 31) {
+		if(n >= 0 && n <= 31) {
 			value.get(n)
 		} else {
 			throw new IllegalArgumentException(n + " is not between 0 and 31")
@@ -33,7 +33,7 @@ class EVMWord {
 
 	// n must be between (including) 0 and 15
 	def int getNth16BitField(Integer n) {
-		if (n >= 0 && n <= 16) {
+		if(n >= 0 && n <= 16) {
 			value.get(n * 2 + 1).intValue * 256 + value.get(n * 2).intValue
 		} else {
 			throw new IllegalArgumentException(n + " is not between 0 and 16")
@@ -83,7 +83,7 @@ class EVMWord {
 	}
 
 	override boolean equals(Object other) {
-		if (other instanceof EVMWord) {
+		if(other instanceof EVMWord) {
 			var result = true
 			for (i : 0 .. 31) {
 				result = result && this.getNthField(i).equals(other.getNthField(i))
