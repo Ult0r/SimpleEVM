@@ -1,6 +1,7 @@
 package org.itemis.evm.types
 
 import org.itemis.evm.Utils
+import java.util.List
 
 //256-bit / 32-byte int
 //[0] contains bits 0-7
@@ -37,6 +38,14 @@ class EVMWord {
 		} else {
 			throw new IllegalArgumentException(n + " is not between 0 and 16")
 		}
+	}
+
+	def List<Integer> convertTo16BitFieldList() {
+		var List<Integer> result = newArrayList()
+		for (i : 0 .. 15) {
+			result.add(getNth16BitField(i))
+		}
+		result
 	}
 
 	def UnsignedByte[] toByteArray() {
