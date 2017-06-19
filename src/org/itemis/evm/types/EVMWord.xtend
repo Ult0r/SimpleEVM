@@ -72,4 +72,12 @@ class EVMWord {
 		}
 		result
 	}
+	
+	def boolean equals(EVMWord other) {
+		var result = true
+		for (i: 0 .. 31) {
+			result = result && this.getNthField(i).equals(other.getNthField(i))
+		}
+		result
+	}
 }
