@@ -5,6 +5,8 @@ import org.itemis.evm.types.EVMWord
 import java.util.ArrayList
 
 //not using java.util.Stack because of lacking operations
+//classical FILO-stack with a maximum depth of 1024 (EVM_MAX_STACK_SIZE)
+//elements are 256-bit words
 class EVMStack {
 	public final static int EVM_MAX_STACK_SIZE = 1024
 	
