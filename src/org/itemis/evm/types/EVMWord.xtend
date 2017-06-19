@@ -33,7 +33,7 @@ class EVMWord {
 	// n must be between (including) 0 and 15
 	def int getNth16BitField(Integer n) {
 		if (n >= 0 && n <= 16) {
-			value.get(n*2).intValue * 256 + value.get(n*2 + 1).intValue
+			value.get(n * 2 + 1).intValue * 256 + value.get(n * 2).intValue
 		} else {
 			throw new IllegalArgumentException(n + " is not between 0 and 16")
 		}
