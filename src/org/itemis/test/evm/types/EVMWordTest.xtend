@@ -73,4 +73,11 @@ class EVMWordTest {
 		Assert.assertNotEquals(zero, various)
 		Assert.assertEquals(zero, various.setToZero)
 	}
+	
+	@Test
+	def void testGetNth16BitField() {
+		initVarious()
+		Assert.assertEquals(various.getNth16BitField(0), 0x3210)
+		Assert.assertEquals(various.getNth16BitField(15), 0xCAFE)
+	}
 }
