@@ -7,7 +7,7 @@ import org.itemis.evm.Utils
 //[31] contains bits 248-255
 class EVMWord {
 	extension Utils u = new Utils()
-	
+
 	private UnsignedByte[] value = newArrayOfSize(32)
 
 	new() {
@@ -24,12 +24,12 @@ class EVMWord {
 	// n must be between (including) 0 and 31
 	def UnsignedByte getNthField(Integer n) {
 		if (n >= 0 && n <= 31) {
-			value.get(n)	
+			value.get(n)
 		} else {
 			throw new IllegalArgumentException(n + " is not between 0 and 31")
 		}
 	}
-	
+
 	// n must be between (including) 0 and 15
 	def int getNth16BitField(Integer n) {
 		if (n >= 0 && n <= 16) {
@@ -38,15 +38,15 @@ class EVMWord {
 			throw new IllegalArgumentException(n + " is not between 0 and 16")
 		}
 	}
-	
+
 	def UnsignedByte[] toByteArray() {
 		value
 	}
-	
+
 	def EVMWord setNthField(Integer n, int newValue) {
 		setNthField(n, newValue as short)
 	}
-	
+
 	def EVMWord setNthField(Integer n, short newValue) {
 		value.get(n).setValue(newValue)
 		this
@@ -59,15 +59,15 @@ class EVMWord {
 
 	def String toHexString() {
 		var String result = ""
-		for (i: 31 .. 0) {
+		for (i : 31 .. 0) {
 			result += this.getNthField(i).toHexString()
 		}
 		result
 	}
-	
+
 	def String toBitString() {
 		var result = ""
-		for (i: 31 .. 0) {
+		for (i : 31 .. 0) {
 			result += this.getNthField(i).toBitString()
 		}
 		result
