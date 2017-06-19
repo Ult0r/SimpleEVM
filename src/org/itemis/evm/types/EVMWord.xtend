@@ -14,10 +14,11 @@ class EVMWord {
 		setToZero
 	}
 
-	def setToZero() {
+	def EVMWord setToZero() {
 		for (i : 0 .. 31) {
 			value.set(i, new UnsignedByte(0))
 		}
+		this
 	}
 
 	// n must be between (including) 0 and 31
@@ -29,16 +30,18 @@ class EVMWord {
 		value
 	}
 	
-	def setNthField(Integer n, int newValue) {
+	def EVMWord setNthField(Integer n, int newValue) {
 		setNthField(n, newValue as short)
 	}
 	
-	def setNthField(Integer n, short newValue) {
+	def EVMWord setNthField(Integer n, short newValue) {
 		value.get(n).setValue(newValue)
+		this
 	}
 
-	def setNthField(Integer n, UnsignedByte newValue) {
+	def EVMWord setNthField(Integer n, UnsignedByte newValue) {
 		value.set(n, newValue)
+		this
 	}
 
 	def String toHexString() {
