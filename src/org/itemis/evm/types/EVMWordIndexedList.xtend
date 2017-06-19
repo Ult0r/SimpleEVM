@@ -1,6 +1,7 @@
 package org.itemis.evm.types
 
 import java.util.List
+import org.itemis.evm.ListUtils
 
 class EVMWordIndexedList<T> {
 	extension ListUtils u = new ListUtils()
@@ -48,5 +49,24 @@ class EVMWordIndexedList<T> {
 			newArrayList()) // o
 		elements.get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).add(
 			newArrayList()) // p
+	}
+	
+	private def ensureIndexExists(List<Integer> indices) {
+		elements.ensureNestedListIndexExists(indices.get(0))
+		elements.get(indices).ensureNestedListIndexExists(indices.get(1))
+		elements.get2(indices).ensureNestedListIndexExists(indices.get(2))
+		elements.get3(indices).ensureNestedListIndexExists(indices.get(3))
+		elements.get4(indices).ensureNestedListIndexExists(indices.get(4))
+		elements.get5(indices).ensureNestedListIndexExists(indices.get(5))
+		elements.get6(indices).ensureNestedListIndexExists(indices.get(6))
+		elements.get7(indices).ensureNestedListIndexExists(indices.get(7))
+		elements.get8(indices).ensureNestedListIndexExists(indices.get(8))
+		elements.get9(indices).ensureNestedListIndexExists(indices.get(9))
+		elements.get10(indices).ensureNestedListIndexExists(indices.get(10))
+		elements.get10(indices).get(indices.subList(9, 15)).ensureNestedListIndexExists(indices.get(11))
+		elements.get10(indices).get2(indices.subList(9, 15)).ensureNestedListIndexExists(indices.get(12))
+		elements.get10(indices).get3(indices.subList(9, 15)).ensureNestedListIndexExists(indices.get(13))
+		elements.get10(indices).get4(indices.subList(9, 15)).ensureNestedListIndexExists(indices.get(14))
+		elements.get10(indices).get5(indices.subList(9, 15)).ensureListIndexExists(null, indices.get(15))
 	}
 }
