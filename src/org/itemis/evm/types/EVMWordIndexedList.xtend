@@ -50,6 +50,13 @@ class EVMWordIndexedList<T> {
 		elements.get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).add(
 			newArrayList()) // p
 	}
+
+	def EVMWordIndexedList<T> set(EVMWord index, T value) {
+		var List<Integer> indices = index.convertTo16BitFieldList
+		ensureIndexExists(indices)
+		elements.get10(indices).get5(indices.subList(9, 15)).set(indices.get(15), value)
+		this
+	}
 	
 	private def ensureIndexExists(List<Integer> indices) {
 		elements.ensureNestedListIndexExists(indices.get(0))
