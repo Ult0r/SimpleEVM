@@ -23,7 +23,12 @@ class EVMWord {
 
 	// n must be between (including) 0 and 31
 	def UnsignedByte getNthField(Integer n) {
-		value.get(n)
+		if (n >= 0 && n <= 31) {
+			value.get(n)	
+		} else {
+			throw new IllegalArgumentException(n + " is not between 0 and 31")
+		}
+	}
 	}
 	
 	def UnsignedByte[] toByteArray() {
