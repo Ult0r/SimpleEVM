@@ -47,30 +47,58 @@ class ListUtils {
 		list.get(a, b, c, d).get(e)
 	}
 
-	def <T extends Object> T get(List<List<List<List<List<List<T>>>>>> list, int a, int b, int c, int d,
-		int e, int f) {
+	def <T extends Object> T get(List<List<List<List<List<List<T>>>>>> list, int a, int b, int c, int d, int e, int f) {
 		list.get(a, b, c, d, e).get(f)
 	}
 
-	def <T extends Object> T get(List<List<List<List<List<List<List<T>>>>>>> list, int a, int b, int c,
-		int d, int e, int f, int g) {
+	def <T extends Object> T get(List<List<List<List<List<List<List<T>>>>>>> list, int a, int b, int c, int d, int e, int f, int g) {
 		list.get(a, b, c, d, e, f).get(g)
 	}
 
-	def <T extends Object> T get(List<List<List<List<List<List<List<List<T>>>>>>>> list, int a, int b,
-		int c, int d, int e, int f, int g, int h) {
+	def <T extends Object> T get(List<List<List<List<List<List<List<List<T>>>>>>>> list, int a, int b, int c, int d, int e, int f, int g, int h) {
 		list.get(a, b, c, d, e, f, g).get(h)
 	}
 
-	def <T extends Object> T get(List<List<List<List<List<List<List<List<List<T>>>>>>>>> list, int a, int b,
-		int c, int d, int e, int f, int g, int h, int i) {
+	def <T extends Object> T get(List<List<List<List<List<List<List<List<List<T>>>>>>>>> list, int a, int b, int c, int d, int e, int f, int g, int h,
+		int i) {
 		list.get(a, b, c, d, e, f, g, h).get(i)
 	}
 
-	def <T extends Object> T get(List<List<List<List<List<List<List<List<List<List<T>>>>>>>>>> list, int a,
-		int b, int c, int d, int e, int f, int g, int h, int i, int j) {
+	def <T extends Object> T get(List<List<List<List<List<List<List<List<List<List<T>>>>>>>>>> list, int a, int b, int c, int d, int e, int f, int g,
+		int h, int i, int j) {
 		list.get(a, b, c, d, e, f, g, h, i).get(j)
 	}
+
+	def <T extends Object> T get(List<List<List<List<List<List<List<List<List<List<List<T>>>>>>>>>>> list, int a, int b, int c, int d, int e, int f,
+		int g, int h, int i, int j, int k) {
+		list.get(a, b, c, d, e, f, g, h, i, j).get(k)
+	}
+
+	def <T extends Object> T get(List<List<List<List<List<List<List<List<List<List<List<List<T>>>>>>>>>>>> list, int a, int b, int c, int d, int e,
+		int f, int g, int h, int i, int j, int k, int l) {
+		list.get(a, b, c, d, e, f, g, h, i, j, k).get(l)
+	}
+
+	def <T extends Object> T get(List<List<List<List<List<List<List<List<List<List<List<List<List<T>>>>>>>>>>>>> list, int a, int b, int c, int d,
+		int e, int f, int g, int h, int i, int j, int k, int l, int m) {
+		list.get(a, b, c, d, e, f, g, h, i, j, k, l).get(m)
+	}
+
+	def <T extends Object> T get(List<List<List<List<List<List<List<List<List<List<List<List<List<List<T>>>>>>>>>>>>>> list, int a, int b, int c,
+		int d, int e, int f, int g, int h, int i, int j, int k, int l, int m, int n) {
+		list.get(a, b, c, d, e, f, g, h, i, j, k, l, m).get(n)
+	}
+
+	def <T extends Object> T get(List<List<List<List<List<List<List<List<List<List<List<List<List<List<List<T>>>>>>>>>>>>>>> list, int a, int b,
+		int c, int d, int e, int f, int g, int h, int i, int j, int k, int l, int m, int n, int o) {
+		list.get(a, b, c, d, e, f, g, h, i, j, k, l, m, n).get(o)
+	}
+
+	def <T extends Object> T get(List<List<List<List<List<List<List<List<List<List<List<List<List<List<List<List<T>>>>>>>>>>>>>>>> list, int a, int b,
+		int c, int d, int e, int f, int g, int h, int i, int j, int k, int l, int m, int n, int o, int p) {
+		list.get(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o).get(p)
+	}
+
 	def <T extends Object> T get(T list, List<Integer> indices) {
 		list
 	}
