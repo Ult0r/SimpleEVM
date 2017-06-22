@@ -221,6 +221,7 @@ class ListUtils {
 			throw new IllegalArgumentException("indices list is not long enough")
 		}
 	}
+
 	def <T extends Object> T get15(List<List<List<List<List<List<List<List<List<List<List<List<List<List<List<T>>>>>>>>>>>>>>> list,
 		List<Integer> indices) {
 		if(indices.size >= 15) {
