@@ -83,5 +83,8 @@ class EVMWordIndexedList<T> {
 		elements.get14(indices).ensureNestedListIndexExists(indices.get(14))
 		elements.get15(indices).ensureListIndexExists(null, indices.get(15))
 	}
+
+	def EVMWord size() {
+		elements.fold15(new EVMWord())[r, t|r.inc]
 	}
 }
