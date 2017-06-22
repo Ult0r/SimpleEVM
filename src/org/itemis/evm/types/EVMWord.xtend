@@ -14,6 +14,10 @@ class EVMWord {
 	new() {
 		setToZero
 	}
+	
+	new(int i) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
 
 	def EVMWord setToZero() {
 		for (i : 0 .. 31) {
@@ -92,5 +96,21 @@ class EVMWord {
 		} else {
 			false
 		}
+	}
+	
+	def EVMWord invert() {
+		//TODO
+	}
+	
+	def EVMWord negate() {
+		//TODO
+	}
+	
+	def EVMWord inc() {
+		add(new EVMWord(1))
+	}
+	
+	def EVMWord add(EVMWord other) {
+		//TODO
 	}
 }
