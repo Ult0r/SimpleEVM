@@ -45,10 +45,8 @@ class EVMWordIndexedList<T> {
 		elements.get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).add(newArrayList()) // l
 		elements.get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).add(newArrayList()) // m
 		elements.get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).add(newArrayList()) // n
-		elements.get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).add(
-			newArrayList()) // o
-		elements.get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).add(
-			newArrayList()) // p
+		elements.get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).add(newArrayList()) // o
+		elements.get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).add(newArrayList()) // p
 	}
 
 	def EVMWordIndexedList<T> set(EVMWord index, T value) {
@@ -62,11 +60,11 @@ class EVMWordIndexedList<T> {
 		try {
 			var List<Integer> indices = index.convertTo16BitFieldList
 			elements.get10(indices).get5(indices.subList(9, 15)).get(indices.get(15))
-		} catch (Exception e) {
+		} catch(Exception e) {
 			null
 		}
 	}
-	
+
 	private def ensureIndexExists(List<Integer> indices) {
 		elements.ensureNestedListIndexExists(indices.get(0))
 		elements.get(indices).ensureNestedListIndexExists(indices.get(1))
@@ -79,10 +77,11 @@ class EVMWordIndexedList<T> {
 		elements.get8(indices).ensureNestedListIndexExists(indices.get(8))
 		elements.get9(indices).ensureNestedListIndexExists(indices.get(9))
 		elements.get10(indices).ensureNestedListIndexExists(indices.get(10))
-		elements.get10(indices).get(indices.subList(9, 15)).ensureNestedListIndexExists(indices.get(11))
-		elements.get10(indices).get2(indices.subList(9, 15)).ensureNestedListIndexExists(indices.get(12))
-		elements.get10(indices).get3(indices.subList(9, 15)).ensureNestedListIndexExists(indices.get(13))
-		elements.get10(indices).get4(indices.subList(9, 15)).ensureNestedListIndexExists(indices.get(14))
-		elements.get10(indices).get5(indices.subList(9, 15)).ensureListIndexExists(null, indices.get(15))
+		elements.get11(indices).ensureNestedListIndexExists(indices.get(11))
+		elements.get12(indices).ensureNestedListIndexExists(indices.get(12))
+		elements.get13(indices).ensureNestedListIndexExists(indices.get(13))
+		elements.get14(indices).ensureNestedListIndexExists(indices.get(14))
+		elements.get15(indices).ensureListIndexExists(null, indices.get(15))
+	}
 	}
 }
