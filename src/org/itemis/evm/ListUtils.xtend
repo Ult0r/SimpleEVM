@@ -241,4 +241,129 @@ class ListUtils {
 		}
 	}
 
+	def <R, T extends Object> R fold(T list, R accu, (R, T)=>R func) {
+		func.apply(accu, list)
+	}
+
+	def <R, T extends Object> R fold(List<T> list, R accu, (R, T)=>R func) {
+		var R result = accu
+		for (elem : list) {
+			result = func.apply(result, elem)
+		}
+		result
+	}
+
+	def <R, T extends Object> R fold2(List<List<T>> list, R accu, (R, T)=>R func) {
+		var R result = accu
+		for (elem : list) {
+			result = elem.fold(result, func)
+		}
+		result
+	}
+
+	def <R, T extends Object> R fold3(List<List<List<T>>> list, R accu, (R, T)=>R func) {
+		var R result = accu
+		for (elem : list) {
+			result = elem.fold2(result, func)
+		}
+		result
+	}
+
+	def <R, T extends Object> R fold4(List<List<List<List<T>>>> list, R accu, (R, T)=>R func) {
+		var R result = accu
+		for (elem : list) {
+			result = elem.fold3(result, func)
+		}
+		result
+	}
+
+	def <R, T extends Object> R fold5(List<List<List<List<List<T>>>>> list, R accu, (R, T)=>R func) {
+		var R result = accu
+		for (elem : list) {
+			result = elem.fold4(result, func)
+		}
+		result
+	}
+
+	def <R, T extends Object> R fold6(List<List<List<List<List<List<T>>>>>> list, R accu, (R, T)=>R func) {
+		var R result = accu
+		for (elem : list) {
+			result = elem.fold5(result, func)
+		}
+		result
+	}
+
+	def <R, T extends Object> R fold7(List<List<List<List<List<List<List<T>>>>>>> list, R accu, (R, T)=>R func) {
+		var R result = accu
+		for (elem : list) {
+			result = elem.fold6(result, func)
+		}
+		result
+	}
+
+	def <R, T extends Object> R fold8(List<List<List<List<List<List<List<List<T>>>>>>>> list, R accu, (R, T)=>R func) {
+		var R result = accu
+		for (elem : list) {
+			result = elem.fold7(result, func)
+		}
+		result
+	}
+
+	def <R, T extends Object> R fold9(List<List<List<List<List<List<List<List<List<T>>>>>>>>> list, R accu, (R, T)=>R func) {
+		var R result = accu
+		for (elem : list) {
+			result = elem.fold8(result, func)
+		}
+		result
+	}
+
+	def <R, T extends Object> R fold10(List<List<List<List<List<List<List<List<List<List<T>>>>>>>>>> list, R accu, (R, T)=>R func) {
+		var R result = accu
+		for (elem : list) {
+			result = elem.fold9(result, func)
+		}
+		result
+	}
+
+	def <R, T extends Object> R fold11(List<List<List<List<List<List<List<List<List<List<List<T>>>>>>>>>>> list, R accu, (R, T)=>R func) {
+		var R result = accu
+		for (elem : list) {
+			result = elem.fold10(result, func)
+		}
+		result
+	}
+
+	def <R, T extends Object> R fold12(List<List<List<List<List<List<List<List<List<List<List<List<T>>>>>>>>>>>> list, R accu, (R, T)=>R func) {
+		var R result = accu
+		for (elem : list) {
+			result = elem.fold11(result, func)
+		}
+		result
+	}
+
+	def <R, T extends Object> R fold13(List<List<List<List<List<List<List<List<List<List<List<List<List<T>>>>>>>>>>>>> list, R accu, (R, T)=>R func) {
+		var R result = accu
+		for (elem : list) {
+			result = elem.fold12(result, func)
+		}
+		result
+	}
+
+	def <R, T extends Object> R fold14(List<List<List<List<List<List<List<List<List<List<List<List<List<List<T>>>>>>>>>>>>>> list, R accu,
+		(R, T)=>R func) {
+		var R result = accu
+		for (elem : list) {
+			result = elem.fold13(result, func)
+		}
+		result
+	}
+
+	def <R, T extends Object> R fold15(List<List<List<List<List<List<List<List<List<List<List<List<List<List<List<T>>>>>>>>>>>>>>> list, R accu,
+		(R, T)=>R func) {
+		var R result = accu
+		for (elem : list) {
+			result = elem.fold14(result, func)
+		}
+		result
+	}
 }
