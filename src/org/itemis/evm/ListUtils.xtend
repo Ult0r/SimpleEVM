@@ -177,10 +177,68 @@ class ListUtils {
 	}
 
 	def <T extends Object> T get10(List<List<List<List<List<List<List<List<List<List<T>>>>>>>>>> list, List<Integer> indices) {
-		if (indices.size >= 10) {
-			list.get(indices.get(0), indices.get(1), indices.get(2), indices.get(3), indices.get(4), indices.get(5), indices.get(6), indices.get(7), indices.get(8), indices.get(9))
+		if(indices.size >= 10) {
+			list.get(indices.get(0), indices.get(1), indices.get(2), indices.get(3), indices.get(4), indices.get(5), indices.get(6), indices.get(7),
+				indices.get(8), indices.get(9))
 		} else {
 			throw new IllegalArgumentException("indices list is not long enough")
 		}
 	}
+
+	def <T extends Object> T get11(List<List<List<List<List<List<List<List<List<List<List<T>>>>>>>>>>> list, List<Integer> indices) {
+		if(indices.size >= 11) {
+			list.get(indices.get(0), indices.get(1), indices.get(2), indices.get(3), indices.get(4), indices.get(5), indices.get(6), indices.get(7),
+				indices.get(8), indices.get(9), indices.get(10))
+		} else {
+			throw new IllegalArgumentException("indices list is not long enough")
+		}
+	}
+
+	def <T extends Object> T get12(List<List<List<List<List<List<List<List<List<List<List<List<T>>>>>>>>>>>> list, List<Integer> indices) {
+		if(indices.size >= 12) {
+			list.get(indices.get(0), indices.get(1), indices.get(2), indices.get(3), indices.get(4), indices.get(5), indices.get(6), indices.get(7),
+				indices.get(8), indices.get(9), indices.get(10), indices.get(11))
+		} else {
+			throw new IllegalArgumentException("indices list is not long enough")
+		}
+	}
+
+	def <T extends Object> T get13(List<List<List<List<List<List<List<List<List<List<List<List<List<T>>>>>>>>>>>>> list, List<Integer> indices) {
+		if(indices.size >= 13) {
+			list.get(indices.get(0), indices.get(1), indices.get(2), indices.get(3), indices.get(4), indices.get(5), indices.get(6), indices.get(7),
+				indices.get(8), indices.get(9), indices.get(10), indices.get(11), indices.get(12))
+		} else {
+			throw new IllegalArgumentException("indices list is not long enough")
+		}
+	}
+
+	def <T extends Object> T get14(List<List<List<List<List<List<List<List<List<List<List<List<List<List<T>>>>>>>>>>>>>> list,
+		List<Integer> indices) {
+		if(indices.size >= 14) {
+			list.get(indices.get(0), indices.get(1), indices.get(2), indices.get(3), indices.get(4), indices.get(5), indices.get(6), indices.get(7),
+				indices.get(8), indices.get(9), indices.get(10), indices.get(11), indices.get(12), indices.get(13))
+		} else {
+			throw new IllegalArgumentException("indices list is not long enough")
+		}
+	}
+	def <T extends Object> T get15(List<List<List<List<List<List<List<List<List<List<List<List<List<List<List<T>>>>>>>>>>>>>>> list,
+		List<Integer> indices) {
+		if(indices.size >= 15) {
+			list.get(indices.get(0), indices.get(1), indices.get(2), indices.get(3), indices.get(4), indices.get(5), indices.get(6), indices.get(7),
+				indices.get(8), indices.get(9), indices.get(10), indices.get(11), indices.get(12), indices.get(13), indices.get(14))
+		} else {
+			throw new IllegalArgumentException("indices list is not long enough")
+		}
+	}
+
+	def <T extends Object> T get16(List<List<List<List<List<List<List<List<List<List<List<List<List<List<List<List<T>>>>>>>>>>>>>>>> list,
+		List<Integer> indices) {
+		if(indices.size >= 16) {
+			list.get(indices.get(0), indices.get(1), indices.get(2), indices.get(3), indices.get(4), indices.get(5), indices.get(6), indices.get(7),
+				indices.get(8), indices.get(9), indices.get(10), indices.get(11), indices.get(12), indices.get(13), indices.get(14), indices.get(15))
+		} else {
+			throw new IllegalArgumentException("indices list is not long enough")
+		}
+	}
+
 }
