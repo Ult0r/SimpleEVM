@@ -79,4 +79,23 @@ class UnsignedByte extends Number implements Comparable<UnsignedByte> {
 			throw new InvalidParameterException(n + " is not a value between 0 and 7")
 		}
 	}
+	
+	def invert() {
+		value = value.bitwiseNot.bitwiseAnd(0x00FF)
+	}
+	
+	//overflow = 1
+	//no overflow = 0
+	def boolean inc() {
+		value = (value + 1).bitwiseAnd(0x00FF)
+		value == 0
+	}
+	
+	//overflow = 1
+	//no overflow = 0
+	def boolean add(UnsignedByte other) {
+		val newValue = value + other.getValue
+		value = newValue.bitwiseAnd(0x00FF)
+		newValue > 255
+	}	
 }
