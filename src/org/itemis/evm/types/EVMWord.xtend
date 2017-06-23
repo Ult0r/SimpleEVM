@@ -124,7 +124,11 @@ class EVMWord {
 	def EVMWord inc() {
 		add(new EVMWord(1))
 	}
-	
+
+	def EVMWord dec() {
+		sub(new EVMWord(1))
+	}
+
 	def EVMWord add(EVMWord other) {
 		//TODO
 	}
