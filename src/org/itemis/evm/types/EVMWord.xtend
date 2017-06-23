@@ -2,6 +2,7 @@ package org.itemis.evm.types
 
 import org.itemis.evm.utils.Utils
 import java.util.List
+import org.itemis.evm.types.exception.OverflowException
 
 //256-bit / 32-byte int
 //[0] contains bits 0-7
@@ -130,6 +131,23 @@ class EVMWord {
 	}
 
 	def EVMWord add(EVMWord other) {
-		//TODO
+		var result = new EVMWord(this)
+		var overflow = false
+		for (i : 0 .. 31) {
+			if(overflow) {
+				overflow = result.getNthField(i).inc
+				result.getNthField(i).add(other.getNthField(i))
+			} else {
+				overflow = result.getNthField(i).add(other.getNthField(i))
+			}
+		}
+		if(overflow) {
+			throw new OverflowException()
+		}
+		result
+	}
+
+	def EVMWord sub(EVMWord other) {
+		negate.add(other)
 	}
 }
