@@ -14,7 +14,7 @@ class EVMWord {
 	new() {
 		setToZero
 	}
-	
+
 	new(int i) {
 		throw new UnsupportedOperationException("TODO: auto-generated method stub")
 	}
@@ -71,7 +71,7 @@ class EVMWord {
 	}
 
 	def String toHexString() {
-		var String result = ""
+		var result = ""
 		for (i : 31 .. 0) {
 			result += this.getNthField(i).toHexString()
 		}
@@ -97,7 +97,7 @@ class EVMWord {
 			false
 		}
 	}
-	
+
 	def EVMWord invert() {
 		//TODO
 	}
@@ -105,7 +105,7 @@ class EVMWord {
 	def EVMWord negate() {
 		//TODO
 	}
-	
+
 	def EVMWord inc() {
 		add(new EVMWord(1))
 	}
