@@ -18,6 +18,6 @@ class EVMMemory {
 	}
 	
 	def EVMWord usedBytes() {
-		//TODO
+		elements.size
 	}
 }
