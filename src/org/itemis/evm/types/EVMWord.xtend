@@ -16,7 +16,16 @@ class EVMWord {
 	}
 
 	new(int i) {
-		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+		value.set(0, new UnsignedByte(i.bitwiseAnd(0x000F)))
+		value.set(1, new UnsignedByte((i >> 8).bitwiseAnd(0x000F)))
+		value.set(2, new UnsignedByte((i >> 16).bitwiseAnd(0x000F)))
+		value.set(3, new UnsignedByte((i >> 24).bitwiseAnd(0x000F)))
+	}
+
+	new(EVMWord word) {
+		for (i : 0 .. 31) {
+			value.set(i, word.getNthField(i))
+		}
 	}
 
 	def EVMWord setToZero() {
