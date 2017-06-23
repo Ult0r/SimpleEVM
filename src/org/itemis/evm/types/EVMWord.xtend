@@ -17,15 +17,16 @@ class EVMWord {
 	}
 
 	new(int i) {
-		value.set(0, new UnsignedByte(i.bitwiseAnd(0x000F)))
-		value.set(1, new UnsignedByte((i >> 8).bitwiseAnd(0x000F)))
-		value.set(2, new UnsignedByte((i >> 16).bitwiseAnd(0x000F)))
-		value.set(3, new UnsignedByte((i >> 24).bitwiseAnd(0x000F)))
+		setToZero
+		value.set(0, new UnsignedByte(i.bitwiseAnd(0x000000FF)))
+		value.set(1, new UnsignedByte((i >> 8).bitwiseAnd(0x000000FF)))
+		value.set(2, new UnsignedByte((i >> 16).bitwiseAnd(0x000000FF)))
+		value.set(3, new UnsignedByte((i >> 24).bitwiseAnd(0x000000FF)))
 	}
 
 	new(EVMWord word) {
 		for (i : 0 .. 31) {
-			value.set(i, word.getNthField(i))
+			value.set(i, new UnsignedByte(word.getNthField(i).value))
 		}
 	}
 
@@ -107,9 +108,9 @@ class EVMWord {
 			false
 		}
 	}
-
+	
 	def EVMWord invert() {
-		var result = new EVMWord(this)
+		var result = new EVMWord()
 		for (i : 0 .. 31) {
 			result.getNthField(i).invert
 		}
@@ -118,7 +119,12 @@ class EVMWord {
 
 	// for all mathematical functions:
 	// interpreting content as 2-complement
+	def boolean isNegative() {
+		(getNthField(31).value >> 7) == 1
+	}
+	
 	def EVMWord negate() {
+		println(toHexString)
 		invert.inc
 	}
 
@@ -131,23 +137,29 @@ class EVMWord {
 	}
 
 	def EVMWord add(EVMWord other) {
-		var result = new EVMWord(this)
-		var overflow = false
-		for (i : 0 .. 31) {
-			if(overflow) {
-				overflow = result.getNthField(i).inc
-				result.getNthField(i).add(other.getNthField(i))
-			} else {
-				overflow = result.getNthField(i).add(other.getNthField(i))
+		println("before: " + this.toHexString + " " + other.toHexString)
+		if (this.isNegative && other.isNegative) {
+			this.negate.add(other.negate).negate
+		} else {
+			var result = new EVMWord(this)
+			var overflow = false
+			for (i : 0 .. 31) {
+				if(overflow) {
+					overflow = result.getNthField(i).inc
+					result.getNthField(i).add(other.getNthField(i))
+				} else {
+					overflow = result.getNthField(i).add(other.getNthField(i))
+				}
 			}
+			if(overflow) {
+				throw new OverflowException()
+			}
+			println("result: " + result.toHexString)
+			result
 		}
-		if(overflow) {
-			throw new OverflowException()
-		}
-		result
 	}
 
 	def EVMWord sub(EVMWord other) {
-		negate.add(other)
+		add(other.negate)
 	}
 }

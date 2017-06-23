@@ -3,6 +3,7 @@ package org.itemis.test.evm.types
 import org.junit.Test
 import org.itemis.evm.types.EVMWord
 import org.junit.Assert
+import org.itemis.evm.types.exception.OverflowException
 
 class EVMWordTest {
 	private val EVMWord zero = new EVMWord()
@@ -79,5 +80,62 @@ class EVMWordTest {
 		initVarious()
 		Assert.assertEquals(various.getNth16BitField(0), 0x3210)
 		Assert.assertEquals(various.getNth16BitField(15), 0xCAFE)
+	}
+	
+	@Test
+	def void testIntConstructor() {
+		var word = new EVMWord(0xABCD)
+		Assert.assertEquals(word.getNth16BitField(0), 0xABCD)
+	}
+	
+	@Test
+	def void testInvert() {
+		initVarious()
+		var word = new EVMWord(0)
+		Assert.assertEquals(word.invert.toHexString, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
+		Assert.assertEquals(various.invert.toHexString, "350145412152411000112233445566778899AABBCCDDEEFF0123456789ABCDEF")
+	}
+	
+	@Test
+	def void testNegate() {
+		var word = new EVMWord(0xABCD)
+		Assert.assertEquals(word.negate.toHexString, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5433")
+	}
+	
+	@Test
+	def void testInc() {
+		initVarious()
+		Assert.assertEquals(zero.inc.toHexString, "0000000000000000000000000000000000000000000000000000000000000001")
+		Assert.assertEquals(various.inc.toHexString, "CAFEBABEDEADBEEFFFEEDDCCBBAA99887766554433221100FEDCBA9876543211")
+	}
+	
+	@Test
+	def void testDec() {
+		initVarious()
+		Assert.assertEquals(zero.dec.toHexString, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
+		Assert.assertEquals(various.dec.toHexString, "CAFEBABEDEADBEEFFFEEDDCCBBAA99887766554433221100FEDCBA987654320F")
+	}
+	
+	@Test
+	def void testAdd() {
+		initVarious()
+		Assert.assertEquals(zero.add(various), various)
+		var word = new EVMWord(0x1234)
+		Assert.assertEquals(word.add(new EVMWord(0x4321)), new EVMWord(0x5555))
+	}
+	
+	@Test
+	def void testSub() {
+		initVarious()
+		var various_negate = various.negate
+		Assert.assertEquals(zero.sub(various), various_negate)
+		var word = new EVMWord(0x5555)
+		Assert.assertEquals(word.sub(new EVMWord(0x1234)), new EVMWord(0x4321))
+	}
+	
+	@Test(expected = OverflowException)
+	def void testAddOverflow() {
+		val max_value = zero.dec
+		max_value.add(new EVMWord(1))		
 	}
 }
