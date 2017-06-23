@@ -59,7 +59,7 @@ class EVMWordIndexedList<T> {
 	def T get(EVMWord index) {
 		try {
 			var List<Integer> indices = index.convertTo16BitFieldList
-			elements.get10(indices).get5(indices.subList(9, 15)).get(indices.get(15))
+			elements.get15(indices).get(indices.get(15))
 		} catch(Exception e) {
 			null
 		}
