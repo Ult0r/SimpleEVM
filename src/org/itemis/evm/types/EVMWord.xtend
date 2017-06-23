@@ -114,7 +114,9 @@ class EVMWord {
 		}
 		result
 	}
-	
+
+	// for all mathematical functions:
+	// interpreting content as 2-complement
 	def EVMWord negate() {
 		//TODO
 	}
