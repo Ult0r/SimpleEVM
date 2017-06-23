@@ -1,6 +1,6 @@
 package org.itemis.evm.types
 
-import org.itemis.evm.Utils
+import org.itemis.evm.utils.Utils
 import java.util.List
 
 //256-bit / 32-byte int

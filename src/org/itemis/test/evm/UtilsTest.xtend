@@ -1,6 +1,6 @@
 package org.itemis.test.evm
 
-import org.itemis.evm.Utils
+import org.itemis.evm.utils.Utils
 import org.junit.Test
 import org.junit.Assert
 import org.itemis.evm.types.UnsignedByte

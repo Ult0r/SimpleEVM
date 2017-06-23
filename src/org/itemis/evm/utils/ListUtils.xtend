@@ -1,4 +1,4 @@
-package org.itemis.evm
+package org.itemis.evm.utils
 
 import java.util.List
 
