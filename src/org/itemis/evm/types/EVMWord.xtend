@@ -108,7 +108,11 @@ class EVMWord {
 	}
 
 	def EVMWord invert() {
-		//TODO
+		var result = new EVMWord(this)
+		for (i : 0 .. 31) {
+			result.getNthField(i).invert
+		}
+		result
 	}
 	
 	def EVMWord negate() {
