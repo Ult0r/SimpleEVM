@@ -134,4 +134,10 @@ class EVMWordTest {
 		Assert.assertEquals(various.invert.toHexString, "350145412152411000112233445566778899AABBCCDDEEFF0123456789ABCDEF")
 	}
 	
+	@Test
+	def void testNegate() {
+		var word = new EVMWord(0xABCD)
+		Assert.assertEquals(word.negate.toHexString, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5433")
+	}
+	
 }
