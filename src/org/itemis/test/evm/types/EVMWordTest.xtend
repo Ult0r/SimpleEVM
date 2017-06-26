@@ -177,4 +177,10 @@ class EVMWordTest {
 		initMaxEVMWord()
 		maxEVMWord.inc
 	}
+	
+	@Test(expected = OverflowException)
+	def void testSubOverflow() {
+		initMaxEVMWord()
+		maxEVMWord.negate.dec
+	}
 }
