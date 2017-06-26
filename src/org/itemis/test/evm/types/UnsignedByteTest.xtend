@@ -61,4 +61,19 @@ class UnsignedByteTest {
 		Assert.assertEquals(_0xE5, invert)
 	}
 	
+	@Test
+	def void testInc() {
+		var UnsignedByte inc = new UnsignedByte(0)
+		Assert.assertEquals(zero, inc)
+		Assert.assertFalse(inc.inc)
+		Assert.assertEquals(1, inc.getValue)
+		Assert.assertFalse(inc.inc)
+		Assert.assertEquals(2, inc.getValue)
+		
+		inc.setValue(0xFF)
+		Assert.assertNotEquals(zero, inc)
+		Assert.assertTrue(inc.inc)
+		Assert.assertEquals(zero, inc)
+	}
+	
 }
