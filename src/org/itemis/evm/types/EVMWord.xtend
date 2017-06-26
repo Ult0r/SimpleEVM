@@ -110,7 +110,7 @@ class EVMWord {
 	}
 
 	def EVMWord invert() {
-		var result = new EVMWord(this)
+		var result = new EVMWord()
 		for (i : 0 .. 31) {
 			result.getNthField(i).invert
 		}
@@ -124,6 +124,7 @@ class EVMWord {
 	}
 
 	def EVMWord negate() {
+		println(toHexString)
 		invert.inc
 	}
 
