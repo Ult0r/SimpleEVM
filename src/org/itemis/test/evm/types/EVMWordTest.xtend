@@ -3,6 +3,7 @@ package org.itemis.test.evm.types
 import org.junit.Test
 import org.itemis.evm.types.EVMWord
 import org.junit.Assert
+import org.itemis.evm.types.exception.OverflowException
 
 class EVMWordTest {
 	private val EVMWord zero = new EVMWord()
@@ -171,4 +172,9 @@ class EVMWordTest {
 		Assert.assertEquals(word.sub(new EVMWord(0x1234)), new EVMWord(0x4321))
 	}
 	
+	@Test(expected = OverflowException)
+	def void testAddOverflow() {
+		initMaxEVMWord()
+		maxEVMWord.inc
+	}
 }
