@@ -156,6 +156,6 @@ class EVMWord {
 	}
 
 	def EVMWord sub(EVMWord other) {
-		negate.add(other)
+		add(other.negate)
 	}
 }
