@@ -7,6 +7,7 @@ import org.junit.Assert
 class EVMWordTest {
 	private val EVMWord zero = new EVMWord()
 	private var EVMWord various = new EVMWord()
+	private var EVMWord maxEVMWord = new EVMWord()
 	
 	def void initVarious() {
 		various.setNthField(0, 0x10)
@@ -44,6 +45,44 @@ class EVMWordTest {
 		various.setNthField(29, 0xBA)
 		various.setNthField(30, 0xFE)
 		various.setNthField(31, 0xCA)
+	}
+	
+	def void initMaxEVMWord() {
+		maxEVMWord.setNthField(0, 0xFF)
+		maxEVMWord.setNthField(1, 0xFF)
+		maxEVMWord.setNthField(2, 0xFF)
+		maxEVMWord.setNthField(3, 0xFF)
+		maxEVMWord.setNthField(4, 0xFF)
+		maxEVMWord.setNthField(5, 0xFF)
+		maxEVMWord.setNthField(6, 0xFF)
+		maxEVMWord.setNthField(7, 0xFF)
+		
+		maxEVMWord.setNthField(8, 0xFF)
+		maxEVMWord.setNthField(9, 0xFF)
+		maxEVMWord.setNthField(10, 0xFF)
+		maxEVMWord.setNthField(11, 0xFF)
+		maxEVMWord.setNthField(12, 0xFF)
+		maxEVMWord.setNthField(13, 0xFF)
+		maxEVMWord.setNthField(14, 0xFF)
+		maxEVMWord.setNthField(15, 0xFF)
+		
+		maxEVMWord.setNthField(16, 0xFF)
+		maxEVMWord.setNthField(17, 0xFF)
+		maxEVMWord.setNthField(18, 0xFF)
+		maxEVMWord.setNthField(19, 0xFF)
+		maxEVMWord.setNthField(20, 0xFF)
+		maxEVMWord.setNthField(21, 0xFF)
+		maxEVMWord.setNthField(22, 0xFF)
+		maxEVMWord.setNthField(23, 0xFF)
+		
+		maxEVMWord.setNthField(24, 0xFF)
+		maxEVMWord.setNthField(25, 0xFF)
+		maxEVMWord.setNthField(26, 0xFF)
+		maxEVMWord.setNthField(27, 0xFF)
+		maxEVMWord.setNthField(28, 0xFF)
+		maxEVMWord.setNthField(29, 0xFF)
+		maxEVMWord.setNthField(30, 0xFF)
+		maxEVMWord.setNthField(31, 0x7F)
 	}
 	
 	@Test
