@@ -147,4 +147,11 @@ class EVMWordTest {
 		Assert.assertEquals(various.inc.toHexString, "CAFEBABEDEADBEEFFFEEDDCCBBAA99887766554433221100FEDCBA9876543211")
 	}
 	
+	@Test
+	def void testDec() {
+		initVarious()
+		Assert.assertEquals(zero.dec.toHexString, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
+		Assert.assertEquals(various.dec.toHexString, "CAFEBABEDEADBEEFFFEEDDCCBBAA99887766554433221100FEDCBA987654320F")
+	}
+	
 }
