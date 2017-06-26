@@ -126,4 +126,12 @@ class EVMWordTest {
 		Assert.assertEquals(word.getNth16BitField(0), 0xABCD)
 	}
 	
+	@Test
+	def void testInvert() {
+		initVarious()
+		var word = new EVMWord(0)
+		Assert.assertEquals(word.invert.toHexString, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
+		Assert.assertEquals(various.invert.toHexString, "350145412152411000112233445566778899AABBCCDDEEFF0123456789ABCDEF")
+	}
+	
 }
