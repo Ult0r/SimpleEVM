@@ -46,4 +46,19 @@ class UnsignedByteTest {
 		Assert.assertTrue(_0xE5.getBit(6))
 		Assert.assertTrue(_0xE5.getBit(7))
 	}
+	
+	@Test
+	def void testInvert() {
+		var UnsignedByte invert = new UnsignedByte(0)
+		Assert.assertEquals(zero, invert)
+		invert.invert
+		Assert.assertEquals(new UnsignedByte(0xFF), invert)
+		
+		invert.setValue(0x1A)
+		Assert.assertNotEquals(zero, invert)
+		Assert.assertNotEquals(_0xE5, invert)
+		invert.invert
+		Assert.assertEquals(_0xE5, invert)
+	}
+	
 }
