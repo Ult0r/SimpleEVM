@@ -17,10 +17,11 @@ class EVMWord {
 	}
 
 	new(int i) {
-		value.set(0, new UnsignedByte(i.bitwiseAnd(0x000F)))
-		value.set(1, new UnsignedByte((i >> 8).bitwiseAnd(0x000F)))
-		value.set(2, new UnsignedByte((i >> 16).bitwiseAnd(0x000F)))
-		value.set(3, new UnsignedByte((i >> 24).bitwiseAnd(0x000F)))
+		setToZero
+		value.set(0, new UnsignedByte(i.bitwiseAnd(0x000000FF)))
+		value.set(1, new UnsignedByte((i >> 8).bitwiseAnd(0x000000FF)))
+		value.set(2, new UnsignedByte((i >> 16).bitwiseAnd(0x000000FF)))
+		value.set(3, new UnsignedByte((i >> 24).bitwiseAnd(0x000000FF)))
 	}
 
 	new(EVMWord word) {
