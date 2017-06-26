@@ -162,4 +162,13 @@ class EVMWordTest {
 		Assert.assertEquals(word.add(new EVMWord(0x4321)), new EVMWord(0x5555))
 	}
 	
+	@Test
+	def void testSub() {
+		initVarious()
+		var various_negate = various.negate
+		Assert.assertEquals(zero.sub(various), various_negate)
+		var word = new EVMWord(0x5555)
+		Assert.assertEquals(word.sub(new EVMWord(0x1234)), new EVMWord(0x4321))
+	}
+	
 }
