@@ -26,7 +26,7 @@ class EVMWord {
 
 	new(EVMWord word) {
 		for (i : 0 .. 31) {
-			value.set(i, word.getNthField(i))
+			value.set(i, new UnsignedByte(word.getNthField(i).value))
 		}
 	}
 
