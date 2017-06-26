@@ -119,4 +119,11 @@ class EVMWordTest {
 		Assert.assertEquals(various.getNth16BitField(0), 0x3210)
 		Assert.assertEquals(various.getNth16BitField(15), 0xCAFE)
 	}
+	
+	@Test
+	def void testIntConstructor() {
+		var word = new EVMWord(0xABCD)
+		Assert.assertEquals(word.getNth16BitField(0), 0xABCD)
+	}
+	
 }
