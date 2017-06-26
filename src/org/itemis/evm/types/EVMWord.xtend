@@ -119,6 +119,10 @@ class EVMWord {
 
 	// for all mathematical functions:
 	// interpreting content as 2-complement
+	def boolean isNegative() {
+		(getNthField(31).value >> 7) == 1
+	}
+
 	def EVMWord negate() {
 		invert.inc
 	}
