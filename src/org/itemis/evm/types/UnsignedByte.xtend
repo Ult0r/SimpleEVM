@@ -11,9 +11,12 @@
 package org.itemis.evm.types
 
 import java.security.InvalidParameterException
+import org.itemis.evm.utils.Utils
 
 //opposing to the signed java.lang.Byte
 class UnsignedByte extends Number implements Comparable<UnsignedByte> {
+	extension Utils u = new Utils
+	
 	private short value = 0 as short
 	
 	new(byte b) {
@@ -66,6 +69,27 @@ class UnsignedByte extends Number implements Comparable<UnsignedByte> {
 	
 	def String toIntString() {
 		value.toString
+	}
+	
+	def String toHexString() {
+		"0x" + higherNibble.toHex + lowerNibble.toHex
+	}
+	
+	def String toBitString() {
+		var result = ""
+		for (i : 7..0) {
+			result += if (getBit(i)) "1" else "0" 
+		}
+		result
+	}
+	
+	def String toASCII() {
+		val c = (value.bitwiseAnd(0xFF) as byte) as char
+		c.toString
+	}
+	
+	override String toString() {
+		toHexString
 	}
 
 	def short getValue() {
