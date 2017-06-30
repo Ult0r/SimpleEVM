@@ -43,6 +43,10 @@ class Utils {
 		}
 	}
 	
+	def UnsignedByte[] unsignedByteArrayFromByteArray(byte[] data) {
+		var List<UnsignedByte> result = newArrayList
+		for (byte elem: data) {
+			result.add(new UnsignedByte(elem))
 		}
 		result
 	}
