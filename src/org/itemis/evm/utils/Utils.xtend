@@ -11,6 +11,10 @@
 package org.itemis.evm.utils
 
 import org.itemis.evm.types.UnsignedByte
+import java.util.List
+import org.itemis.evm.types.EVMWord
+import org.bouncycastle.jcajce.provider.digest.SHA3
+import java.util.Arrays
 
 class Utils {
 	// if n = 0, results in bits 0-7
@@ -110,4 +114,8 @@ class Utils {
 		}
 	}
 
+	def EVMWord keccak(byte[] input) {
+		val byte[] digest = new SHA3.Digest256().digest(input)
+		new EVMWord(digest, true)
+	}
 }
