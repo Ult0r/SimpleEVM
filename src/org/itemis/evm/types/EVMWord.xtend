@@ -116,9 +116,9 @@ class EVMWord {
 	}
 
 	def String toHexString() {
-		var result = ""
+		var result = "0x"
 		for (i : 31 .. 0) {
-			result += this.getNthField(i).toHexString()
+			result += this.getNthField(i).toHexString().substring(2)
 		}
 		result
 	}
