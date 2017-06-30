@@ -10,9 +10,10 @@
 
 package org.itemis.test;
 
-import org.itemis.test.evm.UtilsTest;
 import org.itemis.test.evm.types.EVMWordTest;
 import org.itemis.test.evm.types.UnsignedByteTest;
+import org.itemis.test.evm.utils.EVMWordIndexedListTest;
+import org.itemis.test.evm.utils.UtilsTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -21,7 +22,8 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
   UnsignedByteTest.class,
   UtilsTest.class,
-  EVMWordTest.class
+  EVMWordTest.class,
+  EVMWordIndexedListTest.class
 })
 public class AllTests {
 
