@@ -32,7 +32,7 @@ class Utils {
 			case 6,
 			case 7,
 			case 8,
-			case 9: b.toString()
+			case 9: b.value.toString
 			case 10: "A"
 			case 11: "B"
 			case 12: "C"
