@@ -165,7 +165,6 @@ class EVMWord {
 	}
 
 	def EVMWord negate() {
-		println(toHexString)
 		invert.inc
 	}
 
