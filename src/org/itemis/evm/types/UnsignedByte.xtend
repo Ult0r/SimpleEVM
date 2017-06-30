@@ -64,7 +64,7 @@ class UnsignedByte extends Number implements Comparable<UnsignedByte> {
 		value.longValue
 	}
 	
-	override toString() {
+	def String toIntString() {
 		value.toString
 	}
 
