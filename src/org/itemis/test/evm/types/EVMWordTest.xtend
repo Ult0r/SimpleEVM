@@ -20,6 +20,12 @@ class EVMWordTest {
 	private var EVMWord various = new EVMWord()
 	private var EVMWord maxEVMWord = new EVMWord()
 	
+	def void init() {
+		zero = new EVMWord(0)
+		initVarious
+		initMaxEVMWord
+	}
+	
 	def void initVarious() {
 		various.setNthField(0, 0x10)
 		various.setNthField(1, 0x32)
@@ -98,76 +104,85 @@ class EVMWordTest {
 	
 	@Test
 	def void testToHexString() {
-		initVarious()
-		Assert.assertEquals(zero.toHexString,    "0000000000000000000000000000000000000000000000000000000000000000")
-		Assert.assertEquals(various.toHexString, "CAFEBABEDEADBEEFFFEEDDCCBBAA99887766554433221100FEDCBA9876543210")
+		init()
+		Assert.assertEquals(zero.toHexString,    "0x0000000000000000000000000000000000000000000000000000000000000000")
+		Assert.assertEquals(various.toHexString, "0xCAFEBABEDEADBEEFFFEEDDCCBBAA99887766554433221100FEDCBA9876543210")
 	}
 	
 	@Test
 	def void testToBitString() {
-		initVarious()
+		init()
 		Assert.assertEquals(zero.toBitString,    "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
 		Assert.assertEquals(various.toBitString, "1100101011111110101110101011111011011110101011011011111011101111111111111110111011011101110011001011101110101010100110011000100001110111011001100101010101000100001100110010001000010001000000001111111011011100101110101001100001110110010101000011001000010000")
 	}
 	
 	@Test
+	def void testToString() {
+		init()
+		Assert.assertEquals(zero.toString,    "0x0000000000000000000000000000000000000000000000000000000000000000")
+		Assert.assertEquals(various.toString, "0xCAFEBABEDEADBEEFFFEEDDCCBBAA99887766554433221100FEDCBA9876543210")
+	}
+	
+	@Test
 	def void testEquals() {
-		initVarious()
+		init()
 		Assert.assertEquals(zero, zero)
 		Assert.assertEquals(various, various)
 	}
 	
 	@Test
 	def void testSetToZero() {
-		initVarious()
+		init()
 		Assert.assertNotEquals(zero, various)
 		Assert.assertEquals(zero, various.setToZero)
 	}
 	
 	@Test
 	def void testGetNth16BitField() {
-		initVarious()
+		init()
 		Assert.assertEquals(various.getNth16BitField(0), 0x3210)
 		Assert.assertEquals(various.getNth16BitField(15), 0xCAFE)
 	}
 	
 	@Test
 	def void testIntConstructor() {
+		init()
 		var word = new EVMWord(0xABCD)
 		Assert.assertEquals(word.getNth16BitField(0), 0xABCD)
 	}
 	
 	@Test
 	def void testInvert() {
-		initVarious()
+		init()
 		var word = new EVMWord(0)
-		Assert.assertEquals(word.invert.toHexString, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
-		Assert.assertEquals(various.invert.toHexString, "350145412152411000112233445566778899AABBCCDDEEFF0123456789ABCDEF")
+		Assert.assertEquals(word.invert.toHexString, "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
+		Assert.assertEquals(various.invert.toHexString, "0x350145412152411000112233445566778899AABBCCDDEEFF0123456789ABCDEF")
 	}
 	
 	@Test
 	def void testNegate() {
+		init()
 		var word = new EVMWord(0xABCD)
-		Assert.assertEquals(word.negate.toHexString, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5433")
+		Assert.assertEquals(word.negate.toHexString, "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF5433")
 	}
 	
 	@Test
 	def void testInc() {
-		initVarious()
-		Assert.assertEquals(zero.inc.toHexString, "0000000000000000000000000000000000000000000000000000000000000001")
-		Assert.assertEquals(various.inc.toHexString, "CAFEBABEDEADBEEFFFEEDDCCBBAA99887766554433221100FEDCBA9876543211")
+		init()
+		Assert.assertEquals(zero.inc.toHexString, "0x0000000000000000000000000000000000000000000000000000000000000001")
+		Assert.assertEquals(various.inc.toHexString, "0xCAFEBABEDEADBEEFFFEEDDCCBBAA99887766554433221100FEDCBA9876543211")
 	}
 	
 	@Test
 	def void testDec() {
-		initVarious()
-		Assert.assertEquals(zero.dec.toHexString, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
-		Assert.assertEquals(various.dec.toHexString, "CAFEBABEDEADBEEFFFEEDDCCBBAA99887766554433221100FEDCBA987654320F")
+		init()
+		Assert.assertEquals(zero.dec.toHexString, "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
+		Assert.assertEquals(various.dec.toHexString, "0xCAFEBABEDEADBEEFFFEEDDCCBBAA99887766554433221100FEDCBA987654320F")
 	}
 	
 	@Test
 	def void testAdd() {
-		initVarious()
+		init()
 		Assert.assertEquals(zero.add(various), various)
 		var word = new EVMWord(0x1234)
 		Assert.assertEquals(word.add(new EVMWord(0x4321)), new EVMWord(0x5555))
@@ -175,7 +190,7 @@ class EVMWordTest {
 	
 	@Test
 	def void testSub() {
-		initVarious()
+		init()
 		var various_negate = various.negate
 		Assert.assertEquals(zero.sub(various), various_negate)
 		var word = new EVMWord(0x5555)
@@ -184,13 +199,13 @@ class EVMWordTest {
 	
 	@Test(expected = OverflowException)
 	def void testAddOverflow() {
-		initMaxEVMWord()
+		init()
 		maxEVMWord.inc
 	}
 	
 	@Test(expected = OverflowException)
 	def void testSubOverflow() {
-		initMaxEVMWord()
+		init()
 		maxEVMWord.negate.dec
 	}
 }
