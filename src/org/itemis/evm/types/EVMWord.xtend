@@ -178,21 +178,21 @@ class EVMWord {
 
 	def EVMWord add(EVMWord other) {
 		if(this.isNegative && other.isNegative) {
-			this.negate.add(other.negate).negate
+			this.negate.add(other.copy.negate).negate
 		} else {
-			var result = new EVMWord(this)
+			val wasNegative = this.isNegative
 			var overflow = false
 			for (i : 0 .. 31) {
 				if(overflow) {
-					overflow = result.getNthField(i).inc || result.getNthField(i).add(other.getNthField(i))
+					overflow = this.getNthField(i).inc || this.getNthField(i).add(other.getNthField(i))
 				} else {
-					overflow = result.getNthField(i).add(other.getNthField(i))
+					overflow = this.getNthField(i).add(other.getNthField(i))
 				}
 			}
-			if(!this.isNegative && !other.isNegative && result.isNegative) {
+			if(!wasNegative && !other.isNegative && this.isNegative) {
 				throw new OverflowException()
 			}
-			result
+			this
 		}
 	}
 
