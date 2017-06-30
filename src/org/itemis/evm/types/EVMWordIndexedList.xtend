@@ -48,7 +48,9 @@ class EVMWordIndexedList<T> {
 	def EVMWordIndexedList<T> set(EVMWord index, T value) {
 		var List<Integer> indices = index.convertTo16BitFieldList
 		ensureIndexExists(indices)
-		elements.get10(indices).get5(indices.subList(9, 15)).set(indices.get(15), value)
+		elements.get15(indices).set(indices.get(15), value)
+		this
+	}
 		this
 	}
 
