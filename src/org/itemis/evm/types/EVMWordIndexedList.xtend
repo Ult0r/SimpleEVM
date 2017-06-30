@@ -53,6 +53,10 @@ class EVMWordIndexedList<T> {
 		elements.get15(indices).set(indices.get(15), value)
 		this
 	}
+	
+	def EVMWordIndexedList<T> add(T value) {
+		set(size, value)
+		size.inc
 		this
 	}
 
