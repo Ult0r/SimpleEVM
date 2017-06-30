@@ -377,4 +377,13 @@ class ListUtils {
 		}
 		result
 	}
+
+	def <R, T extends Object> R fold16(List<List<List<List<List<List<List<List<List<List<List<List<List<List<List<List<T>>>>>>>>>>>>>>>> list, R accu,
+		(R, T)=>R func) {
+		var R result = accu
+		for (elem : list) {
+			result = elem.fold15(result, func)
+		}
+		result
+	}
 }
