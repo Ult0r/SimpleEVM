@@ -111,6 +111,10 @@ class EVMWord {
 		this
 	}
 
+	override String toString() {
+		toHexString
+	}
+
 	def String toHexString() {
 		var result = ""
 		for (i : 31 .. 0) {
