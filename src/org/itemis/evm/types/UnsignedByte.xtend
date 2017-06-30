@@ -16,6 +16,14 @@ import java.security.InvalidParameterException
 class UnsignedByte extends Number implements Comparable<UnsignedByte> {
 	private short value = 0 as short
 	
+	new(byte b) {
+		if (b > 0) {
+			value = b
+		} else {
+			value = b + 256
+		}
+	}
+	
 	new(int i) {
 		setValue(i)
 	}
