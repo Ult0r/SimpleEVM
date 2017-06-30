@@ -105,5 +105,16 @@ class EVMWordIndexedList<T> {
 	def EVMWord size() {
 		return size
 	}
+	
+	override String toString() {
+		var result = ""
+		
+		var counter = new EVMWord(0)
+		while (!counter.equals(size)) {
+			result += get(counter).toString + "\n"
+			counter.inc	
+		}
+		
+		result
 	}
 }
