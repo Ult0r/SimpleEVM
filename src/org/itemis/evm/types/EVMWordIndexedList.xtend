@@ -103,6 +103,7 @@ class EVMWordIndexedList<T> {
 	}
 
 	def EVMWord size() {
-		elements.fold15(new EVMWord())[r, t|r.inc]
+		return size
+	}
 	}
 }
