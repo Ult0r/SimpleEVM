@@ -40,6 +40,19 @@ class EVMWord {
 		}
 	}
 
+	new(byte[] array, boolean littleEndian) {
+		setToZero
+		if(littleEndian) {
+			for (i : 0 .. array.length) {
+				value.set(i, new UnsignedByte(array.get(i)))
+			}
+		} else {
+			for (i : 31 .. (31 - array.length + 1)) {
+				value.set(i, new UnsignedByte(array.get(i)))
+			}
+		}
+	}
+
 	def EVMWord setToZero() {
 		for (i : 0 .. 31) {
 			value.set(i, new UnsignedByte(0))
