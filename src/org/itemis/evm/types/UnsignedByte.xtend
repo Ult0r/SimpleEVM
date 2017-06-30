@@ -126,6 +126,10 @@ class UnsignedByte extends Number implements Comparable<UnsignedByte> {
 		value = value.bitwiseNot.bitwiseAnd(0x00FF)
 	}
 	
+	def UnsignedByte copy() {
+		new UnsignedByte(value)
+	}
+	
 	//overflow = 1
 	//no overflow = 0
 	def boolean inc() {
