@@ -68,6 +68,20 @@ class EVMWordIndexedList<T> {
 			null
 		}
 	}
+	
+	def T remove(EVMWord index) {
+		val value = get(index)
+		var first = index.copy
+		var second = first.copy.inc
+		while (!second.equals(size)) {
+			set(first, get(second))
+			set(second, null)
+			first.setTo(second)
+			second.inc
+		}
+		size.dec
+		value
+	}
 
 	private def ensureIndexExists(List<Integer> indices) {
 		elements.ensureNestedListIndexExists(indices.get(0))
