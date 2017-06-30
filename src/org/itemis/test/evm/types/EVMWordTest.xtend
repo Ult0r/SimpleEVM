@@ -16,7 +16,7 @@ import org.junit.Assert
 import org.itemis.evm.types.exception.OverflowException
 
 class EVMWordTest {
-	private val EVMWord zero = new EVMWord()
+	private var EVMWord zero = new EVMWord()
 	private var EVMWord various = new EVMWord()
 	private var EVMWord maxEVMWord = new EVMWord()
 	
