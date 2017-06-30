@@ -38,4 +38,8 @@ class EVMStack {
 	def EVMWord get(int index) {
 		elements.get(index)
 	}
+	
+	def int size() {
+		elements.size
+	}
 }
