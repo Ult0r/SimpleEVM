@@ -20,10 +20,6 @@ class Utils {
 		new UnsignedByte((i >> (n * 8)).bitwiseAnd(0xFF))
 	}
 	
-	def String toHexString(UnsignedByte b) {
-		b.higherNibble.toHex + b.lowerNibble.toHex
-	}
-	
 	//must be between 0 and 15
 	def String toHex(UnsignedByte b) {
 		switch b.value as int {
@@ -47,10 +43,6 @@ class Utils {
 		}
 	}
 	
-	def String toBitString(UnsignedByte b) {
-		var result = ""
-		for (i : 7..0) {
-			result += if (b.getBit(i)) "1" else "0" 
 		}
 		result
 	}
