@@ -15,6 +15,8 @@ import org.itemis.evm.utils.ListUtils
 
 class EVMWordIndexedList<T> {
 	extension ListUtils u = new ListUtils()
+	
+	private EVMWord size = new EVMWord()
 
 	// indexing: elements[a][b][c][d][e][f][g][h][i][j][k][l][m][n][o][p]
 	// with:
