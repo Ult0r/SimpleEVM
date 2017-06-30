@@ -100,4 +100,19 @@ class UnsignedByteTest {
 		Assert.assertTrue(add.add(_0xE5))
 		Assert.assertEquals(0xE4, add.getValue)
 	}
+
+	@Test
+	def void testToHexString() {
+		Assert.assertEquals(new UnsignedByte(0xE5).toHexString, "0xE5")
+	}
+	
+	@Test
+	def void testToBitString() {
+		Assert.assertEquals(new UnsignedByte(42).toBitString, "00101010")
+	}
+	
+	@Test
+	def void testToASCII() {
+		Assert.assertEquals(new UnsignedByte(0x5A).toASCII, "Z")
+	}
 }
