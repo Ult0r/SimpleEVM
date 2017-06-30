@@ -10,7 +10,6 @@
 
 package org.itemis.evm.types
 
-import org.itemis.evm.utils.Utils
 import java.util.List
 import org.itemis.evm.types.exception.OverflowException
 
@@ -18,8 +17,6 @@ import org.itemis.evm.types.exception.OverflowException
 //[0] contains bits 0-7
 //[31] contains bits 248-255
 class EVMWord {
-	extension Utils u = new Utils()
-
 	private UnsignedByte[] value = newArrayOfSize(32)
 
 	new() {
