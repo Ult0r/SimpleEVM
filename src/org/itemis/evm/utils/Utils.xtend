@@ -13,9 +13,9 @@ package org.itemis.evm.utils
 import org.itemis.evm.types.UnsignedByte
 
 class Utils {
-	//if n = 0, results in bits 0-7
-	//if n = 1, bits 8-15
-	//etc.
+	// if n = 0, results in bits 0-7
+	// if n = 1, bits 8-15
+	// etc.
 	def UnsignedByte getNthByteOfInteger(Integer i, int n) {
 		new UnsignedByte((i >> (n * 8)).bitwiseAnd(0xFF))
 	}
@@ -43,7 +43,7 @@ class Utils {
 			case 13: "D"
 			case 14: "E"
 			case 15: "F"
-			default: b.toHexString()
+			default: b.toHexString
 		}
 	}
 	
