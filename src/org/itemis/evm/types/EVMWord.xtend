@@ -144,6 +144,12 @@ class EVMWord {
 	}
 
 	def EVMWord invert() {
+		for (i : 0 .. 31) {
+			this.getNthField(i).invert
+		}
+		this
+	}
+
 		var result = new EVMWord()
 		for (i : 0 .. 31) {
 			result.getNthField(i).invert
