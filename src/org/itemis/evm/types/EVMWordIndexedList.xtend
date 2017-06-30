@@ -40,23 +40,9 @@ class EVMWordIndexedList<T> {
 	T>>>>>>>>>>>>>>>> elements = newArrayList()
 
 	// enables spacing for 2^16 bytes of memory, usually no more will be needed
-	// doesn't reserve space yet besides list-overhead
+	// doesn't reserve space yet
 	new() {
-		elements.add(newArrayList()) // b
-		elements.get(0).add(newArrayList()) // c
-		elements.get(0).get(0).add(newArrayList()) // d
-		elements.get(0).get(0).get(0).add(newArrayList()) // e
-		elements.get(0).get(0).get(0).get(0).add(newArrayList()) // f
-		elements.get(0).get(0).get(0).get(0).get(0).add(newArrayList()) // g
-		elements.get(0).get(0).get(0).get(0).get(0).get(0).add(newArrayList()) // h
-		elements.get(0).get(0).get(0).get(0).get(0).get(0).get(0).add(newArrayList()) // i
-		elements.get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).add(newArrayList()) // j
-		elements.get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).add(newArrayList()) // k
-		elements.get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).add(newArrayList()) // l
-		elements.get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).add(newArrayList()) // m
-		elements.get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).add(newArrayList()) // n
-		elements.get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).add(newArrayList()) // o
-		elements.get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).get(0).add(newArrayList()) // p
+		
 	}
 
 	def EVMWordIndexedList<T> set(EVMWord index, T value) {
