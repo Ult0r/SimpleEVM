@@ -150,9 +150,10 @@ class EVMWord {
 		this
 	}
 
+	def EVMWord copy() {
 		var result = new EVMWord()
 		for (i : 0 .. 31) {
-			result.getNthField(i).invert
+			result.setNthField(i, this.getNthField(i).copy())
 		}
 		result
 	}
