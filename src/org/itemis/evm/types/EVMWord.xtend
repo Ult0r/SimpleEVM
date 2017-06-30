@@ -90,6 +90,13 @@ class EVMWord {
 		value
 	}
 
+	def EVMWord setTo(EVMWord other) {
+		for (i : 0 .. 31) {
+			this.setNthField(i, other.getNthField(i).copy)
+		}
+		this
+	}
+
 	def EVMWord setNthField(Integer n, int newValue) {
 		setNthField(n, newValue as short)
 	}
