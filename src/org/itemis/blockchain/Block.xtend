@@ -59,3 +59,124 @@ class Block {
 		}
 		GENESIS_BLOCK
 	}
+
+	def EVMWord getParentHash() {
+		return parentHash;
+	}
+
+	def setParentHash(EVMWord parentHash) {
+		this.parentHash = parentHash;
+	}
+
+	def EVMWord getOmmersHash() {
+		return ommersHash;
+	}
+
+	def setOmmersHash(EVMWord ommersHash) {
+		this.ommersHash = ommersHash;
+	}
+
+	def EVMWord getBeneficiary() {
+		return beneficiary;
+	}
+
+	def setBeneficiary(EVMWord beneficiary) {
+		this.beneficiary = beneficiary;
+	}
+
+	def EVMWord getStateRoot() {
+		return stateRoot;
+	}
+
+	def setStateRoot(EVMWord stateRoot) {
+		this.stateRoot = stateRoot;
+	}
+
+	def EVMWord getTransactionsRoot() {
+		return transactionsRoot;
+	}
+
+	def setTransactionsRoot(EVMWord transactionsRoot) {
+		this.transactionsRoot = transactionsRoot;
+	}
+
+	def EVMWord getReceiptsRoot() {
+		return receiptsRoot;
+	}
+
+	def setReceiptsRoot(EVMWord receiptsRoot) {
+		this.receiptsRoot = receiptsRoot;
+	}
+
+	def Int2048 getLogsBloom() {
+		return logsBloom;
+	}
+
+	def setLogsBloom(Int2048 logsBloom) {
+		this.logsBloom = logsBloom;
+	}
+
+	def EVMWord getDifficulty() {
+		return difficulty;
+	}
+
+	def setDifficulty(EVMWord difficulty) {
+		this.difficulty = difficulty;
+	}
+
+	def EVMWord getNumber() {
+		return number;
+	}
+
+	def setNumber(EVMWord number) {
+		this.number = number;
+	}
+
+	def EVMWord getGasLimit() {
+		return gasLimit;
+	}
+
+	def setGasLimit(EVMWord gasLimit) {
+		this.gasLimit = gasLimit;
+	}
+
+	def EVMWord getGasUsed() {
+		return gasUsed;
+	}
+
+	def setGasUsed(EVMWord gasUsed) {
+		this.gasUsed = gasUsed;
+	}
+
+	def EVMWord getTimestamp() {
+		return timestamp;
+	}
+
+	def setTimestamp(EVMWord timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	def EVMWord getExtraData() {
+		return extraData;
+	}
+
+	def setExtraData(EVMWord extraData) {
+		this.extraData = extraData;
+	}
+
+	def EVMWord getMixHash() {
+		return mixHash;
+	}
+
+	def setMixHash(EVMWord mixHash) {
+		this.mixHash = mixHash;
+	}
+
+	def EVMWord getNonce() {
+		return nonce;
+	}
+
+	def setNonce(EVMWord nonce) {
+		this.nonce = nonce;
+	}
+}
