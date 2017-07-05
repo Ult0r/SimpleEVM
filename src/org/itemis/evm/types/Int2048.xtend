@@ -58,4 +58,13 @@ class Int2048 {
 		this
 	}
 
+	// n must be between (including) 0 and 255
+	def UnsignedByte getNthField(Integer n) {
+		if(n >= 0 && n <= 255) {
+			value.get(n)
+		} else {
+			throw new IllegalArgumentException(n + " is not between 0 and 255")
+		}
+	}
+
 }
