@@ -156,4 +156,45 @@ class Int2048 {
 		result
 	}
 
+	// for all mathematical functions:
+	// interpreting content as 2-complement
+	def boolean isNegative() {
+		(getNthField(255).value >> 7) == 1
+	}
+
+	def Int2048 negate() {
+		invert.inc
+	}
+
+	def Int2048 inc() {
+		add(new Int2048(1))
+	}
+
+	def Int2048 dec() {
+		sub(new Int2048(1))
+	}
+
+	def Int2048 add(Int2048 other) {
+		if(this.isNegative && other.isNegative) {
+			this.negate.add(other.copy.negate).negate
+		} else {
+			val wasNegative = this.isNegative
+			var overflow = false
+			for (i : 0 .. 255) {
+				if(overflow) {
+					overflow = this.getNthField(i).inc || this.getNthField(i).add(other.getNthField(i))
+				} else {
+					overflow = this.getNthField(i).add(other.getNthField(i))
+				}
+			}
+			if(!wasNegative && !other.isNegative && this.isNegative) {
+				throw new OverflowException()
+			}
+			this
+		}
+	}
+
+	def Int2048 sub(Int2048 other) {
+		add(other.negate)
+	}
 }
