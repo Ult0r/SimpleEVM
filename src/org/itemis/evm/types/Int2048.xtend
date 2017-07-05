@@ -51,4 +51,11 @@ class Int2048 {
 		}
 	}
 
+	def Int2048 setToZero() {
+		for (i : 0 .. 255) {
+			value.set(i, new UnsignedByte(0))
+		}
+		this
+	}
+
 }
