@@ -88,4 +88,11 @@ class Int2048 {
 		value
 	}
 
+	def Int2048 setTo(Int2048 other) {
+		for (i : 0 .. 255) {
+			this.setNthField(i, other.getNthField(i).copy)
+		}
+		this
+	}
+
 }
