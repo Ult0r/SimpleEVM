@@ -99,4 +99,9 @@ class Int2048 {
 		setNthField(n, newValue as short)
 	}
 
+	def Int2048 setNthField(Integer n, short newValue) {
+		value.get(n).setValue(newValue)
+		this
+	}
+
 }
