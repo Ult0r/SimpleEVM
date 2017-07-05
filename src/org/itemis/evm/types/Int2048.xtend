@@ -104,4 +104,9 @@ class Int2048 {
 		this
 	}
 
+	def Int2048 setNthField(Integer n, UnsignedByte newValue) {
+		value.set(n, newValue)
+		this
+	}
+
 }
