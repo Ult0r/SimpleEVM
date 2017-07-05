@@ -76,4 +76,12 @@ class Int2048 {
 		}
 	}
 
+	def List<Integer> convertTo16BitFieldList() {
+		var List<Integer> result = newArrayList()
+		for (i : 0 .. 127) {
+			result.add(getNth16BitField(i))
+		}
+		result
+	}
+
 }
