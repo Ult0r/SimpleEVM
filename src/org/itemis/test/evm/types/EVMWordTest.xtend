@@ -103,6 +103,14 @@ class EVMWordTest {
 	}
 	
 	@Test
+	def void testByteArrayConstructor() {
+		init()
+		val byte[] array = #[42 as byte]
+		Assert.assertEquals(new EVMWord(array, true).toHexString, "0x000000000000000000000000000000000000000000000000000000000000002A")
+		Assert.assertEquals(new EVMWord(array, false).toHexString, "0x2A00000000000000000000000000000000000000000000000000000000000000")
+	}
+	
+	@Test
 	def void testToHexString() {
 		init()
 		Assert.assertEquals(zero.toHexString,    "0x0000000000000000000000000000000000000000000000000000000000000000")
