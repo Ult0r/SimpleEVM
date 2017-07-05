@@ -84,4 +84,8 @@ class Int2048 {
 		result
 	}
 
+	def UnsignedByte[] toByteArray() {
+		value
+	}
+
 }
