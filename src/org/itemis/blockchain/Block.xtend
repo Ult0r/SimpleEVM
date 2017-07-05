@@ -27,7 +27,7 @@ class Block {
 	private EVMWord number
 	private EVMWord gasUsed
 	private EVMWord gasLimit
-	private EVMWord timestamp // second since The Epoch
+	private EVMWord timestamp // seconds since The Epoch
 	private EVMWord extraData
 	private EVMWord mixHash
 	private EVMWord nonce // 64-bit hash
