@@ -95,4 +95,8 @@ class Int2048 {
 		this
 	}
 
+	def Int2048 setNthField(Integer n, int newValue) {
+		setNthField(n, newValue as short)
+	}
+
 }
