@@ -88,4 +88,14 @@ class UtilsTest {
 		Assert.assertEquals(result.length, 1)
 		Assert.assertEquals(result.get(0).toHexString, "0xC0")
 	}
+	
+	@Test
+	def void testKeccak() {
+		Assert.assertEquals(sha3_256("".bytes).toString, "0xA7FFC6F8BF1ED76651C14756A061D662F580FF4DE43B49FA82D80A4B80F8434A")
+		Assert.assertEquals(sha3_256("abc".bytes).toString, "0x3A985DA74FE225B2045C172D6BD390BD855F086E3E9D525B46BFE24511431532")
+		Assert.assertEquals(sha3_256("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq".bytes).toString,
+		                           "0x41C0DBA2A9D6240849100376A8235E2C82E1B9998A999E21DB32DD97496D3376")
+		Assert.assertEquals(sha3_256("abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu".bytes).toString,
+		                           "0x916F6061FE879741CA6469B43971DFDB28B1A32DC36CB3254E812BE27AAD1D18")
+	}
 }
