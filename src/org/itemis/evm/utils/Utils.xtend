@@ -13,109 +13,39 @@ package org.itemis.evm.utils
 import org.itemis.evm.types.UnsignedByte
 import java.util.List
 import org.itemis.evm.types.EVMWord
-import org.bouncycastle.jcajce.provider.digest.SHA3
-import java.util.Arrays
 
+//uses implementations in static utils
 class Utils {
 	// if n = 0, results in bits 0-7
 	// if n = 1, bits 8-15
 	// etc.
 	def UnsignedByte getNthByteOfInteger(Integer i, int n) {
-		new UnsignedByte((i >> (n * 8)).bitwiseAnd(0xFF))
+		StaticUtils.getNthByteOfInteger(i, n)
 	}
 	
 	//must be between 0 and 15
 	def String toHex(UnsignedByte b) {
-		switch b.value as int {
-			case 0,
-			case 1,
-			case 2,
-			case 3,
-			case 4,
-			case 5,
-			case 6,
-			case 7,
-			case 8,
-			case 9: b.value.toString
-			case 10: "A"
-			case 11: "B"
-			case 12: "C"
-			case 13: "D"
-			case 14: "E"
-			case 15: "F"
-			default: b.toHexString
-		}
+		StaticUtils.toHex(b)
 	}
 	
 	def UnsignedByte[] unsignedByteArrayFromByteArray(byte[] data) {
-		var List<UnsignedByte> result = newArrayList
-		for (byte elem: data) {
-			result.add(new UnsignedByte(elem))
-		}
-		result
+		StaticUtils.unsignedByteArrayFromByteArray(data)
 	}
 	
 	def UnsignedByte[] rlp(Object data) {
-		switch (data) {
-			UnsignedByte[]: rlp(data)
-			List<UnsignedByte[]>: rlp(data)
-			List<? extends Object>: rlp(data.map[rlp])
-			default: throw new IllegalArgumentException
-		}
+		StaticUtils.rlp(data)
 	}
 	
 	// recursive length prefix
 	def UnsignedByte[] rlp(UnsignedByte[] data) {
-		if (data === null) {
-			#[new UnsignedByte(0x80)]
-		} else if (data.length == 1 && data.get(0).intValue < 128) {
-			#[data.get(0)]
-		} else if (data.length < 56) {
-			var List<UnsignedByte> result = newArrayList
-			result.addAll(Arrays.copyOf(data, data.length))
-			result.add(0, new UnsignedByte(data.length + 128))
-			result
-		} else {
-			var result = Arrays.copyOf(data, data.length)
-			result.add(0, getNthByteOfInteger(data.length, 0))
-
-			var size = 1
-			while (data.length >= (1 << (8 * size))) {
-				result.add(0, getNthByteOfInteger(data.length, size))
-				size++
-			}
-			result.add(0, new UnsignedByte(size - 1 + 183))
-			result
-		}
+		StaticUtils.rlp(data)
 	}
 	
 	def UnsignedByte[] rlp(List<UnsignedByte[]> data) {
-		var concatedSerialisations = newArrayList
-		for (UnsignedByte[] elem : data) {
-			val UnsignedByte[] _rlp = elem.rlp
-			concatedSerialisations.addAll(_rlp)
-		}
-		var result = newArrayList()
-		result.addAll(concatedSerialisations)
-
-		if (concatedSerialisations.length < 56) {
-			result.add(0, new UnsignedByte(concatedSerialisations.length + 192))
-			result
-		} else {
-			result.add(0, getNthByteOfInteger(concatedSerialisations.length, 0))
-
-			var size = 1
-			while (concatedSerialisations.length >= (1 << (8 * size))) {
-				result.add(0, getNthByteOfInteger(concatedSerialisations.length, size))
-				size++
-			}
-			result.add(0, new UnsignedByte(size - 1 + 247))
-			result
-		}
+		StaticUtils.rlp(data)
 	}
 
-	def EVMWord keccak(byte[] input) {
-		val byte[] digest = new SHA3.Digest256().digest(input)
-		new EVMWord(digest, true)
+	def EVMWord sha3_256(byte[] input) {
+		StaticUtils.sha3_256(input)
 	}
 }
