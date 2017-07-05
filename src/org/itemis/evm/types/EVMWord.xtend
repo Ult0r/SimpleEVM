@@ -37,15 +37,18 @@ class EVMWord {
 		}
 	}
 
-	new(byte[] array, boolean littleEndian) {
+	new(UnsignedByte[] array, boolean bigEndian) {
+		this(array.map[byteValue], bigEndian)
+	}
+
+	new(byte[] array, boolean bigEndian) {
 		setToZero
-		if(littleEndian) {
-			for (i : 0 .. array.length) {
+		val length = array.length - 1
+		for (i : 0 .. length) {
+			if(bigEndian) {
 				value.set(i, new UnsignedByte(array.get(i)))
-			}
-		} else {
-			for (i : 31 .. (31 - array.length + 1)) {
-				value.set(i, new UnsignedByte(array.get(i)))
+			} else {
+				value.set(31 - i, new UnsignedByte(array.get(i)))
 			}
 		}
 	}
@@ -124,6 +127,18 @@ class EVMWord {
 		var result = ""
 		for (i : 31 .. 0) {
 			result += this.getNthField(i).toBitString()
+		}
+		result
+	}
+
+	def byte[] toByteArray(boolean bigEndian) {
+		var byte[] result = newByteArrayOfSize(32)
+		for (i : 0 .. 31) {
+			if(bigEndian) {
+				result.set(i, getNthField(i).byteValue)
+			} else {
+				result.set(i, getNthField(31 - i).byteValue)
+			}
 		}
 		result
 	}
