@@ -141,4 +141,11 @@ class Int2048 {
 		}
 	}
 
+	def Int2048 invert() {
+		for (i : 0 .. 255) {
+			this.getNthField(i).invert
+		}
+		this
+	}
+
 }
