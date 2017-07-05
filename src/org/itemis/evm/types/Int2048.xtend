@@ -109,4 +109,24 @@ class Int2048 {
 		this
 	}
 
+	override String toString() {
+		toHexString
+	}
+
+	def String toHexString() {
+		var result = "0x"
+		for (i : 255 .. 0) {
+			result += this.getNthField(i).toHexString().substring(2)
+		}
+		result
+	}
+
+	def String toBitString() {
+		var result = ""
+		for (i : 255 .. 0) {
+			result += this.getNthField(i).toBitString()
+		}
+		result
+	}
+
 }
