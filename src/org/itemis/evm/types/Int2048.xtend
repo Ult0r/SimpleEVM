@@ -129,4 +129,16 @@ class Int2048 {
 		result
 	}
 
+	override boolean equals(Object other) {
+		if(other instanceof Int2048) {
+			var result = true
+			for (i : 0 .. 255) {
+				result = result && this.getNthField(i).equals(other.getNthField(i))
+			}
+			result
+		} else {
+			false
+		}
+	}
+
 }
