@@ -148,4 +148,12 @@ class Int2048 {
 		this
 	}
 
+	def Int2048 copy() {
+		var result = new Int2048()
+		for (i : 0 .. 255) {
+			result.setNthField(i, this.getNthField(i).copy())
+		}
+		result
+	}
+
 }
