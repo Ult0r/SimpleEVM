@@ -34,4 +34,28 @@ class Block {
 	private List<EVMWord> ommers
 //	private List<Transaction> transactions //TODO: implement blockchain.Transaction
 	
-}
+	private static Block GENESIS_BLOCK = null
+	
+	def static Block getGenesisBlock() {
+		if (GENESIS_BLOCK === null) {
+			GENESIS_BLOCK = new Block()
+			GENESIS_BLOCK.parentHash = new EVMWord(0)
+			GENESIS_BLOCK.ommersHash = StaticUtils.sha3_256(StaticUtils.rlp(newArrayList()).map[byteValue])
+			GENESIS_BLOCK.beneficiary = new EVMWord(0)
+//			GENESIS_BLOCK.stateRoot = new EVMWord(0xDEADBEEF) //TODO: get actual value
+			GENESIS_BLOCK.transactionsRoot = new EVMWord(0)
+			GENESIS_BLOCK.receiptsRoot = new EVMWord(0)
+			GENESIS_BLOCK.logsBloom = new Int2048(0)
+			GENESIS_BLOCK.difficulty = new EVMWord(131072) //2^17
+			GENESIS_BLOCK.number = new EVMWord(0)
+			GENESIS_BLOCK.gasUsed = new EVMWord(0)
+			GENESIS_BLOCK.gasLimit = new EVMWord(3141592)
+//			GENESIS_BLOCK.timestamp = new EVMWord(0) //TODO: get actual value
+			GENESIS_BLOCK.extraData = new EVMWord(0)
+			GENESIS_BLOCK.mixHash = new EVMWord(0)
+			GENESIS_BLOCK.nonce = StaticUtils.sha3_256(#[42 as byte])
+			GENESIS_BLOCK.ommers = newArrayList
+//			GENESIS_BLOCK.transactions = newArrayList //TODO: valid after implementing blockchain.Transaction
+		}
+		GENESIS_BLOCK
+	}
