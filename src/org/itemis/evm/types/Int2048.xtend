@@ -17,7 +17,7 @@ import org.itemis.evm.types.exception.OverflowException
 //[0] contains bits 0-7
 //[255] contains bits 2040-2047
 class Int2048 {
-	private UnsignedByte[] value = newArrayOfSize(255)
+	private UnsignedByte[] value = newArrayOfSize(256)
 
 	new() {
 		setToZero
