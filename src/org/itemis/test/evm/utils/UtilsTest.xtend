@@ -91,11 +91,11 @@ class UtilsTest {
 	
 	@Test
 	def void testKeccak() {
-		Assert.assertEquals(sha3_256("".bytes).toString, "0xA7FFC6F8BF1ED76651C14756A061D662F580FF4DE43B49FA82D80A4B80F8434A")
-		Assert.assertEquals(sha3_256("abc".bytes).toString, "0x3A985DA74FE225B2045C172D6BD390BD855F086E3E9D525B46BFE24511431532")
-		Assert.assertEquals(sha3_256("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq".bytes).toString,
-		                           "0x41C0DBA2A9D6240849100376A8235E2C82E1B9998A999E21DB32DD97496D3376")
-		Assert.assertEquals(sha3_256("abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu".bytes).toString,
-		                           "0x916F6061FE879741CA6469B43971DFDB28B1A32DC36CB3254E812BE27AAD1D18")
+		Assert.assertEquals(keccak256("".bytes).toString, "0xC5D2460186F7233C927E7DB2DCC703C0E500B653CA82273B7BFAD8045D85A470")
+		Assert.assertEquals(keccak256("abc".bytes).toString, "0x4E03657AEA45A94FC7D47BA826C8D667C0D1E6E33A64A036EC44F58FA12D6C45")
+		Assert.assertEquals(keccak256("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq".bytes).toString,
+		                           "0x45D3B367A6904E6E8D502EE04999A7C27647F91FA845D456525FD352AE3D7371")
+		Assert.assertEquals(keccak256("abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu".bytes).toString,
+		                           "0xF519747ED599024F3882238E5AB43960132572B7345FBEB9A90769DAFD21AD67")
 	}
 }
