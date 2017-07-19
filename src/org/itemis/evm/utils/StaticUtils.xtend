@@ -15,8 +15,8 @@ import java.util.List
 import org.itemis.evm.types.EVMWord
 import org.bouncycastle.jcajce.provider.digest.SHA3
 import java.util.Arrays
+abstract class StaticUtils {
 
-class StaticUtils {
 	// if n = 0, results in bits 0-7
 	// if n = 1, bits 8-15
 	// etc.
