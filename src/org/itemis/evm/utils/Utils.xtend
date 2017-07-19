@@ -53,6 +53,10 @@ class Utils {
     StaticUtils.rlp(data)
   }
 
+  def Node<UnsignedByte[]> reverseRLP(UnsignedByte[] data) {
+    StaticUtils.reverseRLP(data)
+  }
+
   def EVMWord keccak256(byte[] input) {
     StaticUtils.keccak256(input)
   }
