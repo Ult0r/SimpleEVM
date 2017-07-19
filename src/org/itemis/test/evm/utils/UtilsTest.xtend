@@ -90,6 +90,25 @@ class UtilsTest {
 	}
 	
 	@Test
+	def void testReverseRLP() {
+    var emptyData = #[0x80].map[new UnsignedByte(it)]
+    Assert.assertNull(emptyData.reverseRLP.data)
+    
+    var dog = #[0x83, 0x64, 0x6F, 0x67].map[x | new UnsignedByte(x)]
+    Assert.assertEquals(new String(dog.reverseRLP.data.map[byteValue]), "dog")
+    
+    var dogCat = #[0xC8, 0x83, 0x64, 0x6F, 0x67, 0x83, 0x63, 0x61, 0x74].map[x | new UnsignedByte(x)]
+    val dogCatResult = dogCat.reverseRLP.children.map[new String(it.data.map[byteValue])]
+    Assert.assertEquals(dogCatResult.length, 2)
+    Assert.assertEquals(dogCatResult.get(0), "dog")
+    Assert.assertEquals(dogCatResult.get(1), "cat")
+    
+    var emptyList = #[0xC0].map[x | new UnsignedByte(x)]
+    val emptyListResult = emptyList.reverseRLP.children
+    Assert.assertEquals(emptyListResult.length, 0)
+	}
+	
+	@Test
 	def void testKeccak() {
 		Assert.assertEquals(keccak256("".bytes).toString, "0xC5D2460186F7233C927E7DB2DCC703C0E500B653CA82273B7BFAD8045D85A470")
 		Assert.assertEquals(keccak256("abc".bytes).toString, "0x4E03657AEA45A94FC7D47BA826C8D667C0D1E6E33A64A036EC44F58FA12D6C45")
