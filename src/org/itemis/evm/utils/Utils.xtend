@@ -20,19 +20,6 @@ class Utils {
 		StaticUtils.unsignedByteArrayFromByteArray(data)
 	}
 	
-	def UnsignedByte[] rlp(Object data) {
-		StaticUtils.rlp(data)
-	}
-	
-	// recursive length prefix
-	def UnsignedByte[] rlp(UnsignedByte[] data) {
-		StaticUtils.rlp(data)
-	}
-	
-	def UnsignedByte[] rlp(List<UnsignedByte[]> data) {
-		StaticUtils.rlp(data)
-	}
-
 	def EVMWord sha3_256(byte[] input) {
 		StaticUtils.sha3_256(input)
 	}
@@ -48,4 +35,17 @@ class Utils {
     StaticUtils.toHex(b)
   }
   
+  def UnsignedByte[] rlp(Object data) {
+    StaticUtils.rlp(data)
+  }
+
+  // recursive length prefix
+  def UnsignedByte[] rlp(UnsignedByte[] data) {
+    StaticUtils.rlp(data)
+  }
+
+  def UnsignedByte[] rlp(List<UnsignedByte[]> data) {
+    StaticUtils.rlp(data)
+  }
+
 }
