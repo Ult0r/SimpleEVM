@@ -36,7 +36,7 @@ class EVMWord {
 			value.set(i, new UnsignedByte(word.getNthField(i).value))
 		}
 	}
-
+	
 	new(UnsignedByte[] array, boolean bigEndian) {
 		this(array.map[byteValue], bigEndian)
 	}
