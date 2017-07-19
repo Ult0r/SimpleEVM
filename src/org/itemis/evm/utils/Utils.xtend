@@ -13,6 +13,7 @@ package org.itemis.evm.utils
 import org.itemis.evm.types.UnsignedByte
 import java.util.List
 import org.itemis.evm.types.EVMWord
+import org.itemis.evm.types.Node
 
 //uses implementations in static utils
 class Utils {
