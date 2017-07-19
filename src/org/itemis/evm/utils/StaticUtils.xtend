@@ -32,65 +32,6 @@ class StaticUtils {
 		result
 	}
 	
-	def static UnsignedByte[] rlp(Object data) {
-		switch (data) {
-			UnsignedByte[]: rlp(data)
-			List<UnsignedByte[]>: rlp(data)
-			List<? extends Object>: rlp(data.map[rlp])
-			default: throw new IllegalArgumentException
-		}
-	}
-	
-	// recursive length prefix
-	def static UnsignedByte[] rlp(UnsignedByte[] data) {
-		if (data === null) {
-			#[new UnsignedByte(0x80)]
-		} else if (data.length == 1 && data.get(0).intValue < 128) {
-			#[data.get(0)]
-		} else if (data.length < 56) {
-			var List<UnsignedByte> result = newArrayList
-			result.addAll(Arrays.copyOf(data, data.length))
-			result.add(0, new UnsignedByte(data.length + 128))
-			result
-		} else {
-			var result = Arrays.copyOf(data, data.length)
-			result.add(0, getNthByteOfInteger(data.length, 0))
-
-			var size = 1
-			while (data.length >= (1 << (8 * size))) {
-				result.add(0, getNthByteOfInteger(data.length, size))
-				size++
-			}
-			result.add(0, new UnsignedByte(size - 1 + 183))
-			result
-		}
-	}
-	
-	def static UnsignedByte[] rlp(List<UnsignedByte[]> data) {
-		var concatedSerialisations = newArrayList
-		for (UnsignedByte[] elem : data) {
-			val UnsignedByte[] _rlp = elem.rlp
-			concatedSerialisations.addAll(_rlp)
-		}
-		var result = newArrayList()
-		result.addAll(concatedSerialisations)
-
-		if (concatedSerialisations.length < 56) {
-			result.add(0, new UnsignedByte(concatedSerialisations.length + 192))
-			result
-		} else {
-			result.add(0, getNthByteOfInteger(concatedSerialisations.length, 0))
-
-			var size = 1
-			while (concatedSerialisations.length >= (1 << (8 * size))) {
-				result.add(0, getNthByteOfInteger(concatedSerialisations.length, size))
-				size++
-			}
-			result.add(0, new UnsignedByte(size - 1 + 247))
-			result
-		}
-	}
-
 	def static EVMWord sha3_256(byte[] input) {
 		val byte[] digest = new SHA3.Digest256().digest(input)
 		new EVMWord(digest, false)
@@ -115,6 +56,65 @@ class StaticUtils {
       case 14: "E"
       case 15: "F"
       default: b.toHexString
+    }
+  }
+
+  def static UnsignedByte[] rlp(Object data) {
+    switch (data) {
+      UnsignedByte[]: rlp(data)
+      List<UnsignedByte[]>: rlp(data)
+      List<? extends Object>: rlp(data.map[rlp])
+      default: throw new IllegalArgumentException
+    }
+  }
+
+  // recursive length prefix
+  def static UnsignedByte[] rlp(UnsignedByte[] data) {
+    if (data === null) {
+      #[new UnsignedByte(0x80)]
+    } else if (data.length == 1 && data.get(0).intValue < 0x80) {
+      #[data.get(0).copy]
+    } else if (data.length < 56) {
+      var List<UnsignedByte> result = newArrayList
+      result.addAll(Arrays.copyOf(data, data.length))
+      result.add(0, new UnsignedByte(data.length + 0x80))
+      result
+    } else {
+      var result = Arrays.copyOf(data, data.length)
+      result.add(0, getNthByteOfInteger(data.length, 0))
+
+      var size = 1
+      while (data.length >= (1 << (8 * size))) {
+        result.add(0, getNthByteOfInteger(data.length, size))
+        size++
+      }
+      result.add(0, new UnsignedByte(size - 1 + 0xB7))
+      result
+    }
+  }
+
+  def static UnsignedByte[] rlp(List<UnsignedByte[]> data) {
+    var concatedSerialisations = newArrayList
+    for (UnsignedByte[] elem : data) {
+      val UnsignedByte[] _rlp = elem.rlp
+      concatedSerialisations.addAll(_rlp)
+    }
+    var result = newArrayList()
+    result.addAll(concatedSerialisations)
+
+    if (concatedSerialisations.length < 56) {
+      result.add(0, new UnsignedByte(concatedSerialisations.length + 0xC0))
+      result
+    } else {
+      result.add(0, getNthByteOfInteger(concatedSerialisations.length, 0))
+
+      var size = 1
+      while (concatedSerialisations.length >= (1 << (8 * size))) {
+        result.add(0, getNthByteOfInteger(concatedSerialisations.length, size))
+        size++
+      }
+      result.add(0, new UnsignedByte(size - 1 + 0xF7))
+      result
     }
   }
 
