@@ -16,14 +16,13 @@ import org.itemis.evm.types.EVMWord
 import org.bouncycastle.jcajce.provider.digest.SHA3
 import java.util.Arrays
 abstract class StaticUtils {
+  // if n = 0, results in bits 0-7
+  // if n = 1, bits 8-15
+  // etc.
+  def static UnsignedByte getNthByteOfInteger(Integer i, int n) {
+    new UnsignedByte((i >> (n * 8)).bitwiseAnd(0xFF))
+  }
 
-	// if n = 0, results in bits 0-7
-	// if n = 1, bits 8-15
-	// etc.
-	def static UnsignedByte getNthByteOfInteger(Integer i, int n) {
-		new UnsignedByte((i >> (n * 8)).bitwiseAnd(0xFF))
-	}
-	
 	def static UnsignedByte[] unsignedByteArrayFromByteArray(byte[] data) {
 		var List<UnsignedByte> result = newArrayList
 		for (byte elem: data) {
