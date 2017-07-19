@@ -14,17 +14,23 @@ import org.itemis.test.evm.types.EVMWordTest;
 import org.itemis.test.evm.types.UnsignedByteTest;
 import org.itemis.test.evm.utils.EVMWordIndexedListTest;
 import org.itemis.test.evm.utils.UtilsTest;
+import org.itemis.test.ressources.AllocTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
+import org.itemis.test.ressources.DataFetchTest
+import org.itemis.test.blockchain.BlockTest
 
-@RunWith(Suite.class)
-@SuiteClasses({
-  UnsignedByteTest.class,
-  UtilsTest.class,
-  EVMWordTest.class,
-  EVMWordIndexedListTest.class
-})
+@RunWith(Suite)
+@SuiteClasses(
+  UnsignedByteTest,
+  UtilsTest,
+  EVMWordTest,
+  EVMWordIndexedListTest,
+  AllocTest,
+  DataFetchTest,
+  BlockTest
+)
 public class AllTests {
 
 }
