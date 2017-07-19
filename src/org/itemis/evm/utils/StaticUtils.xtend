@@ -23,14 +23,6 @@ abstract class StaticUtils {
     new UnsignedByte((i >> (n * 8)).bitwiseAnd(0xFF))
   }
 
-	def static UnsignedByte[] unsignedByteArrayFromByteArray(byte[] data) {
-		var List<UnsignedByte> result = newArrayList
-		for (byte elem: data) {
-			result.add(new UnsignedByte(elem))
-		}
-		result
-	}
-	
 	def static EVMWord sha3_256(byte[] input) {
 		val byte[] digest = new SHA3.Digest256().digest(input)
 		new EVMWord(digest, false)
@@ -56,6 +48,14 @@ abstract class StaticUtils {
       case 15: "F"
       default: b.toHexString
     }
+  }
+
+  def static UnsignedByte[] unsignedByteArrayFromByteArray(byte[] data) {
+    var List<UnsignedByte> result = newArrayList
+    for (byte elem : data) {
+      result.add(new UnsignedByte(elem))
+    }
+    result
   }
 
   def static UnsignedByte[] rlp(Object data) {
