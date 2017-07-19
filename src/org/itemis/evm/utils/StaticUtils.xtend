@@ -46,6 +46,44 @@ abstract class StaticUtils {
     }
   }
 
+  def static byte fromHex(char c) {
+    switch c.toString {
+      case "0",
+      case "1",
+      case "2",
+      case "3",
+      case "4",
+      case "5",
+      case "6",
+      case "7",
+      case "8",
+      case "9": new Byte(c.toString)
+      case "A",
+      case "a": 10 as byte
+      case "B",
+      case "b": 11 as byte
+      case "C",
+      case "c": 12 as byte
+      case "D",
+      case "d": 13 as byte
+      case "E",
+      case "e": 14 as byte
+      case "F",
+      case "f": 15 as byte
+      default: throw new IllegalArgumentException(c + " is not a legal hex character")
+    }
+  }
+  
+  def static byte[] fromHex(String s) {
+    var result = newArrayList
+    
+    for (c: s.bytes) {
+      result.add(fromHex(c as char))
+    }
+    
+    result
+  }
+
   def static UnsignedByte[] unsignedByteArrayFromByteArray(byte[] data) {
     var List<UnsignedByte> result = newArrayList
     for (byte elem : data) {
