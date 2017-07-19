@@ -15,6 +15,8 @@ import java.util.List
 import org.itemis.evm.types.EVMWord
 import org.bouncycastle.jcajce.provider.digest.Keccak
 import java.util.Arrays
+import org.itemis.evm.types.Node
+
 abstract class StaticUtils {
   // if n = 0, results in bits 0-7
   // if n = 1, bits 8-15
@@ -151,6 +153,76 @@ abstract class StaticUtils {
     }
   }
 
+  def private static List<Node<UnsignedByte[]>> _reverseRLP(UnsignedByte[] data) {
+    var List<Node<UnsignedByte[]>> result = newArrayList
+    var usedLength = 0
+
+    if (data === null) { // invalid
+      throw new IllegalArgumentException("invalid rlp data")
+    } else if (data.length == 0) {
+      // do nothing
+    } else {
+      var _data = Arrays.copyOf(data, data.length)
+    
+      while (_data.length != 0) {
+        val head = _data.get(0).intValue
+        val _head = new UnsignedByte(head)
+        switch (head) {
+          case 0x80: {
+            usedLength = 1
+          }
+          case head < 0x80: {
+            result.add(new Node(#[_head]))
+            usedLength = 1
+          }
+          case head <= 0xB7: {
+            val dataLength = head - 0x80
+            result.add(new Node(Arrays.copyOfRange(_data, 1, 1 + dataLength)))
+            usedLength = 1 + dataLength
+          }
+          case head < 0xC0: {
+            val sizeLength = head - 0xB7
+            val dataLength = new EVMWord(Arrays.copyOfRange(_data, 1, sizeLength + 1), false).toUnsignedInt(true).intValue
+            result.add(new Node(Arrays.copyOfRange(_data, 1 + sizeLength, 1 + sizeLength + dataLength)))
+            usedLength = 1 + sizeLength + dataLength
+          }
+          case head <= 0xF7: {
+            val dataLength = head - 0xC0
+            var node = new Node()
+            node.children.addAll(_reverseRLP(Arrays.copyOfRange(_data, 1, dataLength + 1)))
+            result.add(node)
+            usedLength = 1 + dataLength
+          }
+          case head > 0xF7: {
+            val sizeLength = head - 0xF7
+            val dataLength = new EVMWord(Arrays.copyOfRange(_data, 1, sizeLength + 1), false).toUnsignedInt(true).intValue
+            var node = new Node()
+            node.children.addAll(_reverseRLP(Arrays.copyOfRange(_data, 1 + sizeLength, 1 + sizeLength + dataLength)))
+            result.add(node)
+            usedLength = 1 + sizeLength + dataLength
+          }
+        }
+        _data = Arrays.copyOfRange(_data, usedLength, _data.length)
+      }
+    }
+
+    result
+  }
+
+  def static Node<UnsignedByte[]> reverseRLP(UnsignedByte[] data) {
+    if (data.length == 0) {
+      throw new IllegalArgumentException("invalid rlp data")
+    }
+
+    var result = _reverseRLP(data)
+    if (result.length == 1) {
+      result.get(0)
+    } else {
+      var node = new Node()
+      node.children.addAll(result)
+      node
+    }
+  }
 
   def static EVMWord keccak256(byte[] input) {
     val byte[] digest = new Keccak.Digest256().digest(input)
