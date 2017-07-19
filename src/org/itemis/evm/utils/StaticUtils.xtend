@@ -13,7 +13,7 @@ package org.itemis.evm.utils
 import org.itemis.evm.types.UnsignedByte
 import java.util.List
 import org.itemis.evm.types.EVMWord
-import org.bouncycastle.jcajce.provider.digest.SHA3
+import org.bouncycastle.jcajce.provider.digest.Keccak
 import java.util.Arrays
 abstract class StaticUtils {
   // if n = 0, results in bits 0-7
@@ -23,10 +23,6 @@ abstract class StaticUtils {
     new UnsignedByte((i >> (n * 8)).bitwiseAnd(0xFF))
   }
 
-	def static EVMWord sha3_256(byte[] input) {
-		val byte[] digest = new SHA3.Digest256().digest(input)
-		new EVMWord(digest, false)
-	}
   // must be between 0 and 15
   def static String toHex(UnsignedByte b) {
     switch b.value as int {
@@ -117,4 +113,9 @@ abstract class StaticUtils {
     }
   }
 
+
+  def static EVMWord keccak256(byte[] input) {
+    val byte[] digest = new Keccak.Digest256().digest(input)
+    new EVMWord(digest, false)
+  }
 }
