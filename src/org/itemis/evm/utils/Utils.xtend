@@ -16,18 +16,6 @@ import org.itemis.evm.types.EVMWord
 
 //uses implementations in static utils
 class Utils {
-	// if n = 0, results in bits 0-7
-	// if n = 1, bits 8-15
-	// etc.
-	def UnsignedByte getNthByteOfInteger(Integer i, int n) {
-		StaticUtils.getNthByteOfInteger(i, n)
-	}
-	
-	//must be between 0 and 15
-	def String toHex(UnsignedByte b) {
-		StaticUtils.toHex(b)
-	}
-	
 	def UnsignedByte[] unsignedByteArrayFromByteArray(byte[] data) {
 		StaticUtils.unsignedByteArrayFromByteArray(data)
 	}
@@ -48,4 +36,16 @@ class Utils {
 	def EVMWord sha3_256(byte[] input) {
 		StaticUtils.sha3_256(input)
 	}
+  // if n = 0, results in bits 0-7
+  // if n = 1, bits 8-15
+  // etc.
+  def UnsignedByte getNthByteOfInteger(Integer i, int n) {
+    StaticUtils.getNthByteOfInteger(i, n)
+  }
+
+  // must be between 0 and 15
+  def String toHex(UnsignedByte b) {
+    StaticUtils.toHex(b)
+  }
+  
 }
