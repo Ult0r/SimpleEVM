@@ -24,29 +24,6 @@ class StaticUtils {
 		new UnsignedByte((i >> (n * 8)).bitwiseAnd(0xFF))
 	}
 	
-	//must be between 0 and 15
-	def static String toHex(UnsignedByte b) {
-		switch b.value as int {
-			case 0,
-			case 1,
-			case 2,
-			case 3,
-			case 4,
-			case 5,
-			case 6,
-			case 7,
-			case 8,
-			case 9: b.value.toString
-			case 10: "A"
-			case 11: "B"
-			case 12: "C"
-			case 13: "D"
-			case 14: "E"
-			case 15: "F"
-			default: b.toHexString
-		}
-	}
-	
 	def static UnsignedByte[] unsignedByteArrayFromByteArray(byte[] data) {
 		var List<UnsignedByte> result = newArrayList
 		for (byte elem: data) {
@@ -118,4 +95,27 @@ class StaticUtils {
 		val byte[] digest = new SHA3.Digest256().digest(input)
 		new EVMWord(digest, false)
 	}
+  // must be between 0 and 15
+  def static String toHex(UnsignedByte b) {
+    switch b.value as int {
+      case 0,
+      case 1,
+      case 2,
+      case 3,
+      case 4,
+      case 5,
+      case 6,
+      case 7,
+      case 8,
+      case 9: b.value.toString
+      case 10: "A"
+      case 11: "B"
+      case 12: "C"
+      case 13: "D"
+      case 14: "E"
+      case 15: "F"
+      default: b.toHexString
+    }
+  }
+
 }
