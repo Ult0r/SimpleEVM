@@ -48,7 +48,7 @@ class EVMWord {
 			if(bigEndian) {
 				value.set(i, new UnsignedByte(array.get(i)))
 			} else {
-				value.set(31 - i, new UnsignedByte(array.get(i)))
+				value.set(i, new UnsignedByte(array.get(length - i)))
 			}
 		}
 	}
