@@ -107,7 +107,10 @@ class EVMWordTest {
 		init()
 		val byte[] array = #[42 as byte]
 		Assert.assertEquals(new EVMWord(array, true).toHexString, "0x000000000000000000000000000000000000000000000000000000000000002A")
-		Assert.assertEquals(new EVMWord(array, false).toHexString, "0x2A00000000000000000000000000000000000000000000000000000000000000")
+		Assert.assertEquals(new EVMWord(array, false).toHexString, "0x000000000000000000000000000000000000000000000000000000000000002A")
+    val byte[] array2 = #[42 as byte, 17 as byte]
+    Assert.assertEquals(new EVMWord(array2, true).toHexString, "0x000000000000000000000000000000000000000000000000000000000000112A")
+    Assert.assertEquals(new EVMWord(array2, false).toHexString, "0x0000000000000000000000000000000000000000000000000000000000002A11")
 	}
 	
 	@Test
@@ -146,10 +149,24 @@ class EVMWordTest {
 	}
 	
 	@Test
+	def void testFromString() {
+	  init()
+	  Assert.assertEquals(EVMWord.fromString("0x400000000").toHexString, "0x0000000000000000000000000000000000000000000000000000000400000000")
+	}
+	
+	@Test
 	def void testGetNth16BitField() {
 		init()
 		Assert.assertEquals(various.getNth16BitField(0), 0x3210)
 		Assert.assertEquals(various.getNth16BitField(15), 0xCAFE)
+	}
+	
+	@Test
+	def void testToUnsignedInt() {
+    init()
+    var word = new EVMWord(0xDEAD)
+    Assert.assertEquals(word.toUnsignedInt(true), 0xDEAD)
+    Assert.assertEquals(word.toUnsignedInt(false), (0xADDE as long) << 16)	  
 	}
 	
 	@Test
