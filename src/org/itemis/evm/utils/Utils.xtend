@@ -28,6 +28,14 @@ class Utils {
     StaticUtils.toHex(b)
   }
   
+  def byte fromHex(char c) {
+    StaticUtils.fromHex(c)
+  }
+  
+  def byte[] fromHex(String s) {
+    StaticUtils.fromHex(s)
+  }
+
   def UnsignedByte[] unsignedByteArrayFromByteArray(byte[] data) {
     StaticUtils.unsignedByteArrayFromByteArray(data)
   }
