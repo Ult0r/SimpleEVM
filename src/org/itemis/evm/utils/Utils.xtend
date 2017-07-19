@@ -16,10 +16,6 @@ import org.itemis.evm.types.EVMWord
 
 //uses implementations in static utils
 class Utils {
-	def UnsignedByte[] unsignedByteArrayFromByteArray(byte[] data) {
-		StaticUtils.unsignedByteArrayFromByteArray(data)
-	}
-	
   // if n = 0, results in bits 0-7
   // if n = 1, bits 8-15
   // etc.
@@ -32,6 +28,10 @@ class Utils {
     StaticUtils.toHex(b)
   }
   
+  def UnsignedByte[] unsignedByteArrayFromByteArray(byte[] data) {
+    StaticUtils.unsignedByteArrayFromByteArray(data)
+  }
+
   def UnsignedByte[] rlp(Object data) {
     StaticUtils.rlp(data)
   }
