@@ -20,9 +20,6 @@ class Utils {
 		StaticUtils.unsignedByteArrayFromByteArray(data)
 	}
 	
-	def EVMWord sha3_256(byte[] input) {
-		StaticUtils.sha3_256(input)
-	}
   // if n = 0, results in bits 0-7
   // if n = 1, bits 8-15
   // etc.
@@ -48,4 +45,7 @@ class Utils {
     StaticUtils.rlp(data)
   }
 
+  def EVMWord keccak256(byte[] input) {
+    StaticUtils.keccak256(input)
+  }
 }
