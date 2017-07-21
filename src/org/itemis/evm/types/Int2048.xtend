@@ -201,4 +201,5 @@ class Int2048 {
 	def Int2048 sub(Int2048 other) {
 		add(other.negate)
 	}
+  
 }
