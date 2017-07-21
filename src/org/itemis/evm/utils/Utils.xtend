@@ -24,7 +24,6 @@ class Utils {
     StaticUtils.getNthByteOfInteger(i, n)
   }
 
-  // must be between 0 and 15
   def String toHex(UnsignedByte b) {
     StaticUtils.toHex(b)
   }

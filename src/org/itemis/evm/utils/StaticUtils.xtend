@@ -25,7 +25,6 @@ abstract class StaticUtils {
     new UnsignedByte((i >> (n * 8)).bitwiseAnd(0xFF))
   }
 
-  // must be between 0 and 15
   def static String toHex(UnsignedByte b) {
     switch b.value as int {
       case 0,
