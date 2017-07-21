@@ -36,6 +36,10 @@ class Int2048 {
 			value.set(i, new UnsignedByte(other.getNthField(i).value))
 		}
 	}
+  
+  new(UnsignedByte[] array, boolean bigEndian) {
+    this(array.map[byteValue], bigEndian)
+  }
 
 	new(byte[] array, boolean littleEndian) {
 		setToZero
