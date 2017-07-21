@@ -12,6 +12,7 @@ package org.itemis.evm.types
 
 import java.util.List
 import org.itemis.evm.types.exception.OverflowException
+import org.itemis.evm.utils.StaticUtils
 
 //2048-bit / 256-byte int
 //[0] contains bits 0-7
@@ -61,6 +62,30 @@ class Int2048 {
 		}
 		this
 	}
+  
+  def static Int2048 fromString(String s) {
+    var data = s
+    if (s.startsWith("0x")) {
+      data = s.substring(2)
+    }
+    
+    var bytes = StaticUtils.fromHex(data).map[intValue]
+    val length = bytes.size
+    
+    var unsignedByteArray = newArrayList
+    var i = 0
+    while (i < length) {
+      if (i == (length - 1)) {
+        unsignedByteArray.add(0, new UnsignedByte(bytes.get(0)))
+      } else {
+        unsignedByteArray.add(0, new UnsignedByte((bytes.get(length - 1 - i) << 4) + bytes.get(length - 1 - i - 1)))
+      }
+      
+      i += 2
+    }
+    
+    new Int2048(unsignedByteArray, false)
+  }
 
 	// n must be between (including) 0 and 255
 	def UnsignedByte getNthField(Integer n) {
