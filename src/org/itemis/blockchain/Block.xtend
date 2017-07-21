@@ -14,6 +14,7 @@ import org.itemis.evm.types.EVMWord
 import org.itemis.evm.types.Int2048
 import org.itemis.evm.utils.StaticUtils
 import java.util.List
+import com.google.gson.JsonObject
 
 class Block {
 	private EVMWord parentHash
@@ -58,6 +59,30 @@ class Block {
 			GENESIS_BLOCK.transactions = newArrayList
 		}
 		GENESIS_BLOCK
+	}
+	
+	new() {
+	  
+	}
+	
+	new(JsonObject obj) {
+    number = EVMWord.fromString(obj.get("number").asString)
+    parentHash = EVMWord.fromString(obj.get("parentHash").asString)
+    nonce = EVMWord.fromString(obj.get("nonce").asString)
+    ommersHash = EVMWord.fromString(obj.get("sha3Uncles").asString)
+    logsBloom = Int2048.fromString(obj.get("logsBloom").asString)
+    transactionsRoot = EVMWord.fromString(obj.get("transactionsRoot").asString)
+    stateRoot = EVMWord.fromString(obj.get("stateRoot").asString)
+    receiptsRoot = EVMWord.fromString(obj.get("receiptsRoot").asString)
+    beneficiary = EVMWord.fromString(obj.get("miner").asString)
+    difficulty = EVMWord.fromString(obj.get("difficulty").asString)
+    extraData = EVMWord.fromString(obj.get("extraData").asString)
+    gasLimit = EVMWord.fromString(obj.get("gasLimit").asString)
+    gasUsed = EVMWord.fromString(obj.get("gasUsed").asString)
+    timestamp = EVMWord.fromString(obj.get("timestamp").asString)
+    
+    ommers = obj.get("uncles").asJsonArray.toList.map[asString].map[EVMWord.fromString(it)]
+    transactions = obj.get("transactions").asJsonArray.toList.map[asJsonObject].map[new Transaction(it)]
 	}
 
 	def EVMWord getParentHash() {
