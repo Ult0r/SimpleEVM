@@ -173,26 +173,15 @@ class EVMWord {
 	
 	//uses 4 bytes from the specified end of the data
 	//other bytes are ignored
-	def long toUnsignedInt(boolean bigEndian) {
-	  if (bigEndian) {
-	    var long result = getNthField(3).longValue
-	    result = result << 8
-	    result += getNthField(2).longValue
-      result = result << 8
-      result += getNthField(1).longValue
-      result = result << 8
-      result += getNthField(0).longValue
-      result
-	  } else {
-      var long result = getNthField(0).longValue
-      result = result << 8
-      result += getNthField(1).longValue
-      result = result << 8
-      result += getNthField(2).longValue
-      result = result << 8
-      result += getNthField(3).longValue
-      result
-	  }
+	def long toUnsignedInt() {
+    var long result = getNthField(3).longValue
+    result = result << 8
+    result += getNthField(2).longValue
+    result = result << 8
+    result += getNthField(1).longValue
+    result = result << 8
+    result += getNthField(0).longValue
+    result
 	}
 
 	override boolean equals(Object other) {
