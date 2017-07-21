@@ -86,9 +86,14 @@ abstract class StaticUtils {
   }
   
   def static byte[] fromHex(String s) {
+    var data = s
+    if (s.startsWith("0x")) {
+      data = s.substring(2)
+    }
+    
     var result = newArrayList
     
-    for (c: s.bytes) {
+    for (c: data.bytes) {
       result.add(fromHex(c as char))
     }
     
