@@ -196,7 +196,7 @@ abstract class StaticUtils {
           }
           case head < 0xC0: {
             val sizeLength = head - 0xB7
-            val dataLength = new EVMWord(Arrays.copyOfRange(_data, 1, sizeLength + 1), false).toUnsignedInt(true).intValue
+            val dataLength = new EVMWord(Arrays.copyOfRange(_data, 1, sizeLength + 1), false).toUnsignedInt().intValue
             result.add(new Node(Arrays.copyOfRange(_data, 1 + sizeLength, 1 + sizeLength + dataLength)))
             usedLength = 1 + sizeLength + dataLength
           }
@@ -209,7 +209,7 @@ abstract class StaticUtils {
           }
           case head > 0xF7: {
             val sizeLength = head - 0xF7
-            val dataLength = new EVMWord(Arrays.copyOfRange(_data, 1, sizeLength + 1), false).toUnsignedInt(true).intValue
+            val dataLength = new EVMWord(Arrays.copyOfRange(_data, 1, sizeLength + 1), false).toUnsignedInt().intValue
             var node = new Node()
             node.children.addAll(_reverseRLP(Arrays.copyOfRange(_data, 1 + sizeLength, 1 + sizeLength + dataLength)))
             result.add(node)
