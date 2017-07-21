@@ -46,6 +46,16 @@ abstract class StaticUtils {
       default: b.toHexString
     }
   }
+  
+  def static String toHex(UnsignedByte[] array) {
+    var result = new StringBuilder("0x")
+    
+    for (c: array) {
+      result.append(c.toHex)
+    }
+    
+    result.toString
+  }
 
   def static byte fromHex(char c) {
     switch c.toString {

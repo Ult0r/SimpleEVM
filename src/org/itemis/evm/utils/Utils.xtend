@@ -28,6 +28,10 @@ class Utils {
     StaticUtils.toHex(b)
   }
   
+  def String toHex(UnsignedByte[] array) {
+    StaticUtils.toHex(array)
+  }
+  
   def byte fromHex(char c) {
     StaticUtils.fromHex(c)
   }
