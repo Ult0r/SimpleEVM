@@ -165,8 +165,7 @@ class EVMWordTest {
 	def void testToUnsignedInt() {
     init()
     var word = new EVMWord(0xDEAD)
-    Assert.assertEquals(word.toUnsignedInt(true), 0xDEAD)
-    Assert.assertEquals(word.toUnsignedInt(false), (0xADDE as long) << 16)	  
+    Assert.assertEquals(word.toUnsignedInt(), 0xDEAD)
 	}
 	
 	@Test
