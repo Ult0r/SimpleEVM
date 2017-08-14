@@ -11,6 +11,8 @@ class DataFetch {
   private static URL API_URL = new URL("https://mainnet.infura.io")
   
   def JsonElement fetchData(String postData) {
+    System.err.println("DataFetch#fetchData postData: " + postData)
+    
     var byte[] _postData = postData.bytes
     var int postDataLength = _postData.length
     
@@ -26,6 +28,13 @@ class DataFetch {
     
     var DataOutputStream wr = new DataOutputStream(conn.getOutputStream())
     wr.write(_postData)
+    
+    if (conn.responseCode != 200) {
+      throw new IllegalArgumentException(
+        "HTTP response code " + conn.responseCode + " - " +
+        postData + " doesn't seem to be valid call data"
+      )
+    }
     
     new JsonParser().parse(new InputStreamReader(conn.inputStream))
   }  
