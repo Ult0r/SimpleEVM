@@ -18,8 +18,9 @@ import org.itemis.test.ressources.AllocTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
-import org.itemis.test.ressources.DataFetchTest
 import org.itemis.test.blockchain.BlockTest
+import org.itemis.test.ressources.JsonRPCWrapperTest
+import org.itemis.test.ressources.DataFetchTest
 
 @RunWith(Suite)
 @SuiteClasses(
@@ -28,8 +29,9 @@ import org.itemis.test.blockchain.BlockTest
   EVMWordTest,
   EVMWordIndexedListTest,
   AllocTest,
-  DataFetchTest,
-  BlockTest
+  JsonRPCWrapperTest,
+  BlockTest,
+  DataFetchTest
 )
 public class AllTests {
 
