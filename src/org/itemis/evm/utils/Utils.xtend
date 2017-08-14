@@ -40,10 +40,6 @@ class Utils {
     StaticUtils.fromHex(s)
   }
 
-  def UnsignedByte[] unsignedByteArrayFromByteArray(byte[] data) {
-    StaticUtils.unsignedByteArrayFromByteArray(data)
-  }
-
   def UnsignedByte[] rlp(Object data) {
     StaticUtils.rlp(data)
   }
@@ -59,6 +55,10 @@ class Utils {
 
   def Node<UnsignedByte[]> reverseRLP(UnsignedByte[] data) {
     StaticUtils.reverseRLP(data)
+  }
+  
+  def EVMWord keccak256(String input) {
+    StaticUtils.keccak256(input)
   }
 
   def EVMWord keccak256(byte[] input) {

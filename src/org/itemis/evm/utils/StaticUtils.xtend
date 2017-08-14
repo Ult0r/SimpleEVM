@@ -100,14 +100,6 @@ abstract class StaticUtils {
     result
   }
 
-  def static UnsignedByte[] unsignedByteArrayFromByteArray(byte[] data) {
-    var List<UnsignedByte> result = newArrayList
-    for (byte elem : data) {
-      result.add(new UnsignedByte(elem))
-    }
-    result
-  }
-
   def static UnsignedByte[] rlp(Object data) {
     switch (data) {
       UnsignedByte[]: rlp(data)
@@ -236,6 +228,10 @@ abstract class StaticUtils {
       node.children.addAll(result)
       node
     }
+  }
+  
+  def static EVMWord keccak256(String input) {
+    keccak256(input.bytes)
   }
 
   def static EVMWord keccak256(byte[] input) {
