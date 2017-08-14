@@ -3,8 +3,11 @@ package org.itemis.blockchain
 import org.itemis.evm.types.EVMWord
 import org.itemis.evm.types.UnsignedByte
 import com.google.gson.JsonObject
+import org.itemis.evm.utils.Utils
 
 class Transaction {
+  extension Utils u = new Utils
+  
 	private EVMWord nonce
 	private EVMWord gasPrice
 	private EVMWord gasLimit
@@ -16,17 +19,22 @@ class Transaction {
 	private UnsignedByte[] data
 	private boolean isData //opposing to being init
   
-  new(JsonObject object) {
+  new(JsonObject obj) {
     nonce = EVMWord.fromString(obj.get("nonce").asString)
-    transactionIndex = EVMWord.fromString(obj.get("transactionIndex").asString)
-    blockHash = EVMWord.fromString(obj.get("blockHash").asString)
-    blockNumber = EVMWord.fromString(obj.get("blockNumber").asString)
-    cumulativeGasUsed = EVMWord.fromString(obj.get("cumulativeGasUsed").asString)
-    gasUsed = EVMWord.fromString(obj.get("gasUsed").asString)
-    contractAddress = EVMWord.fromString(obj.get("contractAddress").asString)
+    gasPrice = EVMWord.fromString(obj.get("gasPrice").asString)
+    gasLimit = EVMWord.fromString(obj.get("gas").asString)
     
-    //TODO
-    throw new UnsupportedOperationException("TODO: auto-generated method stub")
+    value = EVMWord.fromString(obj.get("value").asString)
+    
+    v = fromHex(obj.get("v").asString).map[new UnsignedByte(it)].get(0)
+    r = EVMWord.fromString(obj.get("r").asString)
+    s = EVMWord.fromString(obj.get("s").asString)
+    
+    isData = !obj.get("to").jsonNull
+    if (isData) {
+      to = EVMWord.fromString(obj.get("to").asString)
+    }
+    
+    data = obj.get("input").asString.fromHex.map[new UnsignedByte(it)]
   }
-	
 }
