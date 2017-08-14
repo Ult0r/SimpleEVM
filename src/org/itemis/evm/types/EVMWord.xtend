@@ -13,6 +13,7 @@ package org.itemis.evm.types
 import java.util.List
 import org.itemis.evm.types.exception.OverflowException
 import org.itemis.evm.utils.StaticUtils
+import java.math.BigInteger
 
 //256-bit / 32-byte int
 //[0] contains bits 0-7
@@ -76,7 +77,7 @@ class EVMWord {
       if (i == (length - 1)) {
         unsignedByteArray.add(0, new UnsignedByte(bytes.get(0)))
       } else {
-        unsignedByteArray.add(0, new UnsignedByte((bytes.get(length - 1 - i) << 4) + bytes.get(length - 1 - i - 1)))
+        unsignedByteArray.add(0, new UnsignedByte((bytes.get(length - 1 - i - 1) << 4) + bytes.get(length - 1 - i)))
       }
       
       i += 2
@@ -158,6 +159,31 @@ class EVMWord {
 		}
 		result
 	}
+	
+	def String toAddressString() {
+    var result = "0x"
+    for (i : 19 .. 0) {
+      result += this.getNthField(i).toHexString().substring(2)
+    }
+    result
+	}
+	
+	def String toTrimmedString() {
+    var result = "0x"
+    var j = 31
+    while (this.getNthField(j).isZero && j > 0) {
+      j--
+    }
+    
+    for (i : j .. 0) {
+      result += this.getNthField(i).toHexString().substring(2)
+    }
+    result
+	}
+	
+	def String toIntString() {
+	  new BigInteger(toString.substring(2), 16).toString
+	}
 
 	def byte[] toByteArray(boolean bigEndian) {
 		var byte[] result = newByteArrayOfSize(32)
@@ -194,6 +220,15 @@ class EVMWord {
 		} else {
 			false
 		}
+	}
+	
+	def boolean isZero() {
+	  for (i: 0 .. 31) {
+	    if (!this.getNthField(i).isZero) {
+	      return false
+	    }
+	  }
+	  true
 	}
 
 	def EVMWord invert() {
