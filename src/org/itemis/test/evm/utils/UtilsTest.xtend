@@ -64,14 +64,14 @@ class UtilsTest {
 		Assert.assertEquals(result.length, 1)
 		Assert.assertEquals(result.get(0).toHexString, "0x80")
 		
-		result = rlp("dog".bytes.unsignedByteArrayFromByteArray)
+		result = rlp("dog".bytes.map[new UnsignedByte(it)] as UnsignedByte[])
 		Assert.assertEquals(result.length, 4)
 		Assert.assertEquals(result.get(0).toHexString, "0x83")
 		Assert.assertEquals(result.get(1).toASCII, "d")
 		Assert.assertEquals(result.get(2).toASCII, "o")
 		Assert.assertEquals(result.get(3).toASCII, "g")
 		
-		result = rlp(#["dog", "cat"].map[bytes.unsignedByteArrayFromByteArray])
+		result = rlp(#["dog", "cat"].map[it.bytes.map[new UnsignedByte(it)]  as UnsignedByte[]])
 		Assert.assertEquals(result.length, 9)
 		Assert.assertEquals(result.get(0).toHexString, "0xC8")
 		Assert.assertEquals(result.get(1).toHexString, "0x83")
