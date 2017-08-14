@@ -50,6 +50,10 @@ class UnsignedByte extends Number implements Comparable<UnsignedByte> {
 			false
 		}
 	}
+  
+  def isZero() {
+    return value == 0
+  }
 
 	override floatValue() {
 		value.floatValue
@@ -143,5 +147,6 @@ class UnsignedByte extends Number implements Comparable<UnsignedByte> {
 		val newValue = value + other.getValue
 		value = newValue.bitwiseAnd(0x00FF)
 		newValue > 255
-	}	
+	}
+  
 }
