@@ -22,6 +22,7 @@ import org.itemis.test.blockchain.BlockTest
 import org.itemis.test.ressources.JsonRPCWrapperTest
 import org.itemis.test.ressources.DataFetchTest
 import org.itemis.test.evm.utils.EVMUtilsTest
+import org.itemis.test.evm.utils.MerklePatriciaTrieTest
 import org.itemis.test.blockchain.WorldStateTest
 
 @RunWith(Suite)
@@ -35,6 +36,7 @@ import org.itemis.test.blockchain.WorldStateTest
   BlockTest,
   DataFetchTest,
   EVMUtilsTest,
+  MerklePatriciaTrieTest,
   WorldStateTest
 )
 public class AllTests {
