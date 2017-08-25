@@ -14,9 +14,10 @@ import org.itemis.evm.types.UnsignedByte
 import java.util.List
 import org.itemis.evm.types.EVMWord
 import org.itemis.evm.types.Node
+import java.io.Serializable
 
 //uses implementations in static utils
-class Utils {
+class Utils implements Serializable {
   // if n = 0, results in bits 0-7
   // if n = 1, bits 8-15
   // etc.
@@ -63,5 +64,13 @@ class Utils {
 
   def EVMWord keccak256(byte[] input) {
     StaticUtils.keccak256(input)
+  }
+  
+  def String rightPad(String input, int length) {
+    StaticUtils.rightPad(input, length)
+  }
+  
+  def void ensureDirExists(String path) {
+    StaticUtils.ensureDirExists(path)
   }
 }

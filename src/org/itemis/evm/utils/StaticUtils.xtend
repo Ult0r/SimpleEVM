@@ -16,6 +16,8 @@ import org.itemis.evm.types.EVMWord
 import org.bouncycastle.jcajce.provider.digest.Keccak
 import java.util.Arrays
 import org.itemis.evm.types.Node
+import java.io.File
+import java.nio.file.Files
 
 abstract class StaticUtils {
   // if n = 0, results in bits 0-7
@@ -237,5 +239,28 @@ abstract class StaticUtils {
   def static EVMWord keccak256(byte[] input) {
     val byte[] digest = new Keccak.Digest256().digest(input)
     new EVMWord(digest, false)
+  }
+  
+  def static String rightPad(String input, int length) {
+    if (input.length >= length) {
+      return input
+    }    
+    
+    val StringBuilder sb = new StringBuilder()
+    
+    sb.append(input)
+    
+    for (var i = 0; i < (length - input.length); i++) {
+      sb.append(" ")
+    }
+    
+    sb.toString
+  }
+  
+  def static void ensureDirExists(String path) {
+    val File dir = new File(path)
+    if (!dir.exists) {
+      Files.createDirectories(dir.toPath)
+    }
   }
 }
