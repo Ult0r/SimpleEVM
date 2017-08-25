@@ -5,6 +5,8 @@ import org.itemis.evm.types.UnsignedByte
 import org.itemis.evm.utils.StaticUtils
 import java.util.List
 import org.itemis.evm.types.Node
+import org.itemis.evm.types.EVMWord
+import java.util.Map
 
 abstract class MainnetAllocData {
 	private static List<UnsignedByte> MAINNET_ALLOC_DATA
@@ -117,5 +119,24 @@ abstract class MainnetAllocData {
       MAINNET_ALLOC_DATA_TREE = StaticUtils.reverseRLP(mainnetAllocData)
     }
     MAINNET_ALLOC_DATA_TREE
+  }
+  
+  def static Map<EVMWord, EVMWord> getMainnetAllocDataMap() {
+    val result = newHashMap()
+    
+    for (c: mainnetAllocDataTree.children) {
+      val address = new EVMWord(c.children.get(0).data, false)
+      var EVMWord balance
+      
+      if (c.children.length == 2) {
+        balance = new EVMWord(c.children.get(1).data, false)
+      } else {
+        balance = new EVMWord(0)
+      }
+      
+      result.put(address, balance)
+    }
+    
+    result
   }
 }
