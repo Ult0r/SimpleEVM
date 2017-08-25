@@ -6,12 +6,16 @@ import java.io.DataOutputStream
 import javax.net.ssl.HttpsURLConnection
 import java.io.InputStreamReader
 import java.net.URL
+import org.itemis.evm.utils.logging.LoggerController
 
 class DataFetch {
   private static URL API_URL = new URL("https://mainnet.infura.io")
+  private static int MAX_TRIES = 3
   
-  def JsonElement fetchData(String postData) {
-    System.err.println("DataFetch#fetchData postData: " + postData)
+  def private JsonElement fetchData(String postData, boolean retryOnNull, int tries, int maxTries) {
+    if (tries >= maxTries) {
+      throw new UnsuccessfulDataFetchException("Wasn't able to retrieve data for " + postData + " after " + tries + "tries.")
+    }
     
     var byte[] _postData = postData.bytes
     var int postDataLength = _postData.length
@@ -30,12 +34,33 @@ class DataFetch {
     wr.write(_postData)
     
     if (conn.responseCode != 200) {
-      throw new IllegalArgumentException(
-        "HTTP response code " + conn.responseCode + " - " +
-        postData + " doesn't seem to be valid call data"
-      )
+      val String errorMessage = String.format("returned %d, retrying...", conn.responseCode)
+      LoggerController.logWarning(DataFetch, "fetchData", errorMessage)
+      
+      fetchData(postData, retryOnNull, tries + 1, maxTries)
+    } else {
+      val result = new JsonParser().parse(new InputStreamReader(conn.inputStream))
+      if (result === null) {
+        LoggerController.logWarning(DataFetch, "fetchData", "returned null, retrying...")
+        
+        fetchData(postData, retryOnNull, tries + 1, maxTries)
+      } else {
+        LoggerController.logInfo(DataFetch, "fetchData", "result: " + result)
+        return result
+      }
     }
-    
-    new JsonParser().parse(new InputStreamReader(conn.inputStream))
-  }  
+  }
+  
+  def JsonElement fetchData(String postData, boolean retryOnNull, int maxTries) {
+    LoggerController.logInfo(DataFetch, "fetchData", "postData: " + postData)
+    fetchData(postData, true, 0, maxTries)
+  }
+  
+  def JsonElement fetchData(String postData, boolean retryOnNull) {
+    fetchData(postData, true, MAX_TRIES)
+  }
+  
+  def JsonElement fetchData(String postData) {
+    fetchData(postData, true)
+  }
 }
