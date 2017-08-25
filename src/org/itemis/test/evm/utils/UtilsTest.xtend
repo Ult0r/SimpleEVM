@@ -15,9 +15,11 @@ import org.junit.Test
 import org.junit.Assert
 import org.itemis.types.UnsignedByte
 import java.util.List
+import org.itemis.evm.utils.EVMUtils
 
 class UtilsTest {
-	extension Utils u = new Utils
+  extension Utils u = new Utils
+	extension EVMUtils e = new EVMUtils
 
 	private val Integer zero = 0
 	private val Integer _0x03020100 = ((3 << 8) + 2 << 8) + 1 << 8

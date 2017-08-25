@@ -16,6 +16,7 @@ import org.itemis.utils.StaticUtils
 import java.util.List
 import com.google.gson.JsonObject
 import org.eclipse.xtend.lib.annotations.Accessors
+import org.itemis.evm.utils.StaticEVMUtils
 
 class Block {
 	@Accessors private EVMWord parentHash
@@ -42,7 +43,7 @@ class Block {
 		if (GENESIS_BLOCK === null) {
 			GENESIS_BLOCK = new Block()
 			GENESIS_BLOCK.parentHash = new EVMWord(0)
-			GENESIS_BLOCK.ommersHash = StaticUtils.keccak256(StaticUtils.rlp(newArrayList()).map[byteValue])
+			GENESIS_BLOCK.ommersHash = StaticUtils.keccak256(StaticEVMUtils.rlp(newArrayList()).map[byteValue])
 			GENESIS_BLOCK.beneficiary = new EVMWord(0)
 //			GENESIS_BLOCK.stateRoot = new EVMWord(0xDEADBEEF) //TODO: get actual value
 			GENESIS_BLOCK.transactionsRoot = new EVMWord(0)

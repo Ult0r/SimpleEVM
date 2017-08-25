@@ -11,9 +11,7 @@
 package org.itemis.utils
 
 import org.itemis.types.UnsignedByte
-import java.util.List
 import org.itemis.types.EVMWord
-import org.itemis.types.Node
 import java.io.Serializable
 
 //uses implementations in static utils
@@ -39,23 +37,6 @@ class Utils implements Serializable {
   
   def byte[] fromHex(String s) {
     StaticUtils.fromHex(s)
-  }
-
-  def UnsignedByte[] rlp(Object data) {
-    StaticUtils.rlp(data)
-  }
-
-  // recursive length prefix
-  def UnsignedByte[] rlp(UnsignedByte[] data) {
-    StaticUtils.rlp(data)
-  }
-
-  def UnsignedByte[] rlp(List<UnsignedByte[]> data) {
-    StaticUtils.rlp(data)
-  }
-
-  def Node<UnsignedByte[]> reverseRLP(UnsignedByte[] data) {
-    StaticUtils.reverseRLP(data)
   }
   
   def EVMWord keccak256(String input) {

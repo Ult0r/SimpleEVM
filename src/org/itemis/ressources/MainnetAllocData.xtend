@@ -7,6 +7,7 @@ import java.util.List
 import org.itemis.types.Node
 import org.itemis.types.EVMWord
 import java.util.Map
+import org.itemis.evm.utils.StaticEVMUtils
 
 abstract class MainnetAllocData {
 	private static List<UnsignedByte> MAINNET_ALLOC_DATA
@@ -116,7 +117,7 @@ abstract class MainnetAllocData {
   
   def static Node<UnsignedByte[]> getMainnetAllocDataTree() {
     if (MAINNET_ALLOC_DATA_TREE === null) {
-      MAINNET_ALLOC_DATA_TREE = StaticUtils.reverseRLP(mainnetAllocData)
+      MAINNET_ALLOC_DATA_TREE = StaticEVMUtils.reverseRLP(mainnetAllocData)
     }
     MAINNET_ALLOC_DATA_TREE
   }
