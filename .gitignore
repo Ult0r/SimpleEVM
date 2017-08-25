@@ -8,3 +8,5 @@
 xtend-gen/**
 bin/**
 build/**
+log/**
+ressources/state/**
