@@ -14,11 +14,14 @@ import java.util.List
 import org.itemis.evm.types.exception.OverflowException
 import org.itemis.evm.utils.StaticUtils
 import java.math.BigInteger
+import java.io.Serializable
+import java.io.ObjectOutputStream
+import java.io.IOException
 
 //256-bit / 32-byte int
 //[0] contains bits 0-7
 //[31] contains bits 248-255
-class EVMWord {
+class EVMWord implements Serializable {
 	private UnsignedByte[] value = newArrayOfSize(32)
 
 	new() {
@@ -178,7 +181,17 @@ class EVMWord {
     for (i : j .. 0) {
       result += this.getNthField(i).toHexString().substring(2)
     }
+    
     result
+	}
+	
+	def String toGoTrimmedString() {
+	  var result = toTrimmedString.substring(2)
+	  if (result.startsWith("0")) {
+	    result = result.substring(1)
+	  } 
+	  
+	  "0x" + result
 	}
 	
 	def String toIntString() {
@@ -211,7 +224,7 @@ class EVMWord {
 	}
 
 	override boolean equals(Object other) {
-		if(other instanceof EVMWord) {
+		if (other instanceof EVMWord) {
 			var result = true
 			for (i : 0 .. 31) {
 				result = result && this.getNthField(i).equals(other.getNthField(i))
@@ -220,6 +233,10 @@ class EVMWord {
 		} else {
 			false
 		}
+	}
+	
+	override int hashCode() {
+	  toHexString.hashCode
 	}
 	
 	def boolean isZero() {
@@ -286,5 +303,9 @@ class EVMWord {
 
 	def EVMWord sub(EVMWord other) {
 		add(other.negate)
+	}
+	
+	def void writeObject(ObjectOutputStream out) throws IOException {
+	  out.writeBytes(toString)
 	}
 }
