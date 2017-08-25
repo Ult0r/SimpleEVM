@@ -3,7 +3,7 @@ package org.itemis.blockchain
 import org.itemis.evm.types.EVMWord
 import org.itemis.evm.types.UnsignedByte
 import com.google.gson.JsonObject
-import org.itemis.evm.utils.Utils
+import org.itemis.utils.Utils
 import org.eclipse.xtend.lib.annotations.Accessors
 
 class Transaction {

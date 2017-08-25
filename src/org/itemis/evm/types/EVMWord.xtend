@@ -12,7 +12,7 @@ package org.itemis.evm.types
 
 import java.util.List
 import org.itemis.evm.types.exception.OverflowException
-import org.itemis.evm.utils.StaticUtils
+import org.itemis.utils.StaticUtils
 import java.math.BigInteger
 import java.io.Serializable
 import java.io.ObjectOutputStream

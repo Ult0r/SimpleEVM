@@ -12,7 +12,7 @@ package org.itemis.evm.types
 
 import java.util.List
 import org.itemis.evm.types.exception.OverflowException
-import org.itemis.evm.utils.StaticUtils
+import org.itemis.utils.StaticUtils
 
 //2048-bit / 256-byte int
 //[0] contains bits 0-7

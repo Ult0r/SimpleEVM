@@ -6,7 +6,7 @@ import java.io.DataOutputStream
 import javax.net.ssl.HttpsURLConnection
 import java.io.InputStreamReader
 import java.net.URL
-import org.itemis.evm.utils.logging.LoggerController
+import org.itemis.utils.logging.LoggerController
 
 class DataFetch {
   private static URL API_URL = new URL("https://mainnet.infura.io")

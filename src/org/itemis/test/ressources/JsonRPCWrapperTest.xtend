@@ -4,12 +4,12 @@ import org.junit.Test
 import org.itemis.evm.types.EVMWord
 import org.itemis.ressources.JsonRPCWrapper
 import org.junit.Assert
-import org.itemis.evm.utils.Utils
+import org.itemis.utils.Utils
 import org.itemis.blockchain.Block
 import java.util.logging.Logger
 import org.junit.BeforeClass
 import org.junit.AfterClass
-import org.itemis.evm.utils.logging.LoggerController
+import org.itemis.utils.logging.LoggerController
 
 class JsonRPCWrapperTest {
   extension JsonRPCWrapper j = new JsonRPCWrapper

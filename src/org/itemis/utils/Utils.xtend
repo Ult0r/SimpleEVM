@@ -8,7 +8,7 @@
  * Lars Reimers for itemis AG
  *******************************************************************************/
 
-package org.itemis.evm.utils
+package org.itemis.utils
 
 import org.itemis.evm.types.UnsignedByte
 import java.util.List

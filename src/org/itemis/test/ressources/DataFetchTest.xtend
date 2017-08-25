@@ -6,8 +6,7 @@ import java.util.logging.Logger
 import org.junit.BeforeClass
 import org.junit.AfterClass
 import org.itemis.ressources.UnsuccessfulDataFetchException
-import org.itemis.evm.utils.logging.LoggerController
-import org.itemis.blockchain.WorldState
+import org.itemis.utils.logging.LoggerController
 
 class DataFetchTest {
   extension DataFetch d = new DataFetch()

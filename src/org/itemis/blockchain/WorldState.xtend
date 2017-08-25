@@ -3,8 +3,8 @@ package org.itemis.blockchain
 import org.itemis.evm.types.EVMWord
 import java.sql.Connection
 import java.sql.DriverManager
-import org.itemis.evm.utils.Utils
-import org.itemis.evm.utils.logging.LoggerController
+import org.itemis.utils.Utils
+import org.itemis.utils.logging.LoggerController
 import org.itemis.evm.types.UnsignedByte
 import org.itemis.ressources.MainnetAllocData
 import java.io.File

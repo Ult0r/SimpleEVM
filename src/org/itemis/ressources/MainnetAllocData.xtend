@@ -2,7 +2,7 @@ package org.itemis.ressources
 
 import java.io.FileReader
 import org.itemis.evm.types.UnsignedByte
-import org.itemis.evm.utils.StaticUtils
+import org.itemis.utils.StaticUtils
 import java.util.List
 import org.itemis.evm.types.Node
 import org.itemis.evm.types.EVMWord

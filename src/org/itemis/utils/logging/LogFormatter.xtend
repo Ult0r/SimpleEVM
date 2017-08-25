@@ -1,10 +1,10 @@
-package org.itemis.evm.utils.logging
+package org.itemis.utils.logging
 
 import java.util.logging.Formatter
 import java.util.logging.LogRecord
 import java.text.SimpleDateFormat
 import java.util.Date
-import org.itemis.evm.utils.Utils
+import org.itemis.utils.Utils
 
 class LogFormatter extends Formatter {
   extension Utils u = new Utils

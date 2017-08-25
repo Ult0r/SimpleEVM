@@ -5,7 +5,7 @@ import org.itemis.evm.types.EVMWord
 import java.util.Optional
 import java.util.List
 import org.itemis.evm.types.UnsignedByte
-import org.itemis.evm.utils.Utils
+import org.itemis.utils.Utils
 import org.itemis.blockchain.Block
 import org.itemis.blockchain.Transaction
 import org.itemis.blockchain.TransactionReceipt

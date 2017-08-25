@@ -12,7 +12,7 @@ package org.itemis.blockchain
 
 import org.itemis.evm.types.EVMWord
 import org.itemis.evm.types.Int2048
-import org.itemis.evm.utils.StaticUtils
+import org.itemis.utils.StaticUtils
 import java.util.List
 import com.google.gson.JsonObject
 import org.eclipse.xtend.lib.annotations.Accessors

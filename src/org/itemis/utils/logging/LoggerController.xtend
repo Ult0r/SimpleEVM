@@ -1,4 +1,4 @@
-package org.itemis.evm.utils.logging
+package org.itemis.utils.logging
 
 import java.util.Stack
 import java.util.logging.Logger
@@ -7,7 +7,7 @@ import java.util.logging.FileHandler
 import java.util.Locale
 import java.io.File
 import java.util.logging.LogManager
-import org.itemis.evm.utils.StaticUtils
+import org.itemis.utils.StaticUtils
 
 final class LoggerController {
   private static Stack<Logger> loggerStack = new Stack

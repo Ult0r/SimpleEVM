@@ -11,7 +11,7 @@
 package org.itemis.evm.types
 
 import java.util.List
-import org.itemis.evm.utils.ListUtils
+import org.itemis.utils.ListUtils
 
 class EVMWordIndexedList<T> {
 	extension ListUtils u = new ListUtils()

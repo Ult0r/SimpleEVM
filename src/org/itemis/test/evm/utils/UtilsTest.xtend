@@ -10,7 +10,7 @@
 
 package org.itemis.test.evm.utils
 
-import org.itemis.evm.utils.Utils
+import org.itemis.utils.Utils
 import org.junit.Test
 import org.junit.Assert
 import org.itemis.evm.types.UnsignedByte

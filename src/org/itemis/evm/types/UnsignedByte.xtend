@@ -11,7 +11,7 @@
 package org.itemis.evm.types
 
 import java.security.InvalidParameterException
-import org.itemis.evm.utils.Utils
+import org.itemis.utils.Utils
 
 //opposing to the signed java.lang.Byte
 class UnsignedByte extends Number implements Comparable<UnsignedByte> {
