@@ -9,7 +9,6 @@ import org.itemis.evm.utils.Utils
 import org.itemis.blockchain.Block
 import org.itemis.blockchain.Transaction
 import org.itemis.blockchain.TransactionReceipt
-import com.google.gson.JsonObject
 
 //documented by: https://github.com/ethereum/wiki/wiki/JSON-RPC
 class JsonRPCWrapper {
@@ -137,12 +136,12 @@ class JsonRPCWrapper {
   }
 
   def EVMWord eth_getStorageAt(EVMWord address, EVMWord offset, EVMWord blockNumber, String tag) {
-    val params = String.format('["%s","%s",%s]', address.toString, offset.toString, identifyBlock(blockNumber, tag))
+    val params = String.format('["%s","%s","%s"]', address.toAddressString, offset.toTrimmedString, identifyBlock(blockNumber, tag))
     EVMWord.fromString(wrapDataFetch("eth_getStorageAt", params).asJsonObject.get("result").asString)
   }
 
   def EVMWord eth_getTransactionCount(EVMWord address, EVMWord blockNumber, String tag) {
-    val params = String.format('["%s",%s]', address.toString, identifyBlock(blockNumber, tag))
+    val params = String.format('["%s","%s"]', address.toAddressString, identifyBlock(blockNumber, tag))
     EVMWord.fromString(wrapDataFetch("eth_getTransactionCount", params).asJsonObject.get("result").asString)
   }
 
@@ -167,52 +166,46 @@ class JsonRPCWrapper {
   }
 
   def UnsignedByte[] eth_getCode(EVMWord address, EVMWord blockNumber, String tag) {
-    val params = String.format('["%s",%s]', address.toAddressString, identifyBlock(blockNumber, tag))
+    val params = String.format('["%s","%s"]', address.toAddressString, identifyBlock(blockNumber, tag))
     wrapDataFetch("eth_getCode", params).asJsonObject.get("result").asString.fromHex.map[new UnsignedByte(it)]
   }
 
   def UnsignedByte[] eth_sign(EVMWord address, UnsignedByte[] message) {
-    val params = String.format('["%s","%s"]', address.toAddressString, message.toHex)
-    wrapDataFetch("eth_sign", params).asJsonObject.get("result").asString.fromHex.map[new UnsignedByte(it)]
+    throw new UnsupportedOperationException("eth_sign: 405 - method not allow")
   }
 
   def EVMWord eth_sendTransaction(EVMWord from, EVMWord to, EVMWord gas, EVMWord gasPrice, EVMWord value, UnsignedByte[] data) {
-    val params = String.format('[{"%s","%s","%s","%s","%s","%s"}]', from.toAddressString, to.toAddressString, gas.toString, gasPrice.toString, value.toString,
-      data.toHex)
-    EVMWord.fromString(wrapDataFetch("eth_sendTransaction", params).asJsonObject.get("result").asString)
+    throw new UnsupportedOperationException("eth_sendTransaction: 405 - method not allow")
   }
 
   def EVMWord eth_sendRawTransaction(UnsignedByte[] signedData) {
-    val params = String.format('["%s"]', signedData.toHex)
-    EVMWord.fromString(wrapDataFetch("eth_sendRawTransaction", params).asJsonObject.get("result").asString)
+    throw new UnsupportedOperationException("eth_sendRawTransaction: 405 - method not allow")
   }
 
   def UnsignedByte[] eth_call(EVMWord from, EVMWord to, EVMWord gas, EVMWord gasPrice, EVMWord value, UnsignedByte[] data, EVMWord blockNumber,
     String tag) {
     val params = String.format(
-      '[{"from":"%s","to":"%s","gas":"%s","gasPrice":"%s","value":"%s","data":"%s"},%s]',
+      '[{"from":"%s","to":"%s","gas":"%s","gasPrice":"%s","value":"%s","data":"%s"},"%s"]',
       from.toAddressString,
       to.toAddressString,
-      gas.toString,
-      gasPrice.toString,
-      value.toString,
+      gas.toTrimmedString,
+      gasPrice.toTrimmedString,
+      value.toTrimmedString,
       data.toHex,
       identifyBlock(blockNumber, tag)
     )
     wrapDataFetch("eth_call", params).asJsonObject.get("result").asString.fromHex.map[new UnsignedByte(it)]
   }
 
-  def EVMWord eth_estimateGas(EVMWord from, EVMWord to, EVMWord gas, EVMWord gasPrice, EVMWord value, UnsignedByte[] data, EVMWord blockNumber,
-    String tag) {
+  def EVMWord eth_estimateGas(EVMWord from, EVMWord to, EVMWord gas, EVMWord gasPrice, EVMWord value, UnsignedByte[] data) {
     val params = String.format(
-      '[{"from":"%s","to":"%s","gas":"%s","gasPrice":"%s","value":"%s","data":"%s"},%s]',
+      '[{"from":"%s","to":"%s","gas":"%s","gasPrice":"%s","value":"%s","data":"%s"}]',
       from.toAddressString,
       to.toAddressString,
-      gas.toString,
-      gasPrice.toString,
-      value.toString,
-      data.toHex,
-      identifyBlock(blockNumber, tag)
+      gas.toTrimmedString,
+      gasPrice.toTrimmedString,
+      value.toTrimmedString,
+      data.toHex
     )
     EVMWord.fromString(wrapDataFetch("eth_estimateGas", params).asJsonObject.get("result").asString)
   }
@@ -222,12 +215,6 @@ class JsonRPCWrapper {
     val fetchResult = wrapDataFetch("eth_getBlockByHash", params).asJsonObject.get("result").asJsonObject
 
     new Block(fetchResult)
-  }
-
-  def EVMWord eth_getBlockByHash_hash(EVMWord blockHash) {
-    val params = String.format('["%s", false]', blockHash.toString)
-    val fetchResult = wrapDataFetch("eth_getBlockByHash", params).asJsonObject.get("result").asJsonObject
-    EVMWord.fromString(fetchResult.get("hash").asString)
   }
 
   def EVMWord eth_getBlockByHash_totalDifficulty(EVMWord blockHash) {
@@ -248,34 +235,34 @@ class JsonRPCWrapper {
     fetchResult.get("transactions").asJsonArray.toList.map[EVMWord.fromString(it.asString)]
   }
 
-  def Block eth_getBlockByNumber(EVMWord blockHash) {
-    val params = String.format('["%s", true]', blockHash.toString)
-    val fetchResult = wrapDataFetch("eth_getBlockByHash", params).asJsonObject.get("result").asJsonObject
+  def Block eth_getBlockByNumber(EVMWord blockNumber) {
+    val params = String.format('["%s", true]', blockNumber.toString)
+    val fetchResult = wrapDataFetch("eth_getBlockByNumber", params).asJsonObject.get("result").asJsonObject
 
     new Block(fetchResult)
   }
 
   def EVMWord eth_getBlockByNumber_hash(EVMWord blockNumber) {
     val params = String.format('["%s", false]', blockNumber.toString)
-    val fetchResult = wrapDataFetch("eth_getBlockByHash", params).asJsonObject.get("result").asJsonObject
+    val fetchResult = wrapDataFetch("eth_getBlockByNumber", params).asJsonObject.get("result").asJsonObject
     EVMWord.fromString(fetchResult.get("hash").asString)
   }
 
   def EVMWord eth_getBlockByNumber_totalDifficulty(EVMWord blockNumber) {
     val params = String.format('["%s", false]', blockNumber.toString)
-    val fetchResult = wrapDataFetch("eth_getBlockByHash", params).asJsonObject.get("result").asJsonObject
+    val fetchResult = wrapDataFetch("eth_getBlockByNumber", params).asJsonObject.get("result").asJsonObject
     EVMWord.fromString(fetchResult.get("totalDifficulty").asString)
   }
 
   def EVMWord eth_getBlockByNumber_size(EVMWord blockNumber) {
     val params = String.format('["%s", false]', blockNumber.toString)
-    val fetchResult = wrapDataFetch("eth_getBlockByHash", params).asJsonObject.get("result").asJsonObject
+    val fetchResult = wrapDataFetch("eth_getBlockByNumber", params).asJsonObject.get("result").asJsonObject
     EVMWord.fromString(fetchResult.get("size").asString)
   }
 
   def List<EVMWord> eth_getBlockByNumber_transactionHashes(EVMWord blockNumber) {
     val params = String.format('["%s", false]', blockNumber.toString)
-    val fetchResult = wrapDataFetch("eth_getBlockByHash", params).asJsonObject.get("result").asJsonObject
+    val fetchResult = wrapDataFetch("eth_getBlockByNumber", params).asJsonObject.get("result").asJsonObject
     fetchResult.get("transactions").asJsonArray.toList.map[EVMWord.fromString(it.asString)]
   }
   
@@ -296,7 +283,7 @@ class JsonRPCWrapper {
   
   def TransactionReceipt eth_getTransactionReceipt(EVMWord transactionHash) {
     val params = String.format('["%s"]', transactionHash.toString)
-    new TransactionReceipt(wrapDataFetch("eth_getBlockByHash", params).asJsonObject.get("result").asJsonObject)    
+    new TransactionReceipt(wrapDataFetch("eth_getTransactionReceipt", params).asJsonObject.get("result").asJsonObject)    
   }
   
   def Block eth_getUncleByBlockHashAndIndex(EVMWord blockHash, EVMWord index) {
@@ -305,112 +292,14 @@ class JsonRPCWrapper {
   }
   
   def Block eth_getUncleByBlockNumberAndIndex(EVMWord blockNumber, String tag, EVMWord index) {
-    val params = String.format('["%s","%s"]', identifyBlock(blockNumber, tag), index.toString)
+    val params = String.format('["%s","%s"]', identifyBlock(blockNumber, tag), index.toGoTrimmedString)
     new Block(wrapDataFetch("eth_getUncleByBlockNumberAndIndex", params).asJsonObject.get("result").asJsonObject)    
   }
   
-  def List<String> eth_getCompilers() {
-    wrapDataFetch("eth_getCompilers").asJsonObject.get("result").asJsonArray.toList.map[asString]
-  }
-  
-  def JsonElement eth_compileSolidity(String sourceCode) {
-    val params = String.format('["%s"]', sourceCode)
-    wrapDataFetch("eth_compileSolidity", params).asJsonObject.get("result")
-  }
-  
-  def JsonElement eth_compileLLL(String sourceCode) {
-    val params = String.format('["%s"]', sourceCode)
-    wrapDataFetch("eth_compileLLL", params).asJsonObject.get("result")
-  }
-  
-  def JsonElement eth_compileSerpent(String sourceCode) {
-    val params = String.format('["%s"]', sourceCode)
-    wrapDataFetch("eth_compileSerpent", params).asJsonObject.get("result")
-  }
-  
-  def EVMWord eth_newFilter(EVMWord fromBlockNumber, String fromTag, EVMWord toBlockNumber, String toTag, List<EVMWord> addresses, List<EVMWord> topics) {
-    val params = String.format(
-      '[{"fromBlock":"%s","toBlock":"%s","address":"%s","topics":"%s"}]',
-      identifyBlock(fromBlockNumber, fromTag),
-      identifyBlock(toBlockNumber, toTag),
-      "[" + addresses.map[toString].join(",") + "]",
-      "[" + topics.map[toString].join(",") + "]"
-    )
-    EVMWord.fromString(wrapDataFetch("eth_newFilter", params).asJsonObject.get("result").asString)
-  }
-  
-  def EVMWord eth_newBlockFilter() {
-    EVMWord.fromString(wrapDataFetch("eth_newBlockFilter").asJsonObject.get("result").asString)
-  }
-  
-  def EVMWord eth_newPendingTransactionFilter() {
-    EVMWord.fromString(wrapDataFetch("eth_newPendingTransactionFilter").asJsonObject.get("result").asString)
-  }
-  
-  def boolean eth_uninstallFilter(EVMWord filterID) {
-    val params = String.format('["%s"]', filterID.toString)
-    wrapDataFetch("eth_uninstallFilter", params).asJsonObject.get("result").asBoolean
-  }
-  
-  def List<EVMWord> eth_getFilterChanges_blocks(EVMWord filterID) {
-    val params = String.format('["%s"]', filterID.toString)
-    try {
-      wrapDataFetch("eth_getFilterChanges", params).asJsonObject.get("result").asJsonArray.toList.map[asString].map[EVMWord.fromString(it)]
-    } catch (Exception e) {
-      throw new IllegalArgumentException(filterID.toString + " is no valid block filter id")
-    }
-  }
-  
-  def List<EVMWord> eth_getFilterChanges_transactions(EVMWord filterID) {
-    val params = String.format('["%s"]', filterID.toString)
-    try {
-      wrapDataFetch("eth_getFilterChanges", params).asJsonObject.get("result").asJsonArray.toList.map[asString].map[EVMWord.fromString(it)]
-    } catch (Exception e) {
-      throw new IllegalArgumentException(filterID.toString + " is no valid transaction filter id")
-    }
-  }
-  
-  def JsonObject eth_getFilterChanges_logs(EVMWord filterID) {
-    val params = String.format('["%s"]', filterID.toString)
-    try {
-      wrapDataFetch("eth_getFilterChanges", params).asJsonObject.get("result").asJsonObject
-    } catch (Exception e) {
-      throw new IllegalArgumentException(filterID.toString + " is no valid log filter id")
-    }
-  }
-  
-  def JsonObject eth_getFilterLogs(EVMWord filterID) {
-    eth_getFilterChanges_logs(filterID)
-  }
-  
-  def JsonObject eth_getLogs(EVMWord fromBlockNumber, String fromTag, EVMWord toBlockNumber, String toTag, List<EVMWord> addresses, List<EVMWord> topics) {
-    val params = String.format(
-      '[{"fromBlock":"%s","toBlock":"%s","address":"%s","topics":"%s"}]',
-      identifyBlock(fromBlockNumber, fromTag),
-      identifyBlock(toBlockNumber, toTag),
-      "[" + addresses.map[toString].join(",") + "]",
-      "[" + topics.map[toString].join(",") + "]"
-    )
-    wrapDataFetch("eth_getLogs", params).asJsonObject.get("result").asJsonObject
-  }
-  
-  //0: current block header pow-hash
-  //1: seed hash used for the DAG
-  //2: difficulty
-  def List<EVMWord> eth_getWork() {
-    wrapDataFetch("eth_getWork").asJsonObject.get("result").asJsonArray.toList.map[asString].map[EVMWord.fromString(it)]
-  }
-  
-  def boolean eth_submitWork(EVMWord nonce, EVMWord powHash, EVMWord mixDigest) {
-    val params = String.format('["%s","%s","%s"]', nonce.toString, powHash.toString, mixDigest.toString)
-    wrapDataFetch("eth_submitWork", params).asJsonObject.get("result").asBoolean
-  }
-  
-  def boolean eth_submitHashrate(EVMWord hashrate, EVMWord client) {
-    val params = String.format('["%s","%s"]', hashrate.toString, client.toString)
-    wrapDataFetch("eth_submitHashrate", params).asJsonObject.get("result").asBoolean
-  }
-  
+  //compilers omitted
+  //filter omitted
+  //logs omitted
+  //PoW omitted
   //db-methods omitted (deprecated)
   //shh-methods omitted
 }
