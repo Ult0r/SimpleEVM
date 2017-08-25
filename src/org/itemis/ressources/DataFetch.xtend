@@ -46,7 +46,19 @@ class DataFetch {
         fetchData(postData, retryOnNull, tries + 1, maxTries)
       } else {
         LoggerController.logInfo(DataFetch, "fetchData", "result: " + result)
-        return result
+        
+        try {
+          if (result.asJsonObject.get("result").jsonNull && retryOnNull) {
+            LoggerController.logWarning(DataFetch, "fetchData", "result is null, retrying...")
+            
+            fetchData(postData, retryOnNull, tries + 1, maxTries)
+          } else {
+            result
+          }
+        } catch (Exception e) {
+          LoggerController.logWarning(DataFetch, "fetchData", "couldn't parse result")
+          result
+        }
       }
     }
   }
