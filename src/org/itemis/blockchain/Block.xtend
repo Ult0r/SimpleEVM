@@ -15,25 +15,26 @@ import org.itemis.evm.types.Int2048
 import org.itemis.evm.utils.StaticUtils
 import java.util.List
 import com.google.gson.JsonObject
+import org.eclipse.xtend.lib.annotations.Accessors
 
 class Block {
-	private EVMWord parentHash
-	private EVMWord ommersHash
-	private EVMWord beneficiary // only 160 bits used
-	private EVMWord stateRoot
-	private EVMWord transactionsRoot
-	private EVMWord receiptsRoot
-	private Int2048 logsBloom
-	private EVMWord difficulty
-	private EVMWord number
-	private EVMWord gasUsed
-	private EVMWord gasLimit
-	private EVMWord timestamp // seconds since The Epoch
-	private EVMWord extraData
-	private EVMWord mixHash
-	private EVMWord nonce // 64-bit hash
-	private List<EVMWord> ommers
-	private List<Transaction> transactions
+	@Accessors private EVMWord parentHash
+	@Accessors private EVMWord ommersHash
+	@Accessors private EVMWord beneficiary // only 160 bits used
+	@Accessors private EVMWord stateRoot
+	@Accessors private EVMWord transactionsRoot
+	@Accessors private EVMWord receiptsRoot
+	@Accessors private Int2048 logsBloom
+	@Accessors private EVMWord difficulty
+	@Accessors private EVMWord number
+	@Accessors private EVMWord gasUsed
+	@Accessors private EVMWord gasLimit
+	@Accessors private EVMWord timestamp // seconds since The Epoch
+	@Accessors private EVMWord extraData
+	@Accessors private EVMWord mixHash
+	@Accessors private EVMWord nonce // 64-bit hash
+	@Accessors private List<EVMWord> ommers
+	@Accessors private List<Transaction> transactions
 	
 	private static Block GENESIS_BLOCK = null
 	
@@ -82,126 +83,12 @@ class Block {
     timestamp = EVMWord.fromString(obj.get("timestamp").asString)
     
     ommers = obj.get("uncles").asJsonArray.toList.map[asString].map[EVMWord.fromString(it)]
-    transactions = obj.get("transactions").asJsonArray.toList.map[asJsonObject].map[new Transaction(it)]
+    
+    //might be uncle
+    if (obj.has("transactions")) {
+      transactions = obj.get("transactions").asJsonArray.toList.map[asJsonObject].map[new Transaction(it)]
+    }
 	}
-
-	def EVMWord getParentHash() {
-		return parentHash;
-	}
-
-	def setParentHash(EVMWord parentHash) {
-		this.parentHash = parentHash;
-	}
-
-	def EVMWord getOmmersHash() {
-		return ommersHash;
-	}
-
-	def setOmmersHash(EVMWord ommersHash) {
-		this.ommersHash = ommersHash;
-	}
-
-	def EVMWord getBeneficiary() {
-		return beneficiary;
-	}
-
-	def setBeneficiary(EVMWord beneficiary) {
-		this.beneficiary = beneficiary;
-	}
-
-	def EVMWord getStateRoot() {
-		return stateRoot;
-	}
-
-	def setStateRoot(EVMWord stateRoot) {
-		this.stateRoot = stateRoot;
-	}
-
-	def EVMWord getTransactionsRoot() {
-		return transactionsRoot;
-	}
-
-	def setTransactionsRoot(EVMWord transactionsRoot) {
-		this.transactionsRoot = transactionsRoot;
-	}
-
-	def EVMWord getReceiptsRoot() {
-		return receiptsRoot;
-	}
-
-	def setReceiptsRoot(EVMWord receiptsRoot) {
-		this.receiptsRoot = receiptsRoot;
-	}
-
-	def Int2048 getLogsBloom() {
-		return logsBloom;
-	}
-
-	def setLogsBloom(Int2048 logsBloom) {
-		this.logsBloom = logsBloom;
-	}
-
-	def EVMWord getDifficulty() {
-		return difficulty;
-	}
-
-	def setDifficulty(EVMWord difficulty) {
-		this.difficulty = difficulty;
-	}
-
-	def EVMWord getNumber() {
-		return number;
-	}
-
-	def setNumber(EVMWord number) {
-		this.number = number;
-	}
-
-	def EVMWord getGasLimit() {
-		return gasLimit;
-	}
-
-	def setGasLimit(EVMWord gasLimit) {
-		this.gasLimit = gasLimit;
-	}
-
-	def EVMWord getGasUsed() {
-		return gasUsed;
-	}
-
-	def setGasUsed(EVMWord gasUsed) {
-		this.gasUsed = gasUsed;
-	}
-
-	def EVMWord getTimestamp() {
-		return timestamp;
-	}
-
-	def setTimestamp(EVMWord timestamp) {
-		this.timestamp = timestamp;
-	}
-
-	def EVMWord getExtraData() {
-		return extraData;
-	}
-
-	def setExtraData(EVMWord extraData) {
-		this.extraData = extraData;
-	}
-
-	def EVMWord getMixHash() {
-		return mixHash;
-	}
-
-	def setMixHash(EVMWord mixHash) {
-		this.mixHash = mixHash;
-	}
-
-	def EVMWord getNonce() {
-		return nonce;
-	}
-
-	def setNonce(EVMWord nonce) {
-		this.nonce = nonce;
-	}
+	
+  //TODO: calculate hash
 }

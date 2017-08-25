@@ -4,20 +4,21 @@ import org.itemis.evm.types.EVMWord
 import org.itemis.evm.types.UnsignedByte
 import com.google.gson.JsonObject
 import org.itemis.evm.utils.Utils
+import org.eclipse.xtend.lib.annotations.Accessors
 
 class Transaction {
   extension Utils u = new Utils
   
-	private EVMWord nonce
-	private EVMWord gasPrice
-	private EVMWord gasLimit
-	private EVMWord to //160-bit address
-	private EVMWord value
-	private UnsignedByte v
-	private EVMWord r
-	private EVMWord s
-	private UnsignedByte[] data
-	private boolean isData //opposing to being init
+	@Accessors private EVMWord nonce
+	@Accessors private EVMWord gasPrice
+	@Accessors private EVMWord gasLimit
+	@Accessors private EVMWord to //160-bit address
+	@Accessors private EVMWord value
+	@Accessors private UnsignedByte v
+	@Accessors private EVMWord r
+	@Accessors private EVMWord s
+	@Accessors private UnsignedByte[] data
+	@Accessors private boolean isData //opposing to being init
   
   new(JsonObject obj) {
     nonce = EVMWord.fromString(obj.get("nonce").asString)
@@ -37,4 +38,7 @@ class Transaction {
     
     data = obj.get("input").asString.fromHex.map[new UnsignedByte(it)]
   }
+  
+  //TODO: calculate hash
+  
 }
