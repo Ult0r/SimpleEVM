@@ -1,4 +1,4 @@
-package org.itemis.evm.types
+package org.itemis.types
 
 import java.util.List
 

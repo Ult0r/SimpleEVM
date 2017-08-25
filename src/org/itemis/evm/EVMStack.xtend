@@ -11,7 +11,7 @@
 package org.itemis.evm
 
 import java.util.List
-import org.itemis.evm.types.EVMWord
+import org.itemis.types.EVMWord
 import java.util.ArrayList
 
 //not using java.util.Stack because of lacking operations

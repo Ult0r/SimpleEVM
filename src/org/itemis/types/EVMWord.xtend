@@ -8,10 +8,10 @@
  * Lars Reimers for itemis AG
  *******************************************************************************/
 
-package org.itemis.evm.types
+package org.itemis.types
 
 import java.util.List
-import org.itemis.evm.types.exception.OverflowException
+import org.itemis.evm.OverflowException
 import org.itemis.utils.StaticUtils
 import java.math.BigInteger
 import java.io.Serializable

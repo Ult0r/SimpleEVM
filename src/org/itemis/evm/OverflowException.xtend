@@ -8,7 +8,7 @@
 * Lars Reimers for itemis AG
 *******************************************************************************/
 
-package org.itemis.evm.types.exception
+package org.itemis.evm
 
 class OverflowException extends Exception {
 	

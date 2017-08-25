@@ -1,7 +1,7 @@
 package org.itemis.blockchain
 
 import com.google.gson.JsonObject
-import org.itemis.evm.types.EVMWord
+import org.itemis.types.EVMWord
 import java.util.List
 import org.eclipse.xtend.lib.annotations.Accessors
 

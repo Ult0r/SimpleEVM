@@ -1,11 +1,11 @@
 package org.itemis.ressources
 
 import java.io.FileReader
-import org.itemis.evm.types.UnsignedByte
+import org.itemis.types.UnsignedByte
 import org.itemis.utils.StaticUtils
 import java.util.List
-import org.itemis.evm.types.Node
-import org.itemis.evm.types.EVMWord
+import org.itemis.types.Node
+import org.itemis.types.EVMWord
 import java.util.Map
 
 abstract class MainnetAllocData {

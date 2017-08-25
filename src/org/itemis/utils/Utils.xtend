@@ -10,10 +10,10 @@
 
 package org.itemis.utils
 
-import org.itemis.evm.types.UnsignedByte
+import org.itemis.types.UnsignedByte
 import java.util.List
-import org.itemis.evm.types.EVMWord
-import org.itemis.evm.types.Node
+import org.itemis.types.EVMWord
+import org.itemis.types.Node
 import java.io.Serializable
 
 //uses implementations in static utils

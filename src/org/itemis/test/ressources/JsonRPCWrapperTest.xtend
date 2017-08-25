@@ -1,7 +1,7 @@
 package org.itemis.test.ressources
 
 import org.junit.Test
-import org.itemis.evm.types.EVMWord
+import org.itemis.types.EVMWord
 import org.itemis.ressources.JsonRPCWrapper
 import org.junit.Assert
 import org.itemis.utils.Utils

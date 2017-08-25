@@ -4,7 +4,7 @@ import org.junit.Test
 import org.itemis.ressources.MainnetAllocData
 import java.nio.charset.Charset
 import org.junit.Assert
-import org.itemis.evm.types.EVMWord
+import org.itemis.types.EVMWord
 
 class AllocTest {
   @Test

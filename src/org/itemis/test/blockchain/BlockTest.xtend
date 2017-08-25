@@ -12,7 +12,7 @@ package org.itemis.test.blockchain
 
 import org.junit.Test
 import org.itemis.blockchain.Block
-import org.itemis.evm.types.EVMWord
+import org.itemis.types.EVMWord
 import org.junit.Assert
 
 class BlockTest {

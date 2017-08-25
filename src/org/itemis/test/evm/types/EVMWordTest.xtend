@@ -11,9 +11,9 @@
 package org.itemis.test.evm.types
 
 import org.junit.Test
-import org.itemis.evm.types.EVMWord
+import org.itemis.types.EVMWord
 import org.junit.Assert
-import org.itemis.evm.types.exception.OverflowException
+import org.itemis.evm.OverflowException
 
 class EVMWordTest {
 	private var EVMWord zero = new EVMWord()

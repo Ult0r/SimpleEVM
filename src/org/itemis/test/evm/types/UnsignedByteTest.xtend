@@ -11,7 +11,7 @@
 package org.itemis.test.evm.types
 
 import org.junit.Test
-import org.itemis.evm.types.UnsignedByte
+import org.itemis.types.UnsignedByte
 import org.junit.Assert
 
 class UnsignedByteTest {

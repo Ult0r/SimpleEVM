@@ -10,10 +10,10 @@
 
 package org.itemis.test.evm.utils
 
-import org.itemis.evm.types.EVMWordIndexedList
+import org.itemis.types.EVMWordIndexedList
 import org.junit.Test
 import org.junit.Assert
-import org.itemis.evm.types.EVMWord
+import org.itemis.types.EVMWord
 
 class EVMWordIndexedListTest {
 	@Test

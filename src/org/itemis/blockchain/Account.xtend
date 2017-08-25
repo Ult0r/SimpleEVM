@@ -1,6 +1,6 @@
 package org.itemis.blockchain
 
-import org.itemis.evm.types.EVMWord
+import org.itemis.types.EVMWord
 import org.eclipse.xtend.lib.annotations.Accessors
 
 class Account {

@@ -8,7 +8,7 @@
 * Lars Reimers for itemis AG
 *******************************************************************************/
 
-package org.itemis.evm.types
+package org.itemis.types
 
 import java.util.List
 import org.itemis.utils.ListUtils

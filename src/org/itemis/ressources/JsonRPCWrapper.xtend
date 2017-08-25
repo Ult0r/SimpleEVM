@@ -1,10 +1,10 @@
 package org.itemis.ressources
 
 import com.google.gson.JsonElement
-import org.itemis.evm.types.EVMWord
+import org.itemis.types.EVMWord
 import java.util.Optional
 import java.util.List
-import org.itemis.evm.types.UnsignedByte
+import org.itemis.types.UnsignedByte
 import org.itemis.utils.Utils
 import org.itemis.blockchain.Block
 import org.itemis.blockchain.Transaction

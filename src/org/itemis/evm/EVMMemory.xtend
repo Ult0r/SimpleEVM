@@ -10,8 +10,8 @@
 
 package org.itemis.evm
 
-import org.itemis.evm.types.EVMWordIndexedList
-import org.itemis.evm.types.EVMWord
+import org.itemis.types.EVMWordIndexedList
+import org.itemis.types.EVMWord
 
 //256-bit-word-adressed byte array
 //volatile and dynamically sized
