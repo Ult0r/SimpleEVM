@@ -15,6 +15,7 @@ import org.itemis.types.EVMWord
 import org.bouncycastle.jcajce.provider.digest.Keccak
 import java.io.File
 import java.nio.file.Files
+import org.itemis.types.Nibble
 
 abstract class StaticUtils {
   // if n = 0, results in bits 0-7
@@ -22,6 +23,10 @@ abstract class StaticUtils {
   // etc.
   def static UnsignedByte getNthByteOfInteger(Integer i, int n) {
     new UnsignedByte((i >> (n * 8)).bitwiseAnd(0xFF))
+  }
+  
+  def static String toHex(Nibble n) {
+    toHex(new UnsignedByte(n.value))
   }
 
   def static String toHex(UnsignedByte b) {
@@ -94,6 +99,31 @@ abstract class StaticUtils {
     
     for (c: data.bytes) {
       result.add(fromHex(c as char))
+    }
+    
+    result
+  }
+  
+  def static Nibble[] toNibbles(UnsignedByte[] b) {
+    val result = newArrayList
+    
+    for (_b : b) {
+      result.add(_b.higherNibble)
+      result.add(_b.lowerNibble) 
+    }
+    
+    result
+  }
+  
+  def static UnsignedByte[] toUnsignedBytes(Nibble[] n) {
+    val result = newArrayList
+    
+    for(var i = 0; i < (n.length / 2); i++) {
+      result.add(new UnsignedByte(n.get(i * 2), n.get(i * 2 + 1)))
+    }
+    
+    if (n.length % 2 != 0) {
+      result.add(new UnsignedByte(n.get(n.length - 1), new Nibble(0x0)))
     }
     
     result

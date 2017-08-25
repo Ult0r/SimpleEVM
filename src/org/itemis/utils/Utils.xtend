@@ -13,6 +13,7 @@ package org.itemis.utils
 import org.itemis.types.UnsignedByte
 import org.itemis.types.EVMWord
 import java.io.Serializable
+import org.itemis.types.Nibble
 
 //uses implementations in static utils
 class Utils implements Serializable {
@@ -21,6 +22,10 @@ class Utils implements Serializable {
   // etc.
   def UnsignedByte getNthByteOfInteger(Integer i, int n) {
     StaticUtils.getNthByteOfInteger(i, n)
+  }
+
+  def String toHex(Nibble n) {
+    StaticUtils.toHex(n)
   }
 
   def String toHex(UnsignedByte b) {
@@ -37,6 +42,14 @@ class Utils implements Serializable {
   
   def byte[] fromHex(String s) {
     StaticUtils.fromHex(s)
+  }
+  
+  def Nibble[] toNibbles(UnsignedByte[] b) {
+    StaticUtils.toNibbles(b)
+  }
+  
+  def UnsignedByte[] toUnsignedBytes(Nibble[] n) {
+    StaticUtils.toUnsignedBytes(n)
   }
   
   def EVMWord keccak256(String input) {

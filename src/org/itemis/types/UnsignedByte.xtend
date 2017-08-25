@@ -31,6 +31,10 @@ class UnsignedByte extends Number implements Comparable<UnsignedByte> {
 		setValue(i)
 	}
 	
+	new(Nibble high, Nibble low) {
+	  this(high.value << 4 + low.value)
+	}
+	
 	override byteValue() {
 		value.byteValue
 	}
@@ -108,12 +112,12 @@ class UnsignedByte extends Number implements Comparable<UnsignedByte> {
 		}
 	}
 	
-	def UnsignedByte getHigherNibble() {
-		new UnsignedByte(value >> 4)
+	def Nibble getHigherNibble() {
+		new Nibble(value >> 4)
 	}
 	
-	def UnsignedByte getLowerNibble() {
-		new UnsignedByte(value.bitwiseAnd(0x0F))
+	def Nibble getLowerNibble() {
+		new Nibble(value.bitwiseAnd(0x0F))
 	}
 	
 	//true = 1
