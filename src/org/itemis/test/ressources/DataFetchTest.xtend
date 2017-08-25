@@ -27,11 +27,4 @@ class DataFetchTest {
   def void testInvalidPostData() {
     fetchData("This is not a valid request")
   }
-  
-  @Test
-  def void testHashMapSerialize() {
-    val ws = new WorldState("state", "state")
-    ws.initGenesisState
-    ws.close()
-  }
 }
