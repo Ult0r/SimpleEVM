@@ -16,10 +16,10 @@ class WorldState {
 
   private Connection conn
 
-  new(String path, String name) {
+  new(String name) {
     LoggerController.logInfo(WorldState, "new(String)", "accessing state at " + name)
 
-    val _path = "ressources" + File.separator + path
+    val _path = "ressources" + File.separator + name
     _path.ensureDirExists
 
     conn = DriverManager.getConnection(
@@ -29,7 +29,7 @@ class WorldState {
     )
   }
 
-  private def initTables() {
+  def initTables() {
     try {
       val st = conn.createStatement
       st.addBatch(
@@ -46,7 +46,7 @@ class WorldState {
     }
   }
   
-  private def initAccount(EVMWord address, EVMWord balance) {
+  def initAccount(EVMWord address, EVMWord balance) {
     try {
       val query = String.format(
         "INSERT INTO accounts VALUES ('%s', '%s', '%s', '%s', '%s', %s)",
@@ -64,9 +64,7 @@ class WorldState {
     }
   }
 
-  def initGenesisState() {
-    initTables
-    
+  def loadGenesisState() {
     for (e: MainnetAllocData.mainnetAllocDataMap.entrySet.toList) {
       initAccount(e.key, e.value)
     }
