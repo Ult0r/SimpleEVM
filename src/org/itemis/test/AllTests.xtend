@@ -10,10 +10,10 @@
 
 package org.itemis.test;
 
-import org.itemis.test.evm.types.EVMWordTest;
-import org.itemis.test.evm.types.UnsignedByteTest;
-import org.itemis.test.evm.utils.EVMWordIndexedListTest;
-import org.itemis.test.evm.utils.UtilsTest;
+import org.itemis.test.types.EVMWordTest;
+import org.itemis.test.types.UnsignedByteTest;
+import org.itemis.test.types.EVMWordIndexedListTest;
+import org.itemis.test.utils.UtilsTest;
 import org.itemis.test.ressources.AllocTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -21,6 +21,8 @@ import org.junit.runners.Suite.SuiteClasses;
 import org.itemis.test.blockchain.BlockTest
 import org.itemis.test.ressources.JsonRPCWrapperTest
 import org.itemis.test.ressources.DataFetchTest
+import org.itemis.test.evm.utils.EVMUtilsTest
+import org.itemis.test.blockchain.WorldStateTest
 
 @RunWith(Suite)
 @SuiteClasses(
@@ -31,7 +33,9 @@ import org.itemis.test.ressources.DataFetchTest
   AllocTest,
   JsonRPCWrapperTest,
   BlockTest,
-  DataFetchTest
+  DataFetchTest,
+  EVMUtilsTest,
+  WorldStateTest
 )
 public class AllTests {
 

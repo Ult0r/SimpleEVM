@@ -8,7 +8,7 @@
 * Lars Reimers for itemis AG
 *******************************************************************************/
 
-package org.itemis.test.evm.utils
+package org.itemis.test.types
 
 import org.itemis.types.EVMWordIndexedList
 import org.junit.Test
