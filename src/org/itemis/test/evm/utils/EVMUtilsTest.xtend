@@ -5,7 +5,6 @@ import org.itemis.types.UnsignedByte
 import org.junit.Assert
 import java.util.List
 import org.itemis.evm.utils.EVMUtils
-import org.itemis.utils.Utils
 
 class EVMUtilsTest {
   extension EVMUtils e = new EVMUtils
