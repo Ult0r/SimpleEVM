@@ -244,33 +244,33 @@ class JsonRPCWrapper {
     fetchResult.get("transactions").asJsonArray.toList.map[EVMWord.fromString(it.asString)]
   }
 
-  def Block eth_getBlockByNumber(EVMWord blockNumber) {
-    val params = String.format('["%s", true]', blockNumber.toString)
+  def Block eth_getBlockByNumber(EVMWord blockNumber, String tag) {
+    val params = String.format('["%s", true]', identifyBlock(blockNumber, tag).toString)
     val fetchResult = wrapDataFetch("eth_getBlockByNumber", params).asJsonObject.get("result").asJsonObject
 
     new Block(fetchResult)
   }
 
-  def EVMWord eth_getBlockByNumber_hash(EVMWord blockNumber) {
-    val params = String.format('["%s", false]', blockNumber.toString)
+  def EVMWord eth_getBlockByNumber_hash(EVMWord blockNumber, String tag) {
+    val params = String.format('["%s", false]', identifyBlock(blockNumber, tag).toString)
     val fetchResult = wrapDataFetch("eth_getBlockByNumber", params).asJsonObject.get("result").asJsonObject
     EVMWord.fromString(fetchResult.get("hash").asString)
   }
 
-  def EVMWord eth_getBlockByNumber_totalDifficulty(EVMWord blockNumber) {
-    val params = String.format('["%s", false]', blockNumber.toString)
+  def EVMWord eth_getBlockByNumber_totalDifficulty(EVMWord blockNumber, String tag) {
+    val params = String.format('["%s", false]', identifyBlock(blockNumber, tag).toString)
     val fetchResult = wrapDataFetch("eth_getBlockByNumber", params).asJsonObject.get("result").asJsonObject
     EVMWord.fromString(fetchResult.get("totalDifficulty").asString)
   }
 
-  def EVMWord eth_getBlockByNumber_size(EVMWord blockNumber) {
-    val params = String.format('["%s", false]', blockNumber.toString)
+  def EVMWord eth_getBlockByNumber_size(EVMWord blockNumber, String tag) {
+    val params = String.format('["%s", false]', identifyBlock(blockNumber, tag).toString)
     val fetchResult = wrapDataFetch("eth_getBlockByNumber", params).asJsonObject.get("result").asJsonObject
     EVMWord.fromString(fetchResult.get("size").asString)
   }
 
-  def List<EVMWord> eth_getBlockByNumber_transactionHashes(EVMWord blockNumber) {
-    val params = String.format('["%s", false]', blockNumber.toString)
+  def List<EVMWord> eth_getBlockByNumber_transactionHashes(EVMWord blockNumber, String tag) {
+    val params = String.format('["%s", false]', identifyBlock(blockNumber, tag).toString)
     val fetchResult = wrapDataFetch("eth_getBlockByNumber", params).asJsonObject.get("result").asJsonObject
     fetchResult.get("transactions").asJsonArray.toList.map[EVMWord.fromString(it.asString)]
   }

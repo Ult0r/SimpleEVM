@@ -176,7 +176,7 @@ class JsonRPCWrapperTest {
     val EVMWord block = new EVMWord(4000000)
     
     val EVMWord result = EVMWord.fromString("0x000001f568875f378bf6d170b790967fe429c81a")
-
+    
     Assert.assertEquals(eth_getStorageAt(address, offset, block, null), result)
   }
   
@@ -303,7 +303,7 @@ class JsonRPCWrapperTest {
     val EVMWord blockNumber = new EVMWord(4000000)
     val EVMWord parentHash = EVMWord.fromString("0x9b3c1d182975fdaa5797879cbc45d6b00a84fb3b13980a107645b2491bcca899")
     
-    Assert.assertEquals(eth_getBlockByNumber(blockNumber).parentHash, parentHash)
+    Assert.assertEquals(eth_getBlockByNumber(blockNumber, null).parentHash, parentHash)
   }
   
   @Test
@@ -311,7 +311,7 @@ class JsonRPCWrapperTest {
     val EVMWord blockNumber = new EVMWord(4000000)
     val EVMWord blockHash = EVMWord.fromString("0xb8a3f7f5cfc1748f91a684f20fe89031202cbadcd15078c49b85ec2a57f43853")
     
-    Assert.assertEquals(eth_getBlockByNumber_hash(blockNumber), blockHash)    
+    Assert.assertEquals(eth_getBlockByNumber_hash(blockNumber, null), blockHash)    
   }
   
   @Test
@@ -319,7 +319,7 @@ class JsonRPCWrapperTest {
     val EVMWord blockNumber = new EVMWord(4000000)
     val EVMWord totalDifficulty = EVMWord.fromString("0x196d077461e5dbab12")
     
-    Assert.assertEquals(eth_getBlockByNumber_totalDifficulty(blockNumber), totalDifficulty)    
+    Assert.assertEquals(eth_getBlockByNumber_totalDifficulty(blockNumber, null), totalDifficulty)    
   }
   
   @Test
@@ -327,14 +327,14 @@ class JsonRPCWrapperTest {
     val EVMWord blockNumber = new EVMWord(4000000)
     val EVMWord size = new EVMWord(16263)
     
-    Assert.assertEquals(eth_getBlockByNumber_size(blockNumber), size)    
+    Assert.assertEquals(eth_getBlockByNumber_size(blockNumber, null), size)    
   }
   
   @Test
   def void testEth_getBlockByNumber_transactionHashes() {
     val EVMWord blockNumber = new EVMWord(4000000)
     
-    Assert.assertEquals(eth_getBlockByNumber_transactionHashes(blockNumber).length, 69)    
+    Assert.assertEquals(eth_getBlockByNumber_transactionHashes(blockNumber, null).length, 69)    
   }
   
   @Test
