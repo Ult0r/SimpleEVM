@@ -43,7 +43,7 @@ class JsonRPCWrapper {
   // HELPER
   def String identifyBlock(EVMWord blockNumber, String tag) {
     if (blockNumber !== null) {
-      blockNumber.toTrimmedString
+      blockNumber.toGoTrimmedString
     } else if (tag !== null) {
       if (tag != "latest" && tag != "earliest" && tag != "pending") {
         throw new IllegalArgumentException(tag + " is not a valid block identifier")
@@ -141,7 +141,9 @@ class JsonRPCWrapper {
 
   def EVMWord eth_getBalance(EVMWord address, EVMWord blockNumber, String tag) {
     val params = String.format('["%s","%s"]', address.toAddressString, identifyBlock(blockNumber, tag))
-    EVMWord.fromString(wrapDataFetch("eth_getBalance", params).asJsonObject.get("result").asString)
+    val result = wrapDataFetch("eth_getBalance", params).asJsonObject.get("result").asString.fromHex.reverse
+//    EVMWord.fromString(wrapDataFetch("eth_getBalance", params).asJsonObject.get("result").asString)
+    new EVMWord(result, true)
   }
 
   def EVMWord eth_getStorageAt(EVMWord address, EVMWord offset, EVMWord blockNumber, String tag) {
