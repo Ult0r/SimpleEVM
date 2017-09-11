@@ -28,8 +28,8 @@ class WorldState {
   new(String name) {
     LoggerController.logInfo(WorldState, "new(String)", "accessing state at " + name)
 
-    val _path = "ressources" + File.separator + name
-    _path.ensureDirExists
+    val path = "db" + File.separator + name
+    path.ensureDirExists
 
     conn = DriverManager.getConnection(
       "jdbc:hsqldb:file:" + _path + File.separator + name,
