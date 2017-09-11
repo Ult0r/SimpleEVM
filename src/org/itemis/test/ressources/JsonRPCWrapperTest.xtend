@@ -303,7 +303,7 @@ class JsonRPCWrapperTest {
     val EVMWord blockNumber = new EVMWord(4000000)
     val EVMWord parentHash = EVMWord.fromString("0x9b3c1d182975fdaa5797879cbc45d6b00a84fb3b13980a107645b2491bcca899")
     
-    Assert.assertEquals(eth_getBlockByNumber(blockNumber, null).parentHash, parentHash)
+    Assert.assertEquals(eth_getBlockByNumber(blockNumber, null).parentHash, parentHash)  
   }
   
   @Test
