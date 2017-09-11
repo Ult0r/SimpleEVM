@@ -17,6 +17,7 @@ import org.itemis.utils.logging.LoggerController
 import org.itemis.types.UnsignedByte
 import org.itemis.ressources.MainnetAllocData
 import java.io.File
+import org.itemis.evm.utils.MerklePatriciaTrie
 
 class WorldState {
   extension Utils u = new Utils
@@ -32,7 +33,7 @@ class WorldState {
     path.ensureDirExists
 
     conn = DriverManager.getConnection(
-      "jdbc:hsqldb:file:" + _path + File.separator + name,
+      "jdbc:hsqldb:file:" + path + File.separator + name,
       "SA",
       ""
     )
@@ -62,8 +63,8 @@ class WorldState {
         address.toHexString.substring(2),
         EMPTY_EVMWORD,
         balance.toHexString.substring(2),
-        EMPTY_EVMWORD, //TODO: storageRoot
-        EMPTY_EVMWORD, //TODO: codeHash
+        MerklePatriciaTrie.Null.hashCode,
+        keccak256(""),
         "null"
       )
       conn.prepareStatement(query).execute
@@ -74,7 +75,9 @@ class WorldState {
   }
 
   def loadGenesisState() {
-    for (e: MainnetAllocData.mainnetAllocDataMap.entrySet.toList) {
+    val iter = MainnetAllocData.mainnetAllocDataQueryIterator
+    while (iter.hasNext) {
+      val e = iter.next
       initAccount(e.key, e.value)
     }
   }
