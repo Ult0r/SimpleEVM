@@ -12,6 +12,7 @@ package org.itemis.evm.utils
 import org.itemis.types.UnsignedByte
 import java.util.List
 import org.itemis.types.Node
+import java.util.function.Predicate
 
 class EVMUtils {
   def UnsignedByte[] rlp(Object data) {
@@ -26,8 +27,20 @@ class EVMUtils {
   def UnsignedByte[] rlp(List<UnsignedByte[]> data) {
     StaticEVMUtils.rlp(data)
   }
+  
+  def UnsignedByte[] rlp(List<UnsignedByte[]> data, boolean resolveChildren) {
+    StaticEVMUtils.rlp(data, resolveChildren)
+  }
+  
+  def UnsignedByte[] rlp(List<UnsignedByte[]> data, Predicate<UnsignedByte[]> resolveChildren) {
+    StaticEVMUtils.rlp(data, resolveChildren)
+  }
 
   def Node<UnsignedByte[]> reverseRLP(UnsignedByte[] data) {
     StaticEVMUtils.reverseRLP(data)
+  }
+  
+  def boolean isValidRLP(UnsignedByte[] data) {
+    StaticEVMUtils.isValidRLP(data)
   }
 }

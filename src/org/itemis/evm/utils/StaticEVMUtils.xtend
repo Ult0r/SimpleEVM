@@ -15,6 +15,7 @@ import java.util.Arrays
 import org.itemis.utils.StaticUtils
 import org.itemis.types.Node
 import org.itemis.types.EVMWord
+import java.util.function.Predicate
 
 class StaticEVMUtils {
   def static UnsignedByte[] rlp(Object data) {
@@ -38,7 +39,10 @@ class StaticEVMUtils {
       result.add(0, new UnsignedByte(data.length + 0x80))
       result
     } else {
-      var result = Arrays.copyOf(data, data.length)
+      var List<UnsignedByte> result = newArrayList
+      for (e: data) {
+        result.add(e)
+      }
       result.add(0, StaticUtils.getNthByteOfInteger(data.length, 0))
 
       var size = 1
@@ -46,37 +50,49 @@ class StaticEVMUtils {
         result.add(0, StaticUtils.getNthByteOfInteger(data.length, size))
         size++
       }
-      result.add(0, new UnsignedByte(size - 1 + 0xB7))
+      result.add(0, new UnsignedByte(Math.max(1, size - 1) + 0xB7))
       result
     }
   }
-
+  
   def static UnsignedByte[] rlp(List<UnsignedByte[]> data) {
+    rlp(data, true)
+  }
+  
+  def static UnsignedByte[] rlp(List<UnsignedByte[]> data, boolean resolveChildren) {
+    rlp(data, [resolveChildren])
+  }
+
+  def static UnsignedByte[] rlp(List<UnsignedByte[]> data, Predicate<UnsignedByte[]> resolveChildren) {
     var concatedSerialisations = newArrayList
     for (UnsignedByte[] elem : data) {
-      val UnsignedByte[] _rlp = elem.rlp
-      concatedSerialisations.addAll(_rlp)
+      if (resolveChildren.test(elem)) {
+        concatedSerialisations.addAll(elem.rlp)
+      } else {
+        concatedSerialisations.addAll(elem)
+      }
     }
+    
     var result = newArrayList()
     result.addAll(concatedSerialisations)
-
+  
     if (concatedSerialisations.length < 56) {
       result.add(0, new UnsignedByte(concatedSerialisations.length + 0xC0))
-      result
     } else {
-      result.add(0, StaticUtils.getNthByteOfInteger(concatedSerialisations.length, 0))
-
-      var size = 1
-      while (concatedSerialisations.length >= (1 << (8 * size))) {
-        result.add(0, StaticUtils.getNthByteOfInteger(concatedSerialisations.length, size))
+      var size = 0
+      var sizeReminder = concatedSerialisations.length
+      while (sizeReminder != 0) {
+        result.add(0, new UnsignedByte(sizeReminder % 256))
+        sizeReminder /= 256
         size++
       }
-      result.add(0, new UnsignedByte(size - 1 + 0xF7))
-      result
+      result.add(0, new UnsignedByte(size + 0xF7))
     }
+    result
   }
 
   def private static List<Node<UnsignedByte[]>> _reverseRLP(UnsignedByte[] data) {
+//    println("_reverseRLP: " + data.size)
     var List<Node<UnsignedByte[]>> result = newArrayList
     var usedLength = 0
 
@@ -85,7 +101,7 @@ class StaticEVMUtils {
     } else if (data.length == 0) {
       // do nothing
     } else {
-      var _data = Arrays.copyOf(data, data.length)
+      var _data = data
     
       while (_data.length != 0) {
         val head = _data.get(0).intValue
@@ -95,7 +111,8 @@ class StaticEVMUtils {
             usedLength = 1
           }
           case head < 0x80: {
-            result.add(new Node(#[_head]))
+            val node = new Node(newArrayList(_head) as UnsignedByte[])
+            result.add(node)
             usedLength = 1
           }
           case head <= 0xB7: {
@@ -105,27 +122,27 @@ class StaticEVMUtils {
           }
           case head < 0xC0: {
             val sizeLength = head - 0xB7
-            val dataLength = new EVMWord(Arrays.copyOfRange(_data, 1, sizeLength + 1), false).toUnsignedInt().intValue
+            val dataLength = new EVMWord(_data.subList(1, sizeLength + 1), false).toUnsignedInt().intValue
             result.add(new Node(Arrays.copyOfRange(_data, 1 + sizeLength, 1 + sizeLength + dataLength)))
             usedLength = 1 + sizeLength + dataLength
           }
           case head <= 0xF7: {
             val dataLength = head - 0xC0
             var node = new Node()
-            node.children.addAll(_reverseRLP(Arrays.copyOfRange(_data, 1, dataLength + 1)))
+            node.children.addAll(_reverseRLP(_data.subList(1, dataLength + 1)))
             result.add(node)
             usedLength = 1 + dataLength
           }
           case head > 0xF7: {
             val sizeLength = head - 0xF7
-            val dataLength = new EVMWord(Arrays.copyOfRange(_data, 1, sizeLength + 1), false).toUnsignedInt().intValue
+            val dataLength = new EVMWord(_data.subList(1, sizeLength + 1), false).toUnsignedInt().intValue
             var node = new Node()
-            node.children.addAll(_reverseRLP(Arrays.copyOfRange(_data, 1 + sizeLength, 1 + sizeLength + dataLength)))
+            node.children.addAll(_reverseRLP(_data.subList(1 + sizeLength, 1 + sizeLength + dataLength)))
             result.add(node)
             usedLength = 1 + sizeLength + dataLength
           }
         }
-        _data = Arrays.copyOfRange(_data, usedLength, _data.length)
+        _data = _data.subList(usedLength, _data.length)
       }
     }
 
@@ -133,6 +150,7 @@ class StaticEVMUtils {
   }
 
   def static Node<UnsignedByte[]> reverseRLP(UnsignedByte[] data) {
+//    println("reverseRLP")
     if (data.length == 0) {
       throw new IllegalArgumentException("invalid rlp data")
     }
@@ -144,6 +162,19 @@ class StaticEVMUtils {
       var node = new Node()
       node.children.addAll(result)
       node
+    }
+  }
+  
+  def static boolean isValidRLP(UnsignedByte[] data) {
+    try {
+      if (data.get(0).intValue < 0x80 && data.size > 1) {
+        false
+      } else {
+        reverseRLP(data)
+        true 
+      }
+    } catch (Exception e) {
+      false
     }
   }
 }
