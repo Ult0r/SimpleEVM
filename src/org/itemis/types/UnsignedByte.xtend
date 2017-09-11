@@ -32,11 +32,11 @@ class UnsignedByte extends Number implements Comparable<UnsignedByte> {
 	}
 	
 	new(Nibble high, Nibble low) {
-	  this(high.value << 4 + low.value)
+    this((high.value << 4) + low.value)
 	}
 	
 	override byteValue() {
-		value.byteValue
+    value.byteValue
 	}
 	
 	override compareTo(UnsignedByte other) {
