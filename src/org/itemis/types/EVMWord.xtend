@@ -71,22 +71,7 @@ class EVMWord implements Serializable {
       data = s.substring(2)
     }
     
-    var bytes = StaticUtils.fromHex(data).map[intValue]
-    val length = bytes.size
-    
-    var unsignedByteArray = newArrayList
-    var i = 0
-    while (i < length) {
-      if (i == (length - 1)) {
-        unsignedByteArray.add(0, new UnsignedByte(bytes.get(0)))
-      } else {
-        unsignedByteArray.add(0, new UnsignedByte((bytes.get(length - 1 - i - 1) << 4) + bytes.get(length - 1 - i)))
-      }
-      
-      i += 2
-    }
-    
-    new EVMWord(unsignedByteArray, false)
+    new EVMWord(StaticUtils.fromHex(data), true)
 	}
 
 	// n must be between (including) 0 and 31
@@ -149,15 +134,27 @@ class EVMWord implements Serializable {
 
 	def String toHexString() {
 		var result = "0x"
-		for (i : 31 .. 0) {
+		for (i : 0 .. 31) {
 			result += this.getNthField(i).toHexString().substring(2)
 		}
 		result
 	}
+	
+	def String toHexValueString() {
+    var result = ""
+    for (i : 31 .. 0) {
+      result += this.getNthField(i).toHexString().substring(2) 
+    }
+    while (result.startsWith("0")) {
+      result = result.substring(1)
+    }
+    
+    "0x" + result
+	}
 
 	def String toBitString() {
 		var result = ""
-		for (i : 31 .. 0) {
+		for (i : 0 .. 31) {
 			result += this.getNthField(i).toBitString()
 		}
 		result
@@ -165,7 +162,7 @@ class EVMWord implements Serializable {
 	
 	def String toAddressString() {
     var result = "0x"
-    for (i : 19 .. 0) {
+    for (i : 0 .. 19) {
       result += this.getNthField(i).toHexString().substring(2)
     }
     result
@@ -178,7 +175,7 @@ class EVMWord implements Serializable {
       j--
     }
     
-    for (i : j .. 0) {
+    for (i : 0 .. j) {
       result += this.getNthField(i).toHexString().substring(2)
     }
     
