@@ -55,7 +55,8 @@ abstract class StaticUtils {
     var result = new StringBuilder("0x")
     
     for (c: array) {
-      result.append(c.toHex)
+      result.append(c.higherNibble.toHex)
+      result.append(c.lowerNibble.toHex)
     }
     
     result.toString
@@ -96,12 +97,17 @@ abstract class StaticUtils {
     }
     
     var result = newArrayList
+    var i = 0
     
-    for (c: data.bytes) {
-      result.add(fromHex(c as char))
+    if (data.length % 2 == 1) {
+      result.add(new UnsignedByte(new Nibble(0), new Nibble(data.charAt(0).fromHex)))
+      i++
+    }
+    for (; i < data.length; i += 2) {
+      result.add(new UnsignedByte(new Nibble(data.charAt(i).fromHex), new Nibble(data.charAt(i + 1).fromHex)))
     }
     
-    result
+    result.map[byteValue]
   }
   
   def static Nibble[] toNibbles(UnsignedByte[] b) {
@@ -135,7 +141,7 @@ abstract class StaticUtils {
 
   def static EVMWord keccak256(byte[] input) {
     val byte[] digest = new Keccak.Digest256().digest(input)
-    new EVMWord(digest, false)
+    new EVMWord(digest, true)
   }
   
   def static String rightPad(String input, int length) {
