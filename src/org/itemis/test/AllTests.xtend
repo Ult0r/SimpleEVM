@@ -27,17 +27,21 @@ import org.itemis.test.blockchain.WorldStateTest
 
 @RunWith(Suite)
 @SuiteClasses(
-  UnsignedByteTest,
-  UtilsTest,
-  EVMWordTest,
-  EVMWordIndexedListTest,
-  AllocTest,
-  JsonRPCWrapperTest,
   BlockTest,
-  DataFetchTest,
+  WorldStateTest,
+  
   EVMUtilsTest,
   MerklePatriciaTrieTest,
-  WorldStateTest
+  
+  AllocTest,
+  DataFetchTest,
+  JsonRPCWrapperTest,
+  
+  EVMWordIndexedListTest,
+  EVMWordTest,
+  UnsignedByteTest,
+  
+  UtilsTest
 )
 public class AllTests {
 
