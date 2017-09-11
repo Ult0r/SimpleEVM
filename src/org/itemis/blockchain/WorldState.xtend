@@ -1,12 +1,12 @@
 /*******************************************************************************
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-* 
-* Contributors:
-* Lars Reimers for itemis AG
-*******************************************************************************/
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ * Lars Reimers for itemis AG
+ *******************************************************************************/
 package org.itemis.blockchain
 
 import org.itemis.types.EVMWord
@@ -21,7 +21,7 @@ import org.itemis.evm.utils.MerklePatriciaTrie
 
 class WorldState {
   extension Utils u = new Utils
-  
+
   private static String EMPTY_EVMWORD = new EVMWord(0).toHexString.substring(2)
 
   private Connection conn
@@ -50,12 +50,12 @@ class WorldState {
       )
       st.executeBatch
       st.close
-    } catch (Exception e) {
+    } catch(Exception e) {
       LoggerController.logSevere(WorldState, "initTables", "failed to initialize")
       throw e
     }
   }
-  
+
   def initAccount(EVMWord address, EVMWord balance) {
     try {
       val query = String.format(
@@ -68,7 +68,7 @@ class WorldState {
         "null"
       )
       conn.prepareStatement(query).execute
-    } catch (Exception e) {
+    } catch(Exception e) {
       LoggerController.logSevere(WorldState, "initAccount", "failed to initialize " + address.toHexString)
       throw e
     }
@@ -76,33 +76,28 @@ class WorldState {
 
   def loadGenesisState() {
     val iter = MainnetAllocData.mainnetAllocDataQueryIterator
-    while (iter.hasNext) {
+    while(iter.hasNext) {
       val e = iter.next
       initAccount(e.key, e.value)
     }
   }
-  
+
   def close() {
     conn.close
   }
 
   def Account getAccountAt(EVMWord address) {
-    
   }
-  
+
   def UnsignedByte[] getCodeAt(EVMWord address) {
-    
   }
-  
+
   def EVMWord getStorageAt(EVMWord address, EVMWord offset) {
-    
   }
 
   def setAccountAt(EVMWord address, Account acc) {
-    
   }
 
   def setCodeAt(EVMWord address, UnsignedByte[] acc) {
-    
   }
 }

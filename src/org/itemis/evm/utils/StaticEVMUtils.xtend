@@ -1,12 +1,12 @@
 /*******************************************************************************
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-* 
-* Contributors:
-* Lars Reimers for itemis AG
-*******************************************************************************/
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ * Lars Reimers for itemis AG
+ *******************************************************************************/
 package org.itemis.evm.utils
 
 import org.itemis.types.UnsignedByte
@@ -29,24 +29,24 @@ class StaticEVMUtils {
 
   // recursive length prefix
   def static UnsignedByte[] rlp(UnsignedByte[] data) {
-    if (data === null) {
+    if(data === null) {
       #[new UnsignedByte(0x80)]
-    } else if (data.length == 1 && data.get(0).intValue < 0x80) {
+    } else if(data.length == 1 && data.get(0).intValue < 0x80) {
       #[data.get(0).copy]
-    } else if (data.length < 56) {
+    } else if(data.length < 56) {
       var List<UnsignedByte> result = newArrayList
       result.addAll(Arrays.copyOf(data, data.length))
       result.add(0, new UnsignedByte(data.length + 0x80))
       result
     } else {
       var List<UnsignedByte> result = newArrayList
-      for (e: data) {
+      for (e : data) {
         result.add(e)
       }
       result.add(0, StaticUtils.getNthByteOfInteger(data.length, 0))
 
       var size = 1
-      while (data.length >= (1 << (8 * size))) {
+      while(data.length >= (1 << (8 * size))) {
         result.add(0, StaticUtils.getNthByteOfInteger(data.length, size))
         size++
       }
@@ -54,11 +54,11 @@ class StaticEVMUtils {
       result
     }
   }
-  
+
   def static UnsignedByte[] rlp(List<UnsignedByte[]> data) {
     rlp(data, true)
   }
-  
+
   def static UnsignedByte[] rlp(List<UnsignedByte[]> data, boolean resolveChildren) {
     rlp(data, [resolveChildren])
   }
@@ -66,22 +66,22 @@ class StaticEVMUtils {
   def static UnsignedByte[] rlp(List<UnsignedByte[]> data, Predicate<UnsignedByte[]> resolveChildren) {
     var concatedSerialisations = newArrayList
     for (UnsignedByte[] elem : data) {
-      if (resolveChildren.test(elem)) {
+      if(resolveChildren.test(elem)) {
         concatedSerialisations.addAll(elem.rlp)
       } else {
         concatedSerialisations.addAll(elem)
       }
     }
-    
+
     var result = newArrayList()
     result.addAll(concatedSerialisations)
-  
-    if (concatedSerialisations.length < 56) {
+
+    if(concatedSerialisations.length < 56) {
       result.add(0, new UnsignedByte(concatedSerialisations.length + 0xC0))
     } else {
       var size = 0
       var sizeReminder = concatedSerialisations.length
-      while (sizeReminder != 0) {
+      while(sizeReminder != 0) {
         result.add(0, new UnsignedByte(sizeReminder % 256))
         sizeReminder /= 256
         size++
@@ -96,14 +96,14 @@ class StaticEVMUtils {
     var List<Node<UnsignedByte[]>> result = newArrayList
     var usedLength = 0
 
-    if (data === null) { // invalid
+    if(data === null) { // invalid
       throw new IllegalArgumentException("invalid rlp data")
-    } else if (data.length == 0) {
+    } else if(data.length == 0) {
       // do nothing
     } else {
       var _data = data
-    
-      while (_data.length != 0) {
+
+      while(_data.length != 0) {
         val head = _data.get(0).intValue
         val _head = new UnsignedByte(head)
         switch (head) {
@@ -151,12 +151,12 @@ class StaticEVMUtils {
 
   def static Node<UnsignedByte[]> reverseRLP(UnsignedByte[] data) {
 //    println("reverseRLP")
-    if (data.length == 0) {
+    if(data.length == 0) {
       throw new IllegalArgumentException("invalid rlp data")
     }
 
     var result = _reverseRLP(data)
-    if (result.length == 1) {
+    if(result.length == 1) {
       result.get(0)
     } else {
       var node = new Node()
@@ -164,16 +164,16 @@ class StaticEVMUtils {
       node
     }
   }
-  
+
   def static boolean isValidRLP(UnsignedByte[] data) {
     try {
-      if (data.get(0).intValue < 0x80 && data.size > 1) {
+      if(data.get(0).intValue < 0x80 && data.size > 1) {
         false
       } else {
         reverseRLP(data)
-        true 
+        true
       }
-    } catch (Exception e) {
+    } catch(Exception e) {
       false
     }
   }

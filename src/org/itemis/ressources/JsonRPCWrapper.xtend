@@ -1,12 +1,12 @@
 /*******************************************************************************
-* All rights reserved. This program and the accompanying materials
-* are made available under the terms of the Eclipse Public License v1.0
-* which accompanies this distribution, and is available at
-* http://www.eclipse.org/legal/epl-v10.html
-* 
-* Contributors:
-* Lars Reimers for itemis AG
-*******************************************************************************/
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ * Lars Reimers for itemis AG
+ *******************************************************************************/
 package org.itemis.ressources
 
 import com.google.gson.JsonElement
@@ -36,16 +36,17 @@ class JsonRPCWrapper {
   }
 
   def private JsonElement wrapDataFetch(int id, String method, String params) {
-    val postData = String.format('{"jsonrpc":"%s","method":"%s","params":%s,"id":%d}', JSONRPC_VERSION, method, params, id)
+    val postData = String.format('{"jsonrpc":"%s","method":"%s","params":%s,"id":%d}', JSONRPC_VERSION, method, params,
+      id)
     fetchData(postData)
   }
 
   // HELPER
   def String identifyBlock(EVMWord blockNumber, String tag) {
-    if (blockNumber !== null) {
+    if(blockNumber !== null) {
       blockNumber.toGoTrimmedString
-    } else if (tag !== null) {
-      if (tag != "latest" && tag != "earliest" && tag != "pending") {
+    } else if(tag !== null) {
+      if(tag != "latest" && tag != "earliest" && tag != "pending") {
         throw new IllegalArgumentException(tag + " is not a valid block identifier")
       } else {
         tag
@@ -90,7 +91,7 @@ class JsonRPCWrapper {
     try {
       sync.asBoolean
       Optional.empty
-    } catch (Exception e) {
+    } catch(Exception e) {
       Optional.of(EVMWord.fromString(sync.asJsonObject.get("startingBlock").asString))
     }
   }
@@ -100,7 +101,7 @@ class JsonRPCWrapper {
     try {
       sync.asBoolean
       Optional.empty
-    } catch (Exception e) {
+    } catch(Exception e) {
       Optional.of(EVMWord.fromString(sync.asJsonObject.get("currentBlock").asString))
     }
   }
@@ -110,7 +111,7 @@ class JsonRPCWrapper {
     try {
       sync.asBoolean
       Optional.empty
-    } catch (Exception e) {
+    } catch(Exception e) {
       Optional.of(EVMWord.fromString(sync.asJsonObject.get("highestBlock").asString))
     }
   }
@@ -147,7 +148,8 @@ class JsonRPCWrapper {
   }
 
   def EVMWord eth_getStorageAt(EVMWord address, EVMWord offset, EVMWord blockNumber, String tag) {
-    val params = String.format('["%s","%s","%s"]', address.toAddressString, offset.toTrimmedString, identifyBlock(blockNumber, tag))
+    val params = String.format('["%s","%s","%s"]', address.toAddressString, offset.toTrimmedString,
+      identifyBlock(blockNumber, tag))
     EVMWord.fromString(wrapDataFetch("eth_getStorageAt", params).asJsonObject.get("result").asString)
   }
 
@@ -163,7 +165,8 @@ class JsonRPCWrapper {
 
   def EVMWord eth_getBlockTransactionCountByNumber(EVMWord blockNumber, String tag) {
     val params = String.format('["%s"]', identifyBlock(blockNumber, tag))
-    EVMWord.fromString(wrapDataFetch("eth_getBlockTransactionCountByNumber", params).asJsonObject.get("result").asString)
+    EVMWord.fromString(
+      wrapDataFetch("eth_getBlockTransactionCountByNumber", params).asJsonObject.get("result").asString)
   }
 
   def EVMWord eth_getUncleCountByBlockHash(EVMWord blockHash) {
@@ -185,7 +188,8 @@ class JsonRPCWrapper {
     throw new UnsupportedOperationException("eth_sign: 405 - method not allow")
   }
 
-  def EVMWord eth_sendTransaction(EVMWord from, EVMWord to, EVMWord gas, EVMWord gasPrice, EVMWord value, UnsignedByte[] data) {
+  def EVMWord eth_sendTransaction(EVMWord from, EVMWord to, EVMWord gas, EVMWord gasPrice, EVMWord value,
+    UnsignedByte[] data) {
     throw new UnsupportedOperationException("eth_sendTransaction: 405 - method not allow")
   }
 
@@ -193,8 +197,8 @@ class JsonRPCWrapper {
     throw new UnsupportedOperationException("eth_sendRawTransaction: 405 - method not allow")
   }
 
-  def UnsignedByte[] eth_call(EVMWord from, EVMWord to, EVMWord gas, EVMWord gasPrice, EVMWord value, UnsignedByte[] data, EVMWord blockNumber,
-    String tag) {
+  def UnsignedByte[] eth_call(EVMWord from, EVMWord to, EVMWord gas, EVMWord gasPrice, EVMWord value,
+    UnsignedByte[] data, EVMWord blockNumber, String tag) {
     val params = String.format(
       '[{"from":"%s","to":"%s","gas":"%s","gasPrice":"%s","value":"%s","data":"%s"},"%s"]',
       from.toAddressString,
@@ -208,7 +212,8 @@ class JsonRPCWrapper {
     wrapDataFetch("eth_call", params).asJsonObject.get("result").asString.fromHex.map[new UnsignedByte(it)]
   }
 
-  def EVMWord eth_estimateGas(EVMWord from, EVMWord to, EVMWord gas, EVMWord gasPrice, EVMWord value, UnsignedByte[] data) {
+  def EVMWord eth_estimateGas(EVMWord from, EVMWord to, EVMWord gas, EVMWord gasPrice, EVMWord value,
+    UnsignedByte[] data) {
     val params = String.format(
       '[{"from":"%s","to":"%s","gas":"%s","gasPrice":"%s","value":"%s","data":"%s"}]',
       from.toAddressString,
@@ -276,41 +281,43 @@ class JsonRPCWrapper {
     val fetchResult = wrapDataFetch("eth_getBlockByNumber", params).asJsonObject.get("result").asJsonObject
     fetchResult.get("transactions").asJsonArray.toList.map[EVMWord.fromString(it.asString)]
   }
-  
+
   def Transaction eth_getTransactionByHash(EVMWord transactionHash) {
     val params = String.format('["%s"]', transactionHash.toString)
-    new Transaction(wrapDataFetch("eth_getTransactionByHash", params).asJsonObject.get("result").asJsonObject)    
+    new Transaction(wrapDataFetch("eth_getTransactionByHash", params).asJsonObject.get("result").asJsonObject)
   }
-  
+
   def Transaction eth_getTransactionByBlockHashAndIndex(EVMWord blockHash, EVMWord index) {
     val params = String.format('["%s","%s"]', blockHash.toString, index.toString)
-    new Transaction(wrapDataFetch("eth_getTransactionByBlockHashAndIndex", params).asJsonObject.get("result").asJsonObject)    
+    new Transaction(
+      wrapDataFetch("eth_getTransactionByBlockHashAndIndex", params).asJsonObject.get("result").asJsonObject)
   }
-  
+
   def Transaction eth_getTransactionByBlockNumberAndIndex(EVMWord blockNumber, String tag, EVMWord index) {
     val params = String.format('["%s","%s"]', identifyBlock(blockNumber, tag), index.toString)
-    new Transaction(wrapDataFetch("eth_getTransactionByBlockNumberAndIndex", params).asJsonObject.get("result").asJsonObject)    
+    new Transaction(
+      wrapDataFetch("eth_getTransactionByBlockNumberAndIndex", params).asJsonObject.get("result").asJsonObject)
   }
-  
+
   def TransactionReceipt eth_getTransactionReceipt(EVMWord transactionHash) {
     val params = String.format('["%s"]', transactionHash.toString)
-    new TransactionReceipt(wrapDataFetch("eth_getTransactionReceipt", params).asJsonObject.get("result").asJsonObject)    
+    new TransactionReceipt(wrapDataFetch("eth_getTransactionReceipt", params).asJsonObject.get("result").asJsonObject)
   }
-  
+
   def Block eth_getUncleByBlockHashAndIndex(EVMWord blockHash, EVMWord index) {
     val params = String.format('["%s","%s"]', blockHash.toString, index.toString)
-    new Block(wrapDataFetch("eth_getUncleByBlockHashAndIndex", params).asJsonObject.get("result").asJsonObject)    
+    new Block(wrapDataFetch("eth_getUncleByBlockHashAndIndex", params).asJsonObject.get("result").asJsonObject)
   }
-  
+
   def Block eth_getUncleByBlockNumberAndIndex(EVMWord blockNumber, String tag, EVMWord index) {
     val params = String.format('["%s","%s"]', identifyBlock(blockNumber, tag), index.toGoTrimmedString)
-    new Block(wrapDataFetch("eth_getUncleByBlockNumberAndIndex", params).asJsonObject.get("result").asJsonObject)    
+    new Block(wrapDataFetch("eth_getUncleByBlockNumberAndIndex", params).asJsonObject.get("result").asJsonObject)
   }
-  
-  //compilers omitted
-  //filter omitted
-  //logs omitted
-  //PoW omitted
-  //db-methods omitted (deprecated)
-  //shh-methods omitted
+
+// compilers omitted
+// filter omitted
+// logs omitted
+// PoW omitted
+// db-methods omitted (deprecated)
+// shh-methods omitted
 }

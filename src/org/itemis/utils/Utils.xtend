@@ -31,27 +31,27 @@ class Utils implements Serializable {
   def String toHex(UnsignedByte b) {
     StaticUtils.toHex(b)
   }
-  
+
   def String toHex(UnsignedByte[] array) {
     StaticUtils.toHex(array)
   }
-  
+
   def byte fromHex(char c) {
     StaticUtils.fromHex(c)
   }
-  
+
   def byte[] fromHex(String s) {
     StaticUtils.fromHex(s)
   }
-  
+
   def Nibble[] toNibbles(UnsignedByte[] b) {
     StaticUtils.toNibbles(b)
   }
-  
+
   def UnsignedByte[] toUnsignedBytes(Nibble[] n) {
     StaticUtils.toUnsignedBytes(n)
   }
-  
+
   def EVMWord keccak256(String input) {
     StaticUtils.keccak256(input)
   }
@@ -59,11 +59,11 @@ class Utils implements Serializable {
   def EVMWord keccak256(byte[] input) {
     StaticUtils.keccak256(input)
   }
-  
+
   def String rightPad(String input, int length) {
     StaticUtils.rightPad(input, length)
   }
-  
+
   def void ensureDirExists(String path) {
     StaticUtils.ensureDirExists(path)
   }

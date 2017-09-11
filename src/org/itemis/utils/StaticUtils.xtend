@@ -24,7 +24,7 @@ abstract class StaticUtils {
   def static UnsignedByte getNthByteOfInteger(Integer i, int n) {
     new UnsignedByte((i >> (n * 8)).bitwiseAnd(0xFF))
   }
-  
+
   def static String toHex(Nibble n) {
     toHex(new UnsignedByte(n.value))
   }
@@ -50,15 +50,15 @@ abstract class StaticUtils {
       default: b.toHexString
     }
   }
-  
+
   def static String toHex(UnsignedByte[] array) {
     var result = new StringBuilder("0x")
-    
-    for (c: array) {
+
+    for (c : array) {
       result.append(c.higherNibble.toHex)
       result.append(c.lowerNibble.toHex)
     }
-    
+
     result.toString
   }
 
@@ -89,52 +89,52 @@ abstract class StaticUtils {
       default: throw new IllegalArgumentException(c + " is not a legal hex character")
     }
   }
-  
+
   def static byte[] fromHex(String s) {
     var data = s
-    if (s.startsWith("0x")) {
+    if(s.startsWith("0x")) {
       data = s.substring(2)
     }
-    
+
     var result = newArrayList
     var i = 0
-    
-    if (data.length % 2 == 1) {
+
+    if(data.length % 2 == 1) {
       result.add(new UnsignedByte(new Nibble(0), new Nibble(data.charAt(0).fromHex)))
       i++
     }
     for (; i < data.length; i += 2) {
       result.add(new UnsignedByte(new Nibble(data.charAt(i).fromHex), new Nibble(data.charAt(i + 1).fromHex)))
     }
-    
+
     result.map[byteValue]
   }
-  
+
   def static Nibble[] toNibbles(UnsignedByte[] b) {
     val result = newArrayList
-    
+
     for (_b : b) {
       result.add(_b.higherNibble)
-      result.add(_b.lowerNibble) 
+      result.add(_b.lowerNibble)
     }
-    
+
     result
   }
-  
+
   def static UnsignedByte[] toUnsignedBytes(Nibble[] n) {
     val result = newArrayList
-    
-    for(var i = 0; i < (n.length / 2); i++) {
+
+    for (var i = 0; i < (n.length / 2); i++) {
       result.add(new UnsignedByte(n.get(i * 2), n.get(i * 2 + 1)))
     }
-    
-    if (n.length % 2 != 0) {
+
+    if(n.length % 2 != 0) {
       result.add(new UnsignedByte(n.get(n.length - 1), new Nibble(0x0)))
     }
-    
+
     result
   }
-  
+
   def static EVMWord keccak256(String input) {
     keccak256(input.bytes)
   }
@@ -143,26 +143,26 @@ abstract class StaticUtils {
     val byte[] digest = new Keccak.Digest256().digest(input)
     new EVMWord(digest, true)
   }
-  
+
   def static String rightPad(String input, int length) {
-    if (input.length >= length) {
+    if(input.length >= length) {
       return input
-    }    
-    
+    }
+
     val StringBuilder sb = new StringBuilder()
-    
+
     sb.append(input)
-    
+
     for (var i = 0; i < (length - input.length); i++) {
       sb.append(" ")
     }
-    
+
     sb.toString
   }
-  
+
   def static void ensureDirExists(String path) {
     val File dir = new File(path)
-    if (!dir.exists) {
+    if(!dir.exists) {
       Files.createDirectories(dir.toPath)
     }
   }
