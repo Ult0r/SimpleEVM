@@ -21,9 +21,9 @@ import org.itemis.utils.db.DataBaseController
 import org.itemis.utils.db.DataBaseController.DataBaseID
 
 abstract class MainnetAllocData {
-  private final static String ALLOC_FILE = "mainnetAllocData"
   static extension DataBaseController db = new DataBaseController()
   
+  private final static String ALLOC_FILE = "src/org/itemis/ressources/mainnetAllocData"
   final static int ALLOC_SIZE = 8893
 
   def static UnsignedByte[] getMainnetAllocData() {
