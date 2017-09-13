@@ -8,7 +8,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.sql.Statement
 
-final class DataBaseController {
+final class DataBaseWrapper {
   private final static Logger LOGGER = LoggerFactory.getLogger("Database")
   
   public enum DataBaseID {
