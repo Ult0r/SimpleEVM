@@ -16,6 +16,7 @@ import org.junit.Assert
 import org.itemis.types.EVMWord
 
 class AllocTest {
+
   @Test
   def void testUTF32Support() {
     try {
@@ -28,11 +29,6 @@ class AllocTest {
   @Test
   def void testAlloc() {
     Assert.assertEquals(MainnetAllocData.mainnetAllocData.length, 286044)
-
-    val iter = MainnetAllocData.mainnetAllocDataQueryIterator
-    while(iter.hasNext()) {
-      iter.next()
-    }
 
     Assert.assertEquals(MainnetAllocData.getMainnetAllocDataSize, 8893)
 
