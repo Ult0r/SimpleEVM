@@ -21,6 +21,10 @@ import org.itemis.utils.db.DataBaseController
 import org.itemis.utils.db.DataBaseController.DataBaseID
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.io.File
+import java.util.List
+import java.io.FileOutputStream
+import java.io.FileInputStream
 
 abstract class MainnetAllocData {
   static extension DataBaseController db = new DataBaseController()
@@ -28,6 +32,7 @@ abstract class MainnetAllocData {
   private final static Logger LOGGER = LoggerFactory.getLogger("General")
   
   private final static String ALLOC_FILE = "src/org/itemis/ressources/mainnetAllocData"
+  private final static String SHORTENED_ALLOC_FILE = "src/org/itemis/ressources/_mainnetAllocData"
   final static int ALLOC_SIZE = 8893
 
   private def static UnsignedByte[] getMainnetAllocData() {
@@ -146,37 +151,74 @@ abstract class MainnetAllocData {
   
   def static void ensureDataIsWritten() {
     if(mainnetAllocDataSize != ALLOC_SIZE) {
+      LOGGER.debug("written entries: " + mainnetAllocDataSize)
       writeMainnetAllocData
-    } 
+    }
   }
   
   private def static void writeMainnetAllocData() {
-    val data = mainnetAllocData
-    LOGGER.debug("alloc data has length " + data.length)
-    val tree = StaticEVMUtils.reverseRLP(data)
+    val shortened = new File(SHORTENED_ALLOC_FILE) //rlp already decoded
+    val List<Pair<EVMWord, EVMWord>> entries = newArrayList
+    if (shortened.exists) {
+      LOGGER.debug("reading from shortened")
+      val fis = new FileInputStream(shortened)
+      var byte[] buffer = newByteArrayOfSize(32)
+      
+      for (var i = 0; i < ALLOC_SIZE; i++) {
+        if (fis.read(buffer) != 32) {
+          throw new IllegalArgumentException("shortened file in wrong format")
+        }
+        val address = new EVMWord(buffer, true)
+        if (fis.read(buffer) != 32) {
+          throw new IllegalArgumentException("shortened file in wrong format")
+        }
+        val balance = new EVMWord(buffer, true)
+        entries.add(Pair.of(address, balance))
+      }
+      
+    } else {
+      val data = mainnetAllocData
+      LOGGER.debug("alloc data has length " + data.length)
+      val tree = StaticEVMUtils.reverseRLP(data)
+      
+      for (c: tree.children) {
+        val left = new ArrayList(c.children.get(0).data)
+        while (left.length < 20) {
+          left.add(0, new UnsignedByte(0))
+        }
+        val address = new EVMWord(left, true)
+        
+        val right = if (c.children.length == 2) c.children.get(1).data
+        val balance = if (right === null) {
+          new EVMWord(0)
+        } else {
+          new EVMWord(right, false)
+        }
+        
+        entries.add(Pair.of(address, balance))
+      }
+      
+      //write data to shortened
+      val fos = new FileOutputStream(shortened)
+      for (e: entries) {
+        fos.write(e.key.toByteArray.map[byteValue])
+        fos.write(e.value.toByteArray.map[byteValue])
+      }
+      fos.close
+    }
+    
     DataBaseID.ALLOC.createTable("alloc", "(address BINARY(32) PRIMARY KEY, balance BINARY(32) NOT NULL)")
 
-    for (c : tree.children) {
-      val _address = new ArrayList(c.children.get(0).data)
-      while(_address.length < 20) {
-        _address.add(0, new UnsignedByte(0))
-      }
-      val address = new EVMWord(_address, true)
-      var EVMWord balance
-
-      if(c.children.length == 2) {
-        balance = new EVMWord(c.children.get(1).data, false)
-      } else {
-        balance = new EVMWord(0)
-      }
-
+    val conn = DataBaseID.ALLOC.connection
+    for (e : entries) {
       val query = String.format(
         "INSERT INTO alloc VALUES ('%s', '%s')",
-        address.toHexString.substring(2),
-        balance.toHexString.substring(2)
+        e.key.toHexString.substring(2),
+        e.value.toHexString.substring(2)
       )
-      DataBaseID.ALLOC.query(query)
+      conn.query(query)
     }
+    conn.close
   }
 
   def static EVMWord getBalanceForAddress(EVMWord address) {
