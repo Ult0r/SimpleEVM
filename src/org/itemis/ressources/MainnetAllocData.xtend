@@ -15,15 +15,15 @@ import org.itemis.utils.StaticUtils
 import org.itemis.types.EVMWord
 import org.itemis.evm.utils.StaticEVMUtils
 import java.util.ArrayList
-import java.sql.Connection
-import org.itemis.utils.logging.LoggerController
-import java.io.File
-import java.sql.DriverManager
 import java.sql.ResultSet
 import java.util.Iterator
+import org.itemis.utils.db.DataBaseController
+import org.itemis.utils.db.DataBaseController.DataBaseID
 
 abstract class MainnetAllocData {
   private final static String ALLOC_FILE = "mainnetAllocData"
+  static extension DataBaseController db = new DataBaseController()
+  
   final static int ALLOC_SIZE = 8893
 
   def static UnsignedByte[] getMainnetAllocData() {
@@ -127,43 +127,22 @@ abstract class MainnetAllocData {
     result
   }
 
-  def static Connection getMainnetAllocDataConn() {
-    val path = "db" + File.separator + "alloc" + File.separator + "data"
-    DriverManager.getConnection("jdbc:hsqldb:file:" + path, "SA", "")
-  }
-
   def static long getMainnetAllocDataSize() {
     try {
       val query = String.format(
         "SELECT COUNT(*) FROM alloc"
       )
-      val conn = mainnetAllocDataConn
-      val result = conn.prepareStatement(query).executeQuery
+      val result = DataBaseID.ALLOC.query(query)
       result.next
-      val _result = result.getLong(1)
-      conn.close
-      _result
+      result.getLong(1)
     } catch(Exception e) {
       0L
     }
   }
 
-  private def static void createAllocTable() {
-    val conn = getMainnetAllocDataConn
-    try {
-      conn.prepareStatement(
-        "CREATE TABLE alloc (address BINARY(32) PRIMARY KEY, balance BINARY(32) NOT NULL)"
-      ).execute
-    } catch(Exception e) {
-      LoggerController.logWarning(MainnetAllocData, "getMainnetAllocDataConn", "failed to create table")
-    }
-  }
-
   private def static void writeMainnetAllocData() {
-    createAllocTable
-
-    val conn = getMainnetAllocDataConn
     val tree = StaticEVMUtils.reverseRLP(mainnetAllocData)
+    DataBaseID.ALLOC.createTable("alloc", "(address BINARY(32) PRIMARY KEY, balance BINARY(32) NOT NULL)")
 
     for (c : tree.children) {
       val _address = new ArrayList(c.children.get(0).data)
@@ -179,19 +158,13 @@ abstract class MainnetAllocData {
         balance = new EVMWord(0)
       }
 
-      try {
-        val query = String.format(
-          "INSERT INTO alloc VALUES ('%s', '%s')",
-          address.toHexString.substring(2),
-          balance.toHexString.substring(2)
-        )
-        conn.prepareStatement(query).execute
-      } catch(Exception e) {
-        LoggerController.logWarning(MainnetAllocData, "getMainnetAllocDataConn", "entry probably exists already")
-      }
+      val query = String.format(
+        "INSERT INTO alloc VALUES ('%s', '%s')",
+        address.toHexString.substring(2),
+        balance.toHexString.substring(2)
+      )
+      DataBaseID.ALLOC.query(query)
     }
-
-    conn.close
   }
 
   def static EVMWord getBalanceForAddress(EVMWord address) {
@@ -203,9 +176,7 @@ abstract class MainnetAllocData {
       "SELECT * FROM alloc WHERE address = '%s'",
       address.toHexString.substring(2)
     )
-    val conn = mainnetAllocDataConn
-    val result = conn.prepareStatement(query).executeQuery
-    conn.close
+    val result = DataBaseID.ALLOC.query(query)
     result.next
     new EVMWord(result.getBytes("balance"), true)
   }
@@ -218,10 +189,7 @@ abstract class MainnetAllocData {
     val query = String.format(
       "SELECT * FROM alloc"
     )
-    val conn = mainnetAllocDataConn
-    val result = new AllocDataIterator(conn.prepareStatement(query).executeQuery)
-    conn.close
-    result
+    new AllocDataIterator(DataBaseID.ALLOC.query(query))
   }
 
   public static class AllocDataIterator implements Iterator<Pair<EVMWord, EVMWord>> {
