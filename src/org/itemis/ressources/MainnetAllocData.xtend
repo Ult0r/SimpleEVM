@@ -17,17 +17,17 @@ import org.itemis.evm.utils.StaticEVMUtils
 import java.util.ArrayList
 import java.sql.ResultSet
 import java.util.Iterator
-import org.itemis.utils.db.DataBaseController
-import org.itemis.utils.db.DataBaseController.DataBaseID
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.List
 import java.io.FileOutputStream
 import java.io.FileInputStream
+import org.itemis.utils.db.DataBaseWrapper
+import org.itemis.utils.db.DataBaseWrapper.DataBaseID
 
 abstract class MainnetAllocData {
-  static extension DataBaseController db = new DataBaseController()
+  static extension DataBaseWrapper db = new DataBaseWrapper()
   
   private final static Logger LOGGER = LoggerFactory.getLogger("General")
   

@@ -10,70 +10,43 @@
 package org.itemis.blockchain
 
 import org.itemis.types.EVMWord
-import java.sql.Connection
-import java.sql.DriverManager
 import org.itemis.utils.Utils
 import org.itemis.types.UnsignedByte
 import org.itemis.ressources.MainnetAllocData
-import java.io.File
 import org.itemis.evm.utils.MerklePatriciaTrie
-import org.slf4j.LoggerFactory
-import org.slf4j.Logger
+import org.itemis.utils.db.DataBaseWrapper
+import org.itemis.utils.db.DataBaseWrapper.DataBaseID
 
 class WorldState {
   extension Utils u = new Utils
+  extension DataBaseWrapper db = new DataBaseWrapper
 
-  private final static Logger LOGGER = LoggerFactory.getLogger("Database")
   private static String EMPTY_EVMWORD = new EVMWord(0).toHexString.substring(2)
-
-  private Connection conn
-
-  new(String name) {
-    org.itemis.blockchain.WorldState.LOGGER.info("accessing state at " + name)
-
-    val path = "db" + File.separator + name
-    path.ensureDirExists
-
-    conn = DriverManager.getConnection(
-      "jdbc:hsqldb:file:" + path + File.separator + name,
-      "SA",
-      ""
-    )
+  
+  private final DataBaseID id
+  
+  new(DataBaseID id) {
+    this.id = id
   }
 
   def initTables() {
-    try {
-      val st = conn.createStatement
-      st.addBatch(
-        "CREATE TABLE accounts (address BINARY(32) PRIMARY KEY, nonce BINARY(32) NOT NULL, balance BINARY(32) NOT NULL, storageRoot BINARY(32) NOT NULL, codeHash BINARY(32) NOT NULL, code LONGVARCHAR)"
-      )
-      st.addBatch(
-        "CREATE TABLE storage (account BINARY(32), offset BINARY(32), value BINARY(32), PRIMARY KEY (account, offset))"
-      )
-      st.executeBatch
-      st.close
-    } catch(Exception e) {
-      org.itemis.blockchain.WorldState.LOGGER.error("failed to initialize")
-      throw e
-    }
+    val conn = id.connection
+    conn.createTable("accounts", "(address BINARY(32) PRIMARY KEY, nonce BINARY(32) NOT NULL, balance BINARY(32) NOT NULL, storageRoot BINARY(32) NOT NULL, codeHash BINARY(32) NOT NULL, code LONGVARCHAR)")
+    conn.createTable("storage", "(account BINARY(32), offset BINARY(32), value BINARY(32), PRIMARY KEY (account, offset))")
+    conn.close
   }
 
   def initAccount(EVMWord address, EVMWord balance) {
-    try {
-      val query = String.format(
-        "INSERT INTO accounts VALUES ('%s', '%s', '%s', '%s', '%s', %s)",
-        address.toHexString.substring(2),
-        EMPTY_EVMWORD,
-        balance.toHexString.substring(2),
-        MerklePatriciaTrie.Null.hashCode,
-        keccak256(""),
-        "null"
-      )
-      conn.prepareStatement(query).execute
-    } catch(Exception e) {
-      org.itemis.blockchain.WorldState.LOGGER.error("failed to initialize " + address.toHexString)
-      throw e
-    }
+    val query = String.format(
+      "INSERT INTO accounts VALUES ('%s', '%s', '%s', '%s', '%s', %s)",
+      address.toHexString.substring(2),
+      EMPTY_EVMWORD,
+      balance.toHexString.substring(2),
+      MerklePatriciaTrie.Null.hashCode,
+      keccak256(""),
+      "null"
+    )
+    id.query(query)
   }
 
   def loadGenesisState() {
@@ -82,10 +55,6 @@ class WorldState {
       val e = iter.next
       initAccount(e.key, e.value)
     }
-  }
-
-  def close() {
-    conn.close
   }
 
   def Account getAccountAt(EVMWord address) {

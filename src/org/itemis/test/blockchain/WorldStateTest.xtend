@@ -11,13 +11,13 @@ package org.itemis.test.blockchain
 
 import org.junit.Test
 import org.itemis.blockchain.WorldState
+import org.itemis.utils.db.DataBaseWrapper.DataBaseID
 
 class WorldStateTest {
   @Test
   def void testInitWorldState() {
-    val ws = new WorldState("state")
+    val ws = new WorldState(DataBaseID.STATE)
     ws.initTables
     ws.loadGenesisState
-    ws.close()
   }
 }
