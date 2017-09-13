@@ -24,8 +24,11 @@ final class DataBaseController {
   private static Map<DataBaseID, Connection> CONNECTIONS = {
     val result = newHashMap
     
+    LOGGER.info("opening connection to " + STATE_LOCATION)
     result.put(DataBaseID.STATE, DriverManager.getConnection("jdbc:hsqldb:file:" + STATE_LOCATION, "SA", ""))
+    LOGGER.info("opening connection to " + ALLOC_LOCATION)
     result.put(DataBaseID.ALLOC, DriverManager.getConnection("jdbc:hsqldb:file:" + ALLOC_LOCATION, "SA", ""))
+    LOGGER.info("opening connection to " + TRIE_LOCATION)
     result.put(DataBaseID.TRIE,  DriverManager.getConnection("jdbc:hsqldb:file:" + TRIE_LOCATION, "SA", ""))
     
     for (conn: result.entrySet.toList.map[it.value]) {
@@ -36,7 +39,7 @@ final class DataBaseController {
   }
   
   def private Connection getConnection(DataBaseID db) {
-    LOGGER.info("accessing db " + db)
+    LOGGER.debug("accessing db " + db)
     CONNECTIONS.get(db)
   }
   
@@ -57,12 +60,12 @@ final class DataBaseController {
   def ResultSet query(DataBaseID db, String query) {
     val conn = getConnection(db)
     try {
-      LOGGER.info("trying to execute query: " + query)
+      LOGGER.debug("trying to execute query: " + query)
       val statement = conn.prepareStatement(query)
       val hasResult = statement.execute
       if (hasResult) statement.resultSet
     } catch(Exception e) {
-      LOGGER.warn("query failed: " + e.message)
+      LOGGER.info("query failed: " + e.message)
       null
     }
   }
