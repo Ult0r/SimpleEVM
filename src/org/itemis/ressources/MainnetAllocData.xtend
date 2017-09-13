@@ -26,7 +26,7 @@ abstract class MainnetAllocData {
   private final static String ALLOC_FILE = "src/org/itemis/ressources/mainnetAllocData"
   final static int ALLOC_SIZE = 8893
 
-  def static UnsignedByte[] getMainnetAllocData() {
+  private def static UnsignedByte[] getMainnetAllocData() {
     var result = newArrayList
 
     val mainnetAllocData = new FileReader(ALLOC_FILE)
@@ -139,7 +139,13 @@ abstract class MainnetAllocData {
       0L
     }
   }
-
+  
+  def static void ensureDataIsWritten() {
+    if(mainnetAllocDataSize != ALLOC_SIZE) {
+      writeMainnetAllocData
+    } 
+  }
+  
   private def static void writeMainnetAllocData() {
     val tree = StaticEVMUtils.reverseRLP(mainnetAllocData)
     DataBaseID.ALLOC.createTable("alloc", "(address BINARY(32) PRIMARY KEY, balance BINARY(32) NOT NULL)")
@@ -168,9 +174,7 @@ abstract class MainnetAllocData {
   }
 
   def static EVMWord getBalanceForAddress(EVMWord address) {
-    if(mainnetAllocDataSize != ALLOC_SIZE) {
-      writeMainnetAllocData
-    }
+    ensureDataIsWritten
 
     val query = String.format(
       "SELECT * FROM alloc WHERE address = '%s'",
@@ -182,9 +186,7 @@ abstract class MainnetAllocData {
   }
 
   def static AllocDataIterator getMainnetAllocDataQueryIterator() {
-    if(mainnetAllocDataSize != ALLOC_SIZE) {
-      writeMainnetAllocData
-    }
+    ensureDataIsWritten
 
     val query = String.format(
       "SELECT * FROM alloc"
