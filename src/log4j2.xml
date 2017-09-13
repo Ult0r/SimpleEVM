@@ -24,6 +24,7 @@
 	
     <File name="Debug" fileName="log/debug.log" append="false">
       <PatternLayout pattern="${log_pattern}"/>
+      <ThresholdFilter level="INFO" onMatch="DENY" onMismatch="NEUTRAL"/>
     </File>
 	
     <File name="General" fileName="log/general.log" append="false">
@@ -37,20 +38,20 @@
   </Appenders>
   
   <Loggers>
-    <Logger name="Tests" level="info">
-      <AppenderRef ref="Tests"/>
+    <Logger name="Tests" level="trace">
+      <AppenderRef ref="Tests" level="INFO"/>
     </Logger>
     
-    <Logger name="Network" level="info">
-      <AppenderRef ref="Network"/>
+    <Logger name="Network" level="trace">
+      <AppenderRef ref="Network" level="INFO"/>
     </Logger>
     
-    <Logger name="General" level="info">
-      <AppenderRef ref="General"/>
+    <Logger name="General" level="trace">
+      <AppenderRef ref="General" level="INFO"/>
     </Logger>
     
-    <Logger name="Database" level="info">
-      <AppenderRef ref="Database"/>
+    <Logger name="Database" level="trace">
+      <AppenderRef ref="Database" level="INFO"/>
     </Logger>
 	
     <Root level="error">
