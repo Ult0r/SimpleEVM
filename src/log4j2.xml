@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="ERROR" name="log4j2.xml">
+  <Properties>
+    <Property name="log_pattern">[%d{MM:dd:yyyy HH:mm:ss.SSS}] [%logger{36}] %-5level: [%C#%M] %msg%n</Property>
+  </Properties>
+  
+  <Appenders>
+    <Console name="System.out" target="SYSTEM_OUT">
+      <PatternLayout pattern="${log_pattern}"/>
+      <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>
+    </Console>
+	
+    <Console name="System.err" target="SYSTEM_ERR">
+      <PatternLayout pattern="${log_pattern}"/>
+    </Console>
+	
+    <File name="Tests" fileName="log/tests.log" append="false">
+      <PatternLayout pattern="${log_pattern}"/>
+    </File>
+	
+    <File name="Network" fileName="log/network.log" append="false">
+      <PatternLayout pattern="${log_pattern}"/>
+    </File>
+	
+    <File name="Debug" fileName="log/debug.log" append="false">
+      <PatternLayout pattern="${log_pattern}"/>
+    </File>
+	
+    <File name="General" fileName="log/general.log" append="false">
+      <PatternLayout pattern="${log_pattern}"/>
+    </File>
+	
+    <File name="Database" fileName="log/database.log" append="false">
+      <PatternLayout pattern="${log_pattern}"/>
+    </File>
+	
+  </Appenders>
+  
+  <Loggers>
+    <Logger name="Tests" level="info">
+      <AppenderRef ref="Tests"/>
+    </Logger>
+    
+    <Logger name="Network" level="info">
+      <AppenderRef ref="Network"/>
+    </Logger>
+    
+    <Logger name="Debug" level="trace">
+      <AppenderRef ref="Debug"/>
+    </Logger>
+    
+    <Logger name="General" level="info">
+      <AppenderRef ref="General"/>
+    </Logger>
+    
+    <Logger name="Database" level="info">
+      <AppenderRef ref="Database"/>
+    </Logger>
+	
+    <Root level="error">
+      <AppenderRef ref="System.err" level="ERROR"/>
+      <AppenderRef ref="System.out" level="WARN"/>
+    </Root>
+  </Loggers>
+  
+</Configuration>

@@ -13,21 +13,23 @@ import org.itemis.types.EVMWord
 import java.sql.Connection
 import java.sql.DriverManager
 import org.itemis.utils.Utils
-import org.itemis.utils.logging.LoggerController
 import org.itemis.types.UnsignedByte
 import org.itemis.ressources.MainnetAllocData
 import java.io.File
 import org.itemis.evm.utils.MerklePatriciaTrie
+import org.slf4j.LoggerFactory
+import org.slf4j.Logger
 
 class WorldState {
   extension Utils u = new Utils
 
+  private final static Logger LOGGER = LoggerFactory.getLogger("Database")
   private static String EMPTY_EVMWORD = new EVMWord(0).toHexString.substring(2)
 
   private Connection conn
 
   new(String name) {
-    LoggerController.logInfo(WorldState, "new(String)", "accessing state at " + name)
+    org.itemis.blockchain.WorldState.LOGGER.info("accessing state at " + name)
 
     val path = "db" + File.separator + name
     path.ensureDirExists
@@ -51,7 +53,7 @@ class WorldState {
       st.executeBatch
       st.close
     } catch(Exception e) {
-      LoggerController.logSevere(WorldState, "initTables", "failed to initialize")
+      org.itemis.blockchain.WorldState.LOGGER.error("failed to initialize")
       throw e
     }
   }
@@ -69,7 +71,7 @@ class WorldState {
       )
       conn.prepareStatement(query).execute
     } catch(Exception e) {
-      LoggerController.logSevere(WorldState, "initAccount", "failed to initialize " + address.toHexString)
+      org.itemis.blockchain.WorldState.LOGGER.error("failed to initialize " + address.toHexString)
       throw e
     }
   }

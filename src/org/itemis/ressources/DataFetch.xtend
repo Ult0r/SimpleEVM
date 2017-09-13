@@ -15,9 +15,12 @@ import java.io.DataOutputStream
 import javax.net.ssl.HttpsURLConnection
 import java.io.InputStreamReader
 import java.net.URL
-import org.itemis.utils.logging.LoggerController
+import org.slf4j.LoggerFactory
+import org.slf4j.Logger
 
 class DataFetch {
+  private final static Logger LOGGER = LoggerFactory.getLogger("Network")
+  
   private static URL API_URL = new URL("https://mainnet.infura.io")
   private static int MAX_TRIES = 3
 
@@ -45,28 +48,28 @@ class DataFetch {
 
     if(conn.responseCode != 200) {
       val String errorMessage = String.format("returned %d, retrying...", conn.responseCode)
-      LoggerController.logWarning(DataFetch, "fetchData", errorMessage)
+      LOGGER.warn(errorMessage)
 
       fetchData(postData, retryOnNull, tries + 1, maxTries)
     } else {
       val result = new JsonParser().parse(new InputStreamReader(conn.inputStream))
       if(result === null) {
-        LoggerController.logWarning(DataFetch, "fetchData", "returned null, retrying...")
+        LOGGER.warn("returned null, retrying...")
 
         fetchData(postData, retryOnNull, tries + 1, maxTries)
       } else {
-        LoggerController.logInfo(DataFetch, "fetchData", "result: " + result)
+        LOGGER.info("result: " + result)
 
         try {
           if(result.asJsonObject.get("result").jsonNull && retryOnNull) {
-            LoggerController.logWarning(DataFetch, "fetchData", "result is null, retrying...")
+            LOGGER.warn("result is null, retrying...")
 
             fetchData(postData, retryOnNull, tries + 1, maxTries)
           } else {
             result
           }
         } catch(Exception e) {
-          LoggerController.logWarning(DataFetch, "fetchData", "couldn't parse result")
+          LOGGER.warn("couldn't parse result")
           result
         }
       }
@@ -74,7 +77,7 @@ class DataFetch {
   }
 
   def JsonElement fetchData(String postData, boolean retryOnNull, int maxTries) {
-    LoggerController.logInfo(DataFetch, "fetchData", "postData: " + postData)
+    LOGGER.info("postData: " + postData)
     fetchData(postData, true, 0, maxTries)
   }
 

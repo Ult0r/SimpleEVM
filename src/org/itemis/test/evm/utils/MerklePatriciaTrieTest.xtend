@@ -10,13 +10,9 @@
 
 package org.itemis.test.evm.utils
 
-import java.util.logging.Logger
 import org.itemis.evm.utils.MerklePatriciaTrie
 import org.itemis.evm.utils.MerklePatriciaTrie.Null
 import org.itemis.ressources.MainnetAllocData
-import org.itemis.utils.logging.LoggerController
-import org.junit.AfterClass
-import org.junit.BeforeClass
 import org.junit.Test
 import org.itemis.utils.Utils
 import java.util.List
@@ -31,17 +27,6 @@ class MerklePatriciaTrieTest {
   extension Utils u = new Utils
   extension EVMUtils e = new EVMUtils
   extension JsonRPCWrapper j = new JsonRPCWrapper
-
-  @BeforeClass
-  def static void initLogger() {
-    val Logger logger = LoggerController.createLogger(MerklePatriciaTrieTest)
-    LoggerController.addLogger(logger)
-  }
-
-  @AfterClass
-  def static void removeLogger() {
-    LoggerController.removeLogger()
-  }
 
   @Test
   def void testEmptyTrie() {

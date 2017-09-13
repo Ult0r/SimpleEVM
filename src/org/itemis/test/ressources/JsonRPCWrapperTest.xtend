@@ -15,25 +15,10 @@ import org.itemis.ressources.JsonRPCWrapper
 import org.junit.Assert
 import org.itemis.utils.Utils
 import org.itemis.blockchain.Block
-import java.util.logging.Logger
-import org.junit.BeforeClass
-import org.junit.AfterClass
-import org.itemis.utils.logging.LoggerController
 
 class JsonRPCWrapperTest {
   extension JsonRPCWrapper j = new JsonRPCWrapper
   extension Utils u = new Utils
-
-  @BeforeClass
-  def static void initLogger() {
-    val Logger logger = LoggerController.createLogger(JsonRPCWrapperTest)
-    LoggerController.addLogger(logger)
-  }
-
-  @AfterClass
-  def static void removeLogger() {
-    LoggerController.removeLogger()
-  }
 
   // HELPER
   @Test
