@@ -45,10 +45,6 @@
       <AppenderRef ref="Network"/>
     </Logger>
     
-    <Logger name="Debug" level="trace">
-      <AppenderRef ref="Debug"/>
-    </Logger>
-    
     <Logger name="General" level="info">
       <AppenderRef ref="General"/>
     </Logger>
@@ -60,6 +56,7 @@
     <Root level="error">
       <AppenderRef ref="System.err" level="ERROR"/>
       <AppenderRef ref="System.out" level="WARN"/>
+      <AppenderRef ref="Debug" level="TRACE"/>
     </Root>
   </Loggers>
   
