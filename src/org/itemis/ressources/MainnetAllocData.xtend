@@ -19,9 +19,13 @@ import java.sql.ResultSet
 import java.util.Iterator
 import org.itemis.utils.db.DataBaseController
 import org.itemis.utils.db.DataBaseController.DataBaseID
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 abstract class MainnetAllocData {
   static extension DataBaseController db = new DataBaseController()
+  
+  private final static Logger LOGGER = LoggerFactory.getLogger("General")
   
   private final static String ALLOC_FILE = "src/org/itemis/ressources/mainnetAllocData"
   final static int ALLOC_SIZE = 8893
@@ -147,7 +151,9 @@ abstract class MainnetAllocData {
   }
   
   private def static void writeMainnetAllocData() {
-    val tree = StaticEVMUtils.reverseRLP(mainnetAllocData)
+    val data = mainnetAllocData
+    LOGGER.debug("alloc data has length " + data.length)
+    val tree = StaticEVMUtils.reverseRLP(data)
     DataBaseID.ALLOC.createTable("alloc", "(address BINARY(32) PRIMARY KEY, balance BINARY(32) NOT NULL)")
 
     for (c : tree.children) {
