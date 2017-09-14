@@ -12,6 +12,7 @@ package org.itemis.types
 
 import java.security.InvalidParameterException
 import org.itemis.utils.Utils
+import org.itemis.evm.OverflowException
 
 //opposing to the signed java.lang.Byte
 class UnsignedByte extends Number implements Comparable<UnsignedByte> {
@@ -55,16 +56,16 @@ class UnsignedByte extends Number implements Comparable<UnsignedByte> {
     }
   }
 
+  override hashCode() {
+    value.hashCode
+  }
+  
   def isZero() {
     return value == 0
   }
 
   override floatValue() {
     value.floatValue
-  }
-
-  override hashCode() {
-    value.hashCode
   }
 
   override intValue() {
@@ -130,27 +131,20 @@ class UnsignedByte extends Number implements Comparable<UnsignedByte> {
     }
   }
 
-  def invert() {
-    value = value.bitwiseNot.bitwiseAnd(0x00FF)
+  def UnsignedByte invert() {
+    new UnsignedByte(value.bitwiseNot.bitwiseAnd(0x00FF))
   }
 
-  def UnsignedByte copy() {
-    new UnsignedByte(value)
+  def UnsignedByte inc() {
+    add(new UnsignedByte(1))
   }
 
-  // overflow = 1
-  // no overflow = 0
-  def boolean inc() {
-    value = (value + 1).bitwiseAnd(0x00FF)
-    value == 0
-  }
-
-  // overflow = 1
-  // no overflow = 0
-  def boolean add(UnsignedByte other) {
+  def UnsignedByte add(UnsignedByte other) {
     val newValue = value + other.getValue
-    value = newValue.bitwiseAnd(0x00FF)
-    newValue > 255
+    if (newValue > 255) {
+      throw new OverflowException()
+    }
+    new UnsignedByte(newValue.bitwiseAnd(0x00FF))
   }
 
 }

@@ -104,7 +104,7 @@ class Int2048 {
 
   def Int2048 setTo(Int2048 other) {
     for (i : 0 .. 255) {
-      this.setNthField(i, other.getNthField(i).copy)
+      this.setNthField(i, other.getNthField(i))
     }
     this
   }
@@ -154,19 +154,24 @@ class Int2048 {
       false
     }
   }
-
-  def Int2048 invert() {
+  
+  def Int2048 reverse() {
+    val result = new Int2048(0)
+    
     for (i : 0 .. 255) {
-      this.getNthField(i).invert
+      result.setNthField(i, this.getNthField(31 - i))
     }
-    this
+    
+    result 
   }
 
-  def Int2048 copy() {
-    var result = new Int2048()
+  def Int2048 invert() {
+    val result = new Int2048(0)
+    
     for (i : 0 .. 255) {
-      result.setNthField(i, this.getNthField(i).copy())
+      result.setNthField(i, this.getNthField(i).invert)
     }
+    
     result
   }
 
@@ -190,21 +195,25 @@ class Int2048 {
 
   def Int2048 add(Int2048 other) {
     if(this.isNegative && other.isNegative) {
-      this.negate.add(other.copy.negate).negate
+      this.negate.add(other.negate).negate
     } else {
-      val wasNegative = this.isNegative
       var overflow = false
-      for (i : 0 .. 255) {
-        if(overflow) {
-          overflow = this.getNthField(i).inc || this.getNthField(i).add(other.getNthField(i))
-        } else {
-          overflow = this.getNthField(i).add(other.getNthField(i))
+      
+      val result = new Int2048(0)
+      for (i : 0 .. 31) {
+        var sum = this.getNthField(i).intValue
+        if (overflow) {
+          sum += 1
         }
+        sum += other.getNthField(i).value
+        overflow = sum > 255
+        result.setNthField(i, sum)
       }
-      if(!wasNegative && !other.isNegative && this.isNegative) {
+      if (!this.isNegative && !other.isNegative && result.isNegative) {
         throw new OverflowException()
       }
-      this
+      
+      result
     }
   }
 

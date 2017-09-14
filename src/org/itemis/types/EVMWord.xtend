@@ -70,6 +70,9 @@ class EVMWord implements Serializable {
     if(s.startsWith("0x")) {
       data = s.substring(2)
     }
+    if (data.length % 2 == 1) {
+      data = data + "0"
+    }
 
     new EVMWord(StaticUtils.fromHex(data), true)
   }
@@ -109,7 +112,7 @@ class EVMWord implements Serializable {
 
   def EVMWord setTo(EVMWord other) {
     for (i : 0 .. 31) {
-      this.setNthField(i, other.getNthField(i).copy)
+      this.setNthField(i, other.getNthField(i))
     }
     this
   }
@@ -168,31 +171,8 @@ class EVMWord implements Serializable {
     result
   }
 
-  def String toTrimmedString() {
-    var result = "0x"
-    var j = 31
-    while(this.getNthField(j).isZero && j > 0) {
-      j--
-    }
-
-    for (i : 0 .. j) {
-      result += this.getNthField(i).toHexString().substring(2)
-    }
-
-    result
-  }
-
-  def String toGoTrimmedString() {
-    var result = toTrimmedString.substring(2)
-    if(result.startsWith("0")) {
-      result = result.substring(1)
-    }
-
-    "0x" + result
-  }
-
   def String toIntString() {
-    new BigInteger(toString.substring(2), 16).toString
+    new BigInteger(reverse.toByteArray.dropWhile[it.byteValue == 0].map[toString.substring(2)].join, 16).toString
   }
 
   def byte[] toByteArray(boolean bigEndian) {
@@ -244,19 +224,24 @@ class EVMWord implements Serializable {
     }
     true
   }
-
-  def EVMWord invert() {
+  
+  def EVMWord reverse() {
+    val result = new EVMWord(0)
+    
     for (i : 0 .. 31) {
-      this.getNthField(i).invert
+      result.setNthField(i, this.getNthField(31 - i))
     }
-    this
+    
+    result 
   }
 
-  def EVMWord copy() {
-    var result = new EVMWord()
+  def EVMWord invert() {
+    val result = new EVMWord(0)
+    
     for (i : 0 .. 31) {
-      result.setNthField(i, this.getNthField(i).copy())
+      result.setNthField(i, this.getNthField(i).invert)
     }
+    
     result
   }
 
@@ -280,21 +265,25 @@ class EVMWord implements Serializable {
 
   def EVMWord add(EVMWord other) {
     if(this.isNegative && other.isNegative) {
-      this.negate.add(other.copy.negate).negate
+      this.negate.add(other.negate).negate
     } else {
-      val wasNegative = this.isNegative
       var overflow = false
+      
+      val result = new EVMWord(0)
       for (i : 0 .. 31) {
-        if(overflow) {
-          overflow = this.getNthField(i).inc || this.getNthField(i).add(other.getNthField(i))
-        } else {
-          overflow = this.getNthField(i).add(other.getNthField(i))
+        var sum = this.getNthField(i).intValue
+        if (overflow) {
+          sum += 1
         }
+        sum += other.getNthField(i).value
+        overflow = sum > 255
+        result.setNthField(i, sum % 256)
       }
-      if(!wasNegative && !other.isNegative && this.isNegative) {
+      if (!this.isNegative && !other.isNegative && result.isNegative) {
         throw new OverflowException()
       }
-      this
+      
+      result
     }
   }
 
