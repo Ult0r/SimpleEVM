@@ -22,11 +22,36 @@ import org.itemis.evm.utils.MerklePatriciaTrie.Node
 import org.itemis.evm.utils.MerklePatriciaTrie.UnsignedByteList
 import org.itemis.types.EVMWord
 import org.itemis.utils.StaticUtils
+import org.itemis.utils.db.DataBaseWrapper.DataBaseID
+import org.itemis.utils.db.DataBaseWrapper
+import com.google.common.cache.CacheBuilder
+import com.google.common.cache.LoadingCache
+import com.google.common.cache.RemovalListener
+import com.google.common.cache.RemovalNotification
+import com.google.common.cache.CacheLoader
 
 class MerklePatriciaTrie {
+  extension DataBaseWrapper db = new DataBaseWrapper
+  
+  private final static int MAX_CACHE_SIZE = 100
+  
   private final String name
+  private boolean database_created = false
   @Accessors private Node root = new Null
   @Accessors private Map<UnsignedByteList, Node> cache = newHashMap
+  
+  private LoadingCache<UnsignedByteList, Node> _cache = CacheBuilder.newBuilder()
+                                                                  .maximumSize(MAX_CACHE_SIZE)
+                                                                  .removalListener(new WriteCacheToDBListener)
+                                                                  .build(
+                                                                    new CacheLoader<UnsignedByteList, Node>() {
+                                                                      override load(UnsignedByteList key) throws Exception {
+                                                                        //TODO
+                                                                        throw new UnsupportedOperationException("TODO: auto-generated method stub")
+                                                                      }
+                                                                    }
+                                                                  )
+  
   new(String name) {
     this.name = name
   }
@@ -48,6 +73,36 @@ class MerklePatriciaTrie {
 
   def String toGraphViz() {
     String.format("digraph G {\n%s}", root.toGraphViz(this, "  ROOT"))
+  }
+  
+  private def Node lookUp(UnsignedByteList hash) {
+    if (cache.containsKey(hash)) {
+      cache.get(hash)
+    } else if (database_created) {
+      val query = "SELECT * FROM nodes"
+      val resultSet = DataBaseID.TRIE.query(name, query)
+      //TODO: convert to node
+      val node = null
+      if (cache.size < MAX_CACHE_SIZE) {
+        
+      }
+      node
+    } else {
+      null
+    }
+  }
+  
+  private def void putNode(Node node) {
+    if (cache.size < MAX_CACHE_SIZE) {
+      //TODO
+    }
+  }
+  
+  protected static final class WriteCacheToDBListener implements RemovalListener<UnsignedByteList, Node> {
+    override onRemoval(RemovalNotification<UnsignedByteList, Node> notification) {
+      //TODO
+      throw new UnsupportedOperationException("TODO: auto-generated method stub")
+    }
   }
 
   static abstract class Node {
