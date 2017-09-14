@@ -213,8 +213,8 @@ abstract class MainnetAllocData {
     for (e : entries) {
       val query = String.format(
         "INSERT INTO alloc VALUES ('%s', '%s')",
-        e.key.toHexString.substring(2),
-        e.value.toHexString.substring(2)
+        e.key.formatForQuery,
+        e.value.formatForQuery
       )
       conn.query(query)
     }

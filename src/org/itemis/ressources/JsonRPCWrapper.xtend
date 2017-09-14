@@ -40,11 +40,35 @@ class JsonRPCWrapper {
       id)
     fetchData(postData)
   }
+  
+  private def String displayEVMWordAsNumber(EVMWord word) {
+    displayEVMWordAsNumber(word, true)
+  }
+  
+  private def String displayEVMWordAsNumber(EVMWord word, boolean fullyTrimmed) {
+    var result = ""
+    var j = 31
+    while(word.getNthField(j).isZero && j > 0) {
+      j--
+    }
+
+    for (i : j .. 0) {
+      result += word.getNthField(i).toHexString().substring(2)
+    }
+
+    if (fullyTrimmed) {
+      if(result.startsWith("0")) {
+        result = result.substring(1)
+      }
+    }
+    
+    "0x" + result
+  } 
 
   // HELPER
   def String identifyBlock(EVMWord blockNumber, String tag) {
     if(blockNumber !== null) {
-      blockNumber.toGoTrimmedString
+      blockNumber.displayEVMWordAsNumber
     } else if(tag !== null) {
       if(tag != "latest" && tag != "earliest" && tag != "pending") {
         throw new IllegalArgumentException(tag + " is not a valid block identifier")
@@ -142,20 +166,18 @@ class JsonRPCWrapper {
 
   def EVMWord eth_getBalance(EVMWord address, EVMWord blockNumber, String tag) {
     val params = String.format('["%s","%s"]', address.toAddressString, identifyBlock(blockNumber, tag))
-    val result = wrapDataFetch("eth_getBalance", params).asJsonObject.get("result").asString.fromHex.reverse
-//    EVMWord.fromString(wrapDataFetch("eth_getBalance", params).asJsonObject.get("result").asString)
-    new EVMWord(result, true)
+    new EVMWord(wrapDataFetch("eth_getBalance", params).asJsonObject.get("result").asString.fromHex, false)
   }
 
   def EVMWord eth_getStorageAt(EVMWord address, EVMWord offset, EVMWord blockNumber, String tag) {
-    val params = String.format('["%s","%s","%s"]', address.toAddressString, offset.toTrimmedString,
+    val params = String.format('["%s","%s","%s"]', address.toAddressString, offset.displayEVMWordAsNumber,
       identifyBlock(blockNumber, tag))
     EVMWord.fromString(wrapDataFetch("eth_getStorageAt", params).asJsonObject.get("result").asString)
   }
 
   def EVMWord eth_getTransactionCount(EVMWord address, EVMWord blockNumber, String tag) {
     val params = String.format('["%s","%s"]', address.toAddressString, identifyBlock(blockNumber, tag))
-    EVMWord.fromString(wrapDataFetch("eth_getTransactionCount", params).asJsonObject.get("result").asString)
+    new EVMWord(wrapDataFetch("eth_getTransactionCount", params).asJsonObject.get("result").asString.fromHex, false)
   }
 
   def EVMWord eth_getBlockTransactionCountByHash(EVMWord blockHash) {
@@ -171,12 +193,12 @@ class JsonRPCWrapper {
 
   def EVMWord eth_getUncleCountByBlockHash(EVMWord blockHash) {
     val params = String.format('["%s"]', blockHash.toString)
-    EVMWord.fromString(wrapDataFetch("eth_getUncleCountByBlockHash", params).asJsonObject.get("result").asString)
+    new EVMWord(wrapDataFetch("eth_getUncleCountByBlockHash", params).asJsonObject.get("result").asString.fromHex, false)
   }
 
   def EVMWord eth_getUncleCountByBlockNumber(EVMWord blockNumber, String tag) {
     val params = String.format('["%s"]', identifyBlock(blockNumber, tag))
-    EVMWord.fromString(wrapDataFetch("eth_getUncleCountByBlockNumber", params).asJsonObject.get("result").asString)
+    new EVMWord(wrapDataFetch("eth_getUncleCountByBlockNumber", params).asJsonObject.get("result").asString.fromHex, false)
   }
 
   def UnsignedByte[] eth_getCode(EVMWord address, EVMWord blockNumber, String tag) {
@@ -203,9 +225,9 @@ class JsonRPCWrapper {
       '[{"from":"%s","to":"%s","gas":"%s","gasPrice":"%s","value":"%s","data":"%s"},"%s"]',
       from.toAddressString,
       to.toAddressString,
-      gas.toTrimmedString,
-      gasPrice.toTrimmedString,
-      value.toTrimmedString,
+      gas.displayEVMWordAsNumber,
+      gasPrice.displayEVMWordAsNumber,
+      value.displayEVMWordAsNumber,
       data.toHex,
       identifyBlock(blockNumber, tag)
     )
@@ -218,9 +240,9 @@ class JsonRPCWrapper {
       '[{"from":"%s","to":"%s","gas":"%s","gasPrice":"%s","value":"%s","data":"%s"}]',
       from.toAddressString,
       to.toAddressString,
-      gas.toTrimmedString,
-      gasPrice.toTrimmedString,
-      value.toTrimmedString,
+      gas.displayEVMWordAsNumber,
+      gasPrice.displayEVMWordAsNumber,
+      value.displayEVMWordAsNumber,
       data.toHex
     )
     EVMWord.fromString(wrapDataFetch("eth_estimateGas", params).asJsonObject.get("result").asString)
@@ -240,9 +262,9 @@ class JsonRPCWrapper {
   }
 
   def EVMWord eth_getBlockByHash_size(EVMWord blockHash) {
-    val params = String.format('["%s", false]', blockHash.toString)
+    val params = String.format('["%s", false]', blockHash)
     val fetchResult = wrapDataFetch("eth_getBlockByHash", params).asJsonObject.get("result").asJsonObject
-    EVMWord.fromString(fetchResult.get("size").asString)
+    new EVMWord(fetchResult.get("size").asString.fromHex, false)
   }
 
   def List<EVMWord> eth_getBlockByHash_transactionHashes(EVMWord blockHash) {
@@ -271,9 +293,9 @@ class JsonRPCWrapper {
   }
 
   def EVMWord eth_getBlockByNumber_size(EVMWord blockNumber, String tag) {
-    val params = String.format('["%s", false]', identifyBlock(blockNumber, tag).toString)
+    val params = String.format('["%s", false]', identifyBlock(blockNumber, tag))
     val fetchResult = wrapDataFetch("eth_getBlockByNumber", params).asJsonObject.get("result").asJsonObject
-    EVMWord.fromString(fetchResult.get("size").asString)
+    new EVMWord(fetchResult.get("size").asString.fromHex, false)
   }
 
   def List<EVMWord> eth_getBlockByNumber_transactionHashes(EVMWord blockNumber, String tag) {
@@ -283,18 +305,18 @@ class JsonRPCWrapper {
   }
 
   def Transaction eth_getTransactionByHash(EVMWord transactionHash) {
-    val params = String.format('["%s"]', transactionHash.toString)
+    val params = String.format('["%s"]', transactionHash)
     new Transaction(wrapDataFetch("eth_getTransactionByHash", params).asJsonObject.get("result").asJsonObject)
   }
 
   def Transaction eth_getTransactionByBlockHashAndIndex(EVMWord blockHash, EVMWord index) {
-    val params = String.format('["%s","%s"]', blockHash.toString, index.toString)
+    val params = String.format('["%s","%s"]', blockHash.toString, index.reverse.displayEVMWordAsNumber)
     new Transaction(
       wrapDataFetch("eth_getTransactionByBlockHashAndIndex", params).asJsonObject.get("result").asJsonObject)
   }
 
   def Transaction eth_getTransactionByBlockNumberAndIndex(EVMWord blockNumber, String tag, EVMWord index) {
-    val params = String.format('["%s","%s"]', identifyBlock(blockNumber, tag), index.toString)
+    val params = String.format('["%s","%s"]', identifyBlock(blockNumber, tag), index.reverse.displayEVMWordAsNumber)
     new Transaction(
       wrapDataFetch("eth_getTransactionByBlockNumberAndIndex", params).asJsonObject.get("result").asJsonObject)
   }
@@ -305,12 +327,12 @@ class JsonRPCWrapper {
   }
 
   def Block eth_getUncleByBlockHashAndIndex(EVMWord blockHash, EVMWord index) {
-    val params = String.format('["%s","%s"]', blockHash.toString, index.toString)
+    val params = String.format('["%s","%s"]', blockHash.toString, index.reverse.displayEVMWordAsNumber)
     new Block(wrapDataFetch("eth_getUncleByBlockHashAndIndex", params).asJsonObject.get("result").asJsonObject)
   }
 
   def Block eth_getUncleByBlockNumberAndIndex(EVMWord blockNumber, String tag, EVMWord index) {
-    val params = String.format('["%s","%s"]', identifyBlock(blockNumber, tag), index.toGoTrimmedString)
+    val params = String.format('["%s","%s"]', identifyBlock(blockNumber, tag), index.reverse.displayEVMWordAsNumber)
     new Block(wrapDataFetch("eth_getUncleByBlockNumberAndIndex", params).asJsonObject.get("result").asJsonObject)
   }
 

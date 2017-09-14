@@ -30,11 +30,11 @@ class Transaction {
   @Accessors private boolean isData // opposing to being init
 
   new(JsonObject obj) {
-    nonce = EVMWord.fromString(obj.get("nonce").asString)
-    gasPrice = EVMWord.fromString(obj.get("gasPrice").asString)
-    gasLimit = EVMWord.fromString(obj.get("gas").asString)
+    nonce = new EVMWord(obj.get("nonce").asString.fromHex, false)
+    gasPrice = new EVMWord(obj.get("gasPrice").asString.fromHex, false)
+    gasLimit = new EVMWord(obj.get("gas").asString.fromHex, false)
 
-    value = EVMWord.fromString(obj.get("value").asString)
+    value = new EVMWord(obj.get("value").asString.fromHex, false)
 
     v = fromHex(obj.get("v").asString).map[new UnsignedByte(it)].get(0)
     r = EVMWord.fromString(obj.get("r").asString)

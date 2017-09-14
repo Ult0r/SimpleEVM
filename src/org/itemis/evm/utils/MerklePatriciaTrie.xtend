@@ -376,7 +376,7 @@ class MerklePatriciaTrie {
     @Accessors private List<UnsignedByte> elements = newArrayList
 
     new(UnsignedByte[] array) {
-      this.elements.addAll(array.map[copy])
+      this.elements.addAll(array)
     }
 
     override equals(Object other) {

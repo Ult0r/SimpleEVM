@@ -25,8 +25,8 @@ class JsonRPCWrapperTest {
   def void testIdentifyBlock() {
     val EVMWord zero = new EVMWord(0)
 
-    Assert.assertEquals(identifyBlock(zero, null), zero.toTrimmedString)
-    Assert.assertEquals(identifyBlock(zero, "earliest"), zero.toTrimmedString)
+    Assert.assertEquals(identifyBlock(zero, null), "0x0")
+    Assert.assertEquals(identifyBlock(zero, "earliest"), "0x0")
     Assert.assertEquals(identifyBlock(null, "earliest"), "earliest")
   }
 
@@ -140,7 +140,7 @@ class JsonRPCWrapperTest {
       new EVMWord(4079011),
       null
     ).isZero)
-
+    
     Assert.assertEquals(eth_getBalance(
       EVMWord.fromString("0xb19264f813465b8e6147ed011c7761c71054e91f"),
       new EVMWord(4079011),
@@ -160,7 +160,7 @@ class JsonRPCWrapperTest {
     val EVMWord offset = new EVMWord(0)
     val EVMWord block = new EVMWord(4000000)
 
-    val EVMWord result = EVMWord.fromString("0x000001f568875f378bf6d170b790967fe429c81a")
+    val EVMWord result = EVMWord.fromString("0x000000000000000000000000000001f568875f378bf6d170b790967fe429c81a")
 
     Assert.assertEquals(eth_getStorageAt(address, offset, block, null), result)
   }
@@ -207,7 +207,7 @@ class JsonRPCWrapperTest {
   def void testEth_getCode() {
     val EVMWord address = EVMWord.fromString("0xa68722974c163a0D26983c50891112e7A4e96c99")
 
-    Assert.assertEquals(eth_getCode(address, null, "latest").length, 1106)
+    Assert.assertEquals(eth_getCode(address, null, "latest").length, 553)
   }
 
   @Test(expected=UnsupportedOperationException)
@@ -353,6 +353,7 @@ class JsonRPCWrapperTest {
       "0x98afba7bfde015e36a84eb5a9540c79952ddf4176df0a87bea2591a2063cf398")
 
     Assert.assertEquals(eth_getTransactionReceipt(transactionHash).blockNumber, new EVMWord(4079010))
+    Assert.assertEquals(eth_getTransactionReceipt(transactionHash).cumulativeGasUsed, new EVMWord(1992359))
   }
 
   @Test

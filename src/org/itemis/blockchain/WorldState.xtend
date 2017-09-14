@@ -36,25 +36,24 @@ class WorldState {
     conn.close
   }
 
-  def initAccount(EVMWord address, EVMWord balance) {
-    val query = String.format(
-      "INSERT INTO accounts VALUES ('%s', '%s', '%s', '%s', '%s', %s)",
-      address.toHexString.substring(2),
-      EMPTY_EVMWORD,
-      balance.toHexString.substring(2),
-      MerklePatriciaTrie.Null.hashCode,
-      keccak256(""),
-      "null"
-    )
-    id.query(query)
-  }
-
   def loadGenesisState() {
+    val conn = id.connection
+    
     val iter = MainnetAllocData.mainnetAllocDataQueryIterator
     while(iter.hasNext) {
       val e = iter.next
-      initAccount(e.key, e.value)
+      conn.query(String.format(
+        "INSERT INTO accounts VALUES ('%s', '%s', '%s', '%s', '%s', %s)",
+        e.key.formatForQuery,
+        EMPTY_EVMWORD,
+        e.value.formatForQuery,
+        new MerklePatriciaTrie().trieRoot.formatForQuery,
+        keccak256("").formatForQuery,
+        "null"
+      ))
     }
+    
+    conn.close
   }
 
   def Account getAccountAt(EVMWord address) {

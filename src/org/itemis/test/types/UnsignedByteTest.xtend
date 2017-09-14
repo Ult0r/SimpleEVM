@@ -13,6 +13,8 @@ package org.itemis.test.types
 import org.junit.Test
 import org.itemis.types.UnsignedByte
 import org.junit.Assert
+import org.itemis.evm.OverflowException
+import org.itemis.types.Nibble
 
 class UnsignedByteTest {
   private val UnsignedByte zero = new UnsignedByte(0)
@@ -26,14 +28,14 @@ class UnsignedByteTest {
 
   @Test
   def void testGetHigherNibble() {
-    Assert.assertEquals(zero.higherNibble, zero)
-    Assert.assertEquals(_0xE5.higherNibble, new UnsignedByte(0xE))
+    Assert.assertEquals(zero.higherNibble, new Nibble(0x0))
+    Assert.assertEquals(_0xE5.higherNibble, new Nibble(0xE))
   }
 
   @Test
   def void testGetLowerNibble() {
-    Assert.assertEquals(zero.lowerNibble, zero)
-    Assert.assertEquals(_0xE5.lowerNibble, new UnsignedByte(0x5))
+    Assert.assertEquals(zero.lowerNibble, new Nibble(0x0))
+    Assert.assertEquals(_0xE5.lowerNibble, new Nibble(0x5))
   }
 
   @Test
@@ -61,44 +63,42 @@ class UnsignedByteTest {
   def void testInvert() {
     var UnsignedByte invert = new UnsignedByte(0)
     Assert.assertEquals(zero, invert)
-    invert.invert
+    invert = invert.invert
     Assert.assertEquals(new UnsignedByte(0xFF), invert)
 
     invert.setValue(0x1A)
     Assert.assertNotEquals(zero, invert)
     Assert.assertNotEquals(_0xE5, invert)
-    invert.invert
+    invert = invert.invert
     Assert.assertEquals(_0xE5, invert)
   }
 
-  @Test
+  @Test(expected=OverflowException)
   def void testInc() {
     var UnsignedByte inc = new UnsignedByte(0)
     Assert.assertEquals(zero, inc)
-    Assert.assertFalse(inc.inc)
+    inc = inc.inc
     Assert.assertEquals(1, inc.getValue)
-    Assert.assertFalse(inc.inc)
+    inc = inc.inc
     Assert.assertEquals(2, inc.getValue)
 
     inc.setValue(0xFF)
     Assert.assertNotEquals(zero, inc)
-    Assert.assertTrue(inc.inc)
-    Assert.assertEquals(zero, inc)
+    inc = inc.inc
   }
 
-  @Test
+  @Test(expected=OverflowException)
   def void testAdd() {
     var UnsignedByte add = new UnsignedByte(0)
     Assert.assertEquals(zero, add)
-    Assert.assertFalse(add.add(zero))
+    add = add.add(zero)
     Assert.assertEquals(zero, add)
-    Assert.assertFalse(add.add(_0xE5))
+    add = add.add(_0xE5)
     Assert.assertEquals(_0xE5, add)
 
     add.setValue(0xFF)
     Assert.assertNotEquals(zero, add)
-    Assert.assertTrue(add.add(_0xE5))
-    Assert.assertEquals(0xE4, add.getValue)
+    add = add.add(_0xE5)
   }
 
   @Test

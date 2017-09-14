@@ -13,8 +13,11 @@ import com.google.gson.JsonObject
 import org.itemis.types.EVMWord
 import java.util.List
 import org.eclipse.xtend.lib.annotations.Accessors
+import org.itemis.utils.Utils
 
 class TransactionReceipt {
+  extension Utils u = new Utils
+  
   @Accessors EVMWord transactionHash
   @Accessors EVMWord transactionIndex
   @Accessors EVMWord blockHash
@@ -28,11 +31,11 @@ class TransactionReceipt {
 
   new(JsonObject obj) {
     transactionHash = EVMWord.fromString(obj.get("transactionHash").asString)
-    transactionIndex = EVMWord.fromString(obj.get("transactionIndex").asString)
+    transactionIndex = new EVMWord(obj.get("transactionIndex").asString.fromHex, false)
     blockHash = EVMWord.fromString(obj.get("blockHash").asString)
-    blockNumber = EVMWord.fromString(obj.get("blockNumber").asString)
-    cumulativeGasUsed = EVMWord.fromString(obj.get("cumulativeGasUsed").asString)
-    gasUsed = EVMWord.fromString(obj.get("gasUsed").asString)
+    blockNumber = new EVMWord(obj.get("blockNumber").asString.fromHex, false)
+    cumulativeGasUsed = new EVMWord(obj.get("cumulativeGasUsed").asString.fromHex, false)
+    gasUsed = new EVMWord(obj.get("gasUsed").asString.fromHex, false)
 
     isContractCreation = !obj.get("contractAddress").jsonNull
     if(isContractCreation) {

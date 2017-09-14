@@ -7,6 +7,7 @@ import java.sql.ResultSet
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.sql.Statement
+import org.itemis.types.EVMWord
 
 final class DataBaseWrapper {
   private final static Logger LOGGER = LoggerFactory.getLogger("Database")
@@ -85,5 +86,9 @@ final class DataBaseWrapper {
     } catch(Exception e) {
       LOGGER.info("batch failed: " + e.message)
     }
+  }
+  
+  def String formatForQuery(EVMWord word) {
+    word.toHexString.substring(2)
   }
 }

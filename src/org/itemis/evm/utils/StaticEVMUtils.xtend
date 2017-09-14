@@ -32,7 +32,7 @@ class StaticEVMUtils {
     if(data === null) {
       #[new UnsignedByte(0x80)]
     } else if(data.length == 1 && data.get(0).intValue < 0x80) {
-      #[data.get(0).copy]
+      #[data.get(0)]
     } else if(data.length < 56) {
       var List<UnsignedByte> result = newArrayList
       result.addAll(Arrays.copyOf(data, data.length))

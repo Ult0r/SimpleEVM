@@ -55,7 +55,7 @@ class EVMWordIndexedList<T> {
 
   def EVMWordIndexedList<T> add(T value) {
     set(size, value)
-    size.inc
+    size = size.inc
     this
   }
 
@@ -70,15 +70,15 @@ class EVMWordIndexedList<T> {
 
   def T remove(EVMWord index) {
     val value = get(index)
-    var first = index.copy
-    var second = first.copy.inc
+    var first = index
+    var second = first.inc
     while(!second.equals(size)) {
       set(first, get(second))
       set(second, null)
       first.setTo(second)
-      second.inc
+      second = second.inc
     }
-    size.dec
+    size = size.dec
     value
   }
 
@@ -111,7 +111,7 @@ class EVMWordIndexedList<T> {
     var counter = new EVMWord(0)
     while(!counter.equals(size)) {
       result += get(counter).toString + "\n"
-      counter.inc
+      counter = counter.inc
     }
 
     result
