@@ -18,16 +18,28 @@ final class DataBaseWrapper {
     TRIE
   }
   
-  private final static String STATE_LOCATION = "db" + File.separator + "state" + File.separator + "state" + ";shutdown=true"
-  private final static String ALLOC_LOCATION = "db" + File.separator + "alloc" + File.separator + "alloc" + ";shutdown=true"
-  private final static String TRIE_LOCATION  = "db" + File.separator + "trie" + File.separator + "trie" + ";shutdown=true"
+  private final static String STATE_LOCATION = "db" + File.separator + "state" + File.separator + "%s" + File.separator + "%s" + ";shutdown=true"
+  private final static String ALLOC_LOCATION = "db" + File.separator + "alloc" + File.separator + "%s" + File.separator + "%s" + ";shutdown=true"
+  private final static String TRIE_LOCATION  = "db" + File.separator + "trie"  + File.separator + "%s" + File.separator + "%s" + ";shutdown=true"
+  
+  private def String defaultName(DataBaseID db) {
+    switch (db) {
+      case STATE: "state"
+      case ALLOC: "alloc"
+      case TRIE:  "trie"
+    }
+  }
   
   def Connection getConnection(DataBaseID db) {
+    getConnection(db, defaultName(db))
+  }
+  
+  def Connection getConnection(DataBaseID db, String dbName) {
     LOGGER.debug("accessing db " + db)
     val conn = DriverManager.getConnection("jdbc:hsqldb:file:" + switch (db) {
-      case STATE: STATE_LOCATION,
-      case ALLOC: ALLOC_LOCATION,
-      case TRIE:  TRIE_LOCATION
+      case STATE: String.format(STATE_LOCATION, dbName, dbName),
+      case ALLOC: String.format(ALLOC_LOCATION, dbName, dbName),
+      case TRIE:  String.format(TRIE_LOCATION, dbName, dbName)
     })
     
     conn.autoCommit = true
@@ -35,7 +47,11 @@ final class DataBaseWrapper {
   }
   
   def boolean createTable(DataBaseID db, String name, String fields) {
-    val conn = getConnection(db)
+    createTable(db, defaultName(db), name, fields)
+  }
+  
+  def boolean createTable(DataBaseID db, String dbName, String name, String fields) {
+    val conn = getConnection(db, dbName)
     val result = createTable(conn, name, fields)
     conn.close
     result 
@@ -55,7 +71,11 @@ final class DataBaseWrapper {
   }
   
   def ResultSet query(DataBaseID db, String query) {
-    val conn = getConnection(db)
+    query(db, defaultName(db), query)
+  }
+  
+  def ResultSet query(DataBaseID db, String dbName, String query) {
+    val conn = getConnection(db, dbName)
     val result = query(conn, query)
     conn.close
     result 
@@ -74,7 +94,11 @@ final class DataBaseWrapper {
   }
   
   def void executeBatch(DataBaseID db, Statement batch) {
-    val conn = getConnection(db)
+    executeBatch(db, defaultName(db), batch)
+  }
+  
+  def void executeBatch(DataBaseID db, String dbName, Statement batch) {
+    val conn = getConnection(db, dbName)
     executeBatch(conn, batch)
     conn.close
   }

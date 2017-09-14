@@ -24,8 +24,12 @@ import org.itemis.types.EVMWord
 import org.itemis.utils.StaticUtils
 
 class MerklePatriciaTrie {
+  private final String name
   @Accessors private Node root = new Null
-  @Accessors private Map<UnsignedByteList, Node> lookUp = newHashMap
+  @Accessors private Map<UnsignedByteList, Node> cache = newHashMap
+  new(String name) {
+    this.name = name
+  }
 
   def EVMWord getTrieRoot() {
     val _root = root.hash
@@ -140,7 +144,7 @@ class MerklePatriciaTrie {
       encodedPath.addAll(key)
       this.value = value
 
-      trie.lookUp.put(hash(), this)
+      trie.cache.put(hash(), this)
     }
 
     override hash() {
@@ -164,7 +168,7 @@ class MerklePatriciaTrie {
         this.value = value
         this
       } else {
-        trie.lookUp.remove(hash)
+        trie.cache.remove(hash)
         Node.fromTwoKeyValuePairs(trie, thisKey, this.value, key, value)
       }
     }
@@ -200,7 +204,7 @@ class MerklePatriciaTrie {
       encodedPath.addAll(path)
       this.nextKey = key
 
-      trie.lookUp.put(hash(), this)
+      trie.cache.put(hash(), this)
     }
 
     override hash() {
@@ -222,14 +226,14 @@ class MerklePatriciaTrie {
     }
 
     override putElement(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value) {
-      trie.lookUp.remove(hash)
+      trie.cache.remove(hash)
       val thisKey = encodedPath.subList(encodedPathOffset)
 
       if(key.startsWith(thisKey)) { // extension -> branch
-        var Node child = trie.lookUp.get(this.nextKey)
+        var Node child = trie.cache.get(this.nextKey)
         child = child.putElement(trie, key.unsharedSuffix(thisKey), value)
         nextKey = child.hash
-        trie.lookUp.put(hash, this)
+        trie.cache.put(hash, this)
         this
       } else {
         val sharedPrefix = thisKey.sharedPrefix(key)
@@ -282,7 +286,7 @@ class MerklePatriciaTrie {
         toHex(encodedPath.toUnsignedBytes),
         prefix,
         prefix,
-        trie.lookUp.get(nextKey).toGraphViz(trie, prefix + "_EXTENSION")
+        trie.cache.get(nextKey).toGraphViz(trie, prefix + "_EXTENSION")
       )
     }
   }
@@ -300,7 +304,7 @@ class MerklePatriciaTrie {
         paths.set(e.key.intValue, e.value)
       }
       this.value = value
-      trie.lookUp.put(hash, this)
+      trie.cache.put(hash, this)
     }
 
     override hash() {
@@ -325,12 +329,12 @@ class MerklePatriciaTrie {
     }
 
     override putElement(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value) {
-      trie.lookUp.remove(hash)
+      trie.cache.remove(hash)
 
       if(key.length == 0) {
         this.value = value
       } else {
-        val child = trie.lookUp.get(this.paths.get(key.head.intValue))
+        val child = trie.cache.get(this.paths.get(key.head.intValue))
         if(child === null) {
           val leaf = new Leaf(trie, key.tail, value)
           this.paths.set(key.head.intValue, leaf.hash)
@@ -339,7 +343,7 @@ class MerklePatriciaTrie {
         }
       }
 
-      trie.lookUp.put(hash, this)
+      trie.cache.put(hash, this)
       this
     }
 
@@ -353,7 +357,7 @@ class MerklePatriciaTrie {
       ))
 
       for (i : 0 .. 15) {
-        var child = trie.lookUp.get(paths.get(i))
+        var child = trie.cache.get(paths.get(i))
 
         if(child !== null) {
           val asHex = toHex(new Nibble(i))

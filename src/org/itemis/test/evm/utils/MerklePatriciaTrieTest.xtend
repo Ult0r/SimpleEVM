@@ -30,13 +30,13 @@ class MerklePatriciaTrieTest {
 
   @Test
   def void testEmptyTrie() {
-    Assert.assertEquals(new MerklePatriciaTrie().root.hash.elements.toHex,
+    Assert.assertEquals(new MerklePatriciaTrie("testEmptyTrie").root.hash.elements.toHex,
       "0x56E81F171BCC55A6FF8345E692C0F86E5B48E01B996CADC001622FB5E363B421")
   }
 
   @Test
   def void testThreeEntries() {
-    val MerklePatriciaTrie trie = new MerklePatriciaTrie
+    val MerklePatriciaTrie trie = new MerklePatriciaTrie("testThreeEntries")
 
     trie.putElement(new NibbleList("doe".bytes.map[new UnsignedByte(it)].toNibbles), "reindeer".bytes.map [
       new UnsignedByte(it)
@@ -53,7 +53,7 @@ class MerklePatriciaTrieTest {
 
   @Test
   def void testWithAllocData() {
-    val MerklePatriciaTrie trie = new MerklePatriciaTrie
+    val MerklePatriciaTrie trie = new MerklePatriciaTrie("testWithAllocData")
 
     val iter = MainnetAllocData.mainnetAllocDataQueryIterator
     while(iter.hasNext) {

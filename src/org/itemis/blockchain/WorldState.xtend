@@ -47,7 +47,7 @@ class WorldState {
         e.key.formatForQuery,
         EMPTY_EVMWORD,
         e.value.formatForQuery,
-        new MerklePatriciaTrie().trieRoot.formatForQuery,
+        new EVMWord(new MerklePatriciaTrie.Null().hash.elements, true).formatForQuery,
         keccak256("").formatForQuery,
         "null"
       ))
