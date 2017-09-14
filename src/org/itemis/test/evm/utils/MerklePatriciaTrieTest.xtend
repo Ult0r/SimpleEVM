@@ -53,14 +53,14 @@ class MerklePatriciaTrieTest {
 
   @Test
   def void testWithAllocData() {
-//    val MerklePatriciaTrie trie = new MerklePatriciaTrie
-//
-//    val iter = MainnetAllocData.mainnetAllocDataQueryIterator
-//    while(iter.hasNext) {
-//      val e = iter.next
-//      trie.addAccount(e.key, e.value)
-//    }
-//    Assert.assertEquals(trie.trieRoot, eth_getBlockByNumber(new EVMWord(0), null).stateRoot)
+    val MerklePatriciaTrie trie = new MerklePatriciaTrie
+
+    val iter = MainnetAllocData.mainnetAllocDataQueryIterator
+    while(iter.hasNext) {
+      val e = iter.next
+      trie.addAccount(e.key, e.value)
+    }
+    Assert.assertEquals(trie.trieRoot, eth_getBlockByNumber(new EVMWord(0), null).stateRoot)
   }
 
   def private void addAccount(MerklePatriciaTrie trie, EVMWord address, EVMWord balance) {
