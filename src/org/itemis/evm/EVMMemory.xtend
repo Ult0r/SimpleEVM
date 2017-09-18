@@ -10,24 +10,32 @@
 
 package org.itemis.evm
 
-import org.itemis.types.EVMWordIndexedList
 import org.itemis.types.EVMWord
+import java.util.Map
 
 //256-bit-word-adressed byte array
 //volatile and dynamically sized
 class EVMMemory {
-  private final EVMWordIndexedList<Byte> elements = new EVMWordIndexedList()
-
+  private final Map<EVMWord, Byte> elements = newHashMap
+  private EVMWord size = new EVMWord(0)
+  
   def Byte get(EVMWord index) {
     elements.get(index)
   }
 
-  def EVMMemory set(EVMWord index, Byte value) {
-    elements.set(index, value)
+  def EVMMemory put(EVMWord index, Byte value) {
+    size = size.inc
+    elements.put(index, value)
+    this
+  }
+  
+  def EVMMemory remove(EVMWord index) {
+    size = size.dec
+    elements.remove(index)
     this
   }
 
-  def EVMWord usedBytes() {
-    elements.size
+  def EVMWord size() {
+    size
   }
 }

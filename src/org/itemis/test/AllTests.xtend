@@ -12,7 +12,6 @@ package org.itemis.test;
 
 import org.itemis.test.types.EVMWordTest;
 import org.itemis.test.types.UnsignedByteTest;
-import org.itemis.test.types.EVMWordIndexedListTest;
 import org.itemis.test.utils.UtilsTest;
 import org.itemis.test.ressources.AllocTest;
 import org.junit.runner.RunWith;
@@ -36,7 +35,6 @@ import org.itemis.test.blockchain.WorldStateTest
   DataFetchTest,
   JsonRPCWrapperTest,
   
-  EVMWordIndexedListTest,
   EVMWordTest,
   UnsignedByteTest,
   
