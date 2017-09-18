@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="ERROR" name="log4j2.xml">
   <Properties>
-    <Property name="log_pattern">[%d{MM:dd:yyyy HH:mm:ss.SSS}] [%logger{36}] %-5level: [%C#%M] %msg%n</Property>
+    <Property name="log_pattern">[%d{MM:dd:yyyy HH:mm:ss.SSS}] [%logger{36}] %-5level: %msg%n</Property>
+    <Property name="debug_pattern">[%d{MM:dd:yyyy HH:mm:ss.SSS}] [%logger{36}] %-5level: [%C#%M] %msg%n</Property>
   </Properties>
   
   <Appenders>
@@ -23,7 +24,7 @@
     </File>
 	
     <File name="Debug" fileName="log/debug.log" append="false">
-      <PatternLayout pattern="${log_pattern}"/>
+      <PatternLayout pattern="${debug_pattern}"/>
       <ThresholdFilter level="INFO" onMatch="DENY" onMismatch="NEUTRAL"/>
     </File>
 	
@@ -32,6 +33,10 @@
     </File>
 	
     <File name="Database" fileName="log/database.log" append="false">
+      <PatternLayout pattern="${log_pattern}"/>
+    </File>
+	
+    <File name="Trie" fileName="log/trie.log" append="false">
       <PatternLayout pattern="${log_pattern}"/>
     </File>
 	
@@ -52,6 +57,10 @@
     
     <Logger name="Database" level="trace">
       <AppenderRef ref="Database" level="INFO"/>
+    </Logger>
+    
+    <Logger name="Trie" level="trace">
+      <AppenderRef ref="Trie" level="INFO"/>
     </Logger>
 	
     <Root level="error">
