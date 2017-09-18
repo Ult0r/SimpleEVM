@@ -45,7 +45,7 @@ class EVMUtilsTest {
     Assert.assertEquals(result.get(7).toASCII, "a")
     Assert.assertEquals(result.get(8).toASCII, "t")
 
-    var List<UnsignedByte> emptyList = newArrayList
+    var List<UnsignedByte[]> emptyList = newArrayList
     result = rlp(emptyList)
     Assert.assertEquals(result.length, 1)
     Assert.assertEquals(result.get(0).toHexString, "0xC0")
