@@ -59,11 +59,9 @@ class MerklePatriciaTrieTest {
     val MerklePatriciaTrie trie = new MerklePatriciaTrie("testWithAllocData")
 
     val iter = MainnetAllocData.mainnetAllocDataQueryIterator
-    var i = 0
     while(iter.hasNext) {
       val e = iter.next
       trie.addAccount(e.key, e.value)
-      println(i++)
     }
     trie.flush
     
