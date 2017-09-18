@@ -22,44 +22,24 @@ import org.itemis.evm.utils.MerklePatriciaTrie.Node
 import org.itemis.evm.utils.MerklePatriciaTrie.UnsignedByteList
 import org.itemis.types.EVMWord
 import org.itemis.utils.StaticUtils
-import org.itemis.utils.db.DataBaseWrapper.DataBaseID
-import org.itemis.utils.db.DataBaseWrapper
-import com.google.common.cache.CacheBuilder
-import com.google.common.cache.LoadingCache
-import com.google.common.cache.RemovalListener
-import com.google.common.cache.RemovalNotification
-import com.google.common.cache.CacheLoader
 
 class MerklePatriciaTrie {
-  extension DataBaseWrapper db = new DataBaseWrapper
-  
-  private final static int MAX_CACHE_SIZE = 100
-  
   private final String name
-  private boolean database_created = false
   @Accessors private Node root = new Null
-  @Accessors private Map<UnsignedByteList, Node> cache = newHashMap
-  
-  private LoadingCache<UnsignedByteList, Node> _cache = CacheBuilder.newBuilder()
-                                                                  .maximumSize(MAX_CACHE_SIZE)
-                                                                  .removalListener(new WriteCacheToDBListener)
-                                                                  .build(
-                                                                    new CacheLoader<UnsignedByteList, Node>() {
-                                                                      override load(UnsignedByteList key) throws Exception {
-                                                                        //TODO
-                                                                        throw new UnsupportedOperationException("TODO: auto-generated method stub")
-                                                                      }
-                                                                    }
-                                                                  )
+  private MerklePatriciaTrieCache cache
+  @Accessors private boolean keepIntermediates = true
   
   new(String name) {
-    this.name = name
+    this(name, 32, 140)
   }
 
+  new(String name, int maxPrefixLength, int maxDataLength) {
+    this.name = name
+    this.cache = new MerklePatriciaTrieCache(name, maxPrefixLength, maxDataLength)
+  }
+  
   def EVMWord getTrieRoot() {
     val _root = root.hash
-//    println(StaticUtils.toHex(_root.elements))
-//    println(_root.elements.get(0))
     if(_root.size < 32) {
       StaticUtils.keccak256(_root.elements.map[byteValue])
     } else {
@@ -75,34 +55,8 @@ class MerklePatriciaTrie {
     String.format("digraph G {\n%s}", root.toGraphViz(this, "  ROOT"))
   }
   
-  private def Node lookUp(UnsignedByteList hash) {
-    if (cache.containsKey(hash)) {
-      cache.get(hash)
-    } else if (database_created) {
-      val query = "SELECT * FROM nodes"
-      val resultSet = DataBaseID.TRIE.query(name, query)
-      //TODO: convert to node
-      val node = null
-      if (cache.size < MAX_CACHE_SIZE) {
-        
-      }
-      node
-    } else {
-      null
-    }
-  }
-  
-  private def void putNode(Node node) {
-    if (cache.size < MAX_CACHE_SIZE) {
-      //TODO
-    }
-  }
-  
-  protected static final class WriteCacheToDBListener implements RemovalListener<UnsignedByteList, Node> {
-    override onRemoval(RemovalNotification<UnsignedByteList, Node> notification) {
-      //TODO
-      throw new UnsupportedOperationException("TODO: auto-generated method stub")
-    }
+  def void flush() {
+    cache.flush
   }
 
   static abstract class Node {
@@ -125,7 +79,7 @@ class MerklePatriciaTrie {
     def abstract Node putElement(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value)
 
     def abstract String toGraphViz(MerklePatriciaTrie trie, String prefix)
-
+    
     def static Node fromTwoKeyValuePairs(MerklePatriciaTrie trie, NibbleList firstKey, UnsignedByte[] firstValue,
       NibbleList secondKey, UnsignedByte[] secondValue) {
       if(firstKey.length == 0 && secondKey.length == 0) {
@@ -186,8 +140,14 @@ class MerklePatriciaTrie {
   static class Leaf extends Node {
     // it can be assumed that encodedPath is always of even length
     // given that it's padded for odd lengths
+    @Accessors
     private NibbleList encodedPath = new NibbleList
+    @Accessors
     private UnsignedByte[] value
+  
+    new() {
+      
+    }
 
     new(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value) {
       if(key.length % 2 == 0) {
@@ -199,7 +159,7 @@ class MerklePatriciaTrie {
       encodedPath.addAll(key)
       this.value = value
 
-      trie.cache.put(hash(), this)
+      trie.cache.putNode(this)
     }
 
     override hash() {
@@ -223,7 +183,9 @@ class MerklePatriciaTrie {
         this.value = value
         this
       } else {
-        trie.cache.remove(hash)
+        if (!trie.keepIntermediates) {
+          trie.cache.removeNode(this)
+        }
         Node.fromTwoKeyValuePairs(trie, thisKey, this.value, key, value)
       }
     }
@@ -243,8 +205,14 @@ class MerklePatriciaTrie {
   static class Extension extends Node {
     // it can be assumed that encodedPath is always of even length
     // given that it's padded for odd lengths
+    @Accessors
     private NibbleList encodedPath = new NibbleList
+    @Accessors
     private UnsignedByteList nextKey
+  
+    new() {
+      
+    }
 
     new(MerklePatriciaTrie trie, NibbleList path, UnsignedByteList key) {
       if(path.length == 0) {
@@ -259,7 +227,7 @@ class MerklePatriciaTrie {
       encodedPath.addAll(path)
       this.nextKey = key
 
-      trie.cache.put(hash(), this)
+      trie.cache.putNode(this)
     }
 
     override hash() {
@@ -281,14 +249,17 @@ class MerklePatriciaTrie {
     }
 
     override putElement(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value) {
-      trie.cache.remove(hash)
+      if (!trie.keepIntermediates) {
+        trie.cache.removeNode(this)
+      }
+      
       val thisKey = encodedPath.subList(encodedPathOffset)
 
       if(key.startsWith(thisKey)) { // extension -> branch
-        var Node child = trie.cache.get(this.nextKey)
+        var Node child = trie.cache.lookUp(this.nextKey)
         child = child.putElement(trie, key.unsharedSuffix(thisKey), value)
         nextKey = child.hash
-        trie.cache.put(hash, this)
+        trie.cache.putNode(this)
         this
       } else {
         val sharedPrefix = thisKey.sharedPrefix(key)
@@ -341,14 +312,20 @@ class MerklePatriciaTrie {
         toHex(encodedPath.toUnsignedBytes),
         prefix,
         prefix,
-        trie.cache.get(nextKey).toGraphViz(trie, prefix + "_EXTENSION")
+        trie.cache.lookUp(nextKey).toGraphViz(trie, prefix + "_EXTENSION")
       )
     }
   }
 
   static class Branch extends Node {
+    @Accessors
     private List<UnsignedByteList> paths = newArrayList
+    @Accessors
     private UnsignedByte[] value
+  
+    new() {
+      
+    }
 
     new(MerklePatriciaTrie trie, Map<Nibble, UnsignedByteList> entries, UnsignedByte[] value) {
       for (i : 0 .. 15) {
@@ -359,7 +336,7 @@ class MerklePatriciaTrie {
         paths.set(e.key.intValue, e.value)
       }
       this.value = value
-      trie.cache.put(hash, this)
+      trie.cache.putNode(this)
     }
 
     override hash() {
@@ -384,12 +361,14 @@ class MerklePatriciaTrie {
     }
 
     override putElement(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value) {
-      trie.cache.remove(hash)
-
+      if (!trie.keepIntermediates) {
+        trie.cache.removeNode(this)
+      }
+      
       if(key.length == 0) {
         this.value = value
       } else {
-        val child = trie.cache.get(this.paths.get(key.head.intValue))
+        val child = trie.cache.lookUp(this.paths.get(key.head.intValue))
         if(child === null) {
           val leaf = new Leaf(trie, key.tail, value)
           this.paths.set(key.head.intValue, leaf.hash)
@@ -398,7 +377,7 @@ class MerklePatriciaTrie {
         }
       }
 
-      trie.cache.put(hash, this)
+      trie.cache.putNode(this)
       this
     }
 
@@ -412,7 +391,7 @@ class MerklePatriciaTrie {
       ))
 
       for (i : 0 .. 15) {
-        var child = trie.cache.get(paths.get(i))
+        var child = trie.cache.lookUp(paths.get(i))
 
         if(child !== null) {
           val asHex = toHex(new Nibble(i))

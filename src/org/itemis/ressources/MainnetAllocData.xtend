@@ -141,7 +141,7 @@ abstract class MainnetAllocData {
       val query = String.format(
         "SELECT COUNT(*) FROM alloc"
       )
-      val result = DataBaseID.ALLOC.query(query)
+      val result = DataBaseID.ALLOC.query("alloc", query)
       result.next
       result.getLong(1)
     } catch(Exception e) {
@@ -207,9 +207,9 @@ abstract class MainnetAllocData {
       fos.close
     }
     
-    DataBaseID.ALLOC.createTable("alloc", "(address BINARY(32) PRIMARY KEY, balance BINARY(32) NOT NULL)")
+    DataBaseID.ALLOC.createTable("alloc", "alloc", "(address BINARY(32) PRIMARY KEY, balance BINARY(32) NOT NULL)")
 
-    val conn = DataBaseID.ALLOC.connection
+    val conn = DataBaseID.ALLOC.getConnection("alloc")
     for (e : entries) {
       val query = String.format(
         "INSERT INTO alloc VALUES ('%s', '%s')",
@@ -228,7 +228,7 @@ abstract class MainnetAllocData {
       "SELECT * FROM alloc WHERE address = '%s'",
       address.toHexString.substring(2)
     )
-    val result = DataBaseID.ALLOC.query(query)
+    val result = DataBaseID.ALLOC.query("alloc", query)
     result.next
     new EVMWord(result.getBytes("balance"), true)
   }
@@ -239,7 +239,7 @@ abstract class MainnetAllocData {
     val query = String.format(
       "SELECT * FROM alloc"
     )
-    new AllocDataIterator(DataBaseID.ALLOC.query(query))
+    new AllocDataIterator(DataBaseID.ALLOC.query("alloc", query))
   }
 
   public static class AllocDataIterator implements Iterator<Pair<EVMWord, EVMWord>> {

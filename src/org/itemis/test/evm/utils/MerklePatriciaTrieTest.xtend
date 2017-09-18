@@ -22,11 +22,14 @@ import org.itemis.types.NibbleList
 import org.itemis.ressources.JsonRPCWrapper
 import org.itemis.types.EVMWord
 import org.junit.Assert
+import org.itemis.utils.db.DataBaseWrapper.DataBaseID
+import org.itemis.utils.db.DataBaseWrapper
 
 class MerklePatriciaTrieTest {
   extension Utils u = new Utils
   extension EVMUtils e = new EVMUtils
   extension JsonRPCWrapper j = new JsonRPCWrapper
+  extension DataBaseWrapper db = new DataBaseWrapper
 
   @Test
   def void testEmptyTrie() {
@@ -56,10 +59,25 @@ class MerklePatriciaTrieTest {
     val MerklePatriciaTrie trie = new MerklePatriciaTrie("testWithAllocData")
 
     val iter = MainnetAllocData.mainnetAllocDataQueryIterator
+    var i = 0
     while(iter.hasNext) {
       val e = iter.next
       trie.addAccount(e.key, e.value)
+      println(i++)
     }
+    trie.flush
+    
+    var conn = DataBaseID.TRIE.getConnection("testWithAllocData")
+    conn.query("SHUTDOWN")
+    conn.close
+    conn = DataBaseID.TRIE.getConnection("testWithAllocData")
+    val res = conn.query("SELECT COUNT(*) FROM nodes")
+    res.next
+    val size = res.getLong(1)
+    conn.query("SHUTDOWN")
+    conn.close
+    
+    Assert.assertEquals(size, 44410)
     Assert.assertEquals(trie.trieRoot, eth_getBlockByNumber(new EVMWord(0), null).stateRoot)
   }
 

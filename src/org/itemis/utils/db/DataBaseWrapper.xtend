@@ -8,6 +8,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.sql.Statement
 import org.itemis.types.EVMWord
+import java.sql.PreparedStatement
 
 final class DataBaseWrapper {
   private final static Logger LOGGER = LoggerFactory.getLogger("Database")
@@ -18,27 +19,20 @@ final class DataBaseWrapper {
     TRIE
   }
   
-  private final static String STATE_LOCATION = "db" + File.separator + "state" + File.separator + "%s" + File.separator + "%s" + ";shutdown=true"
-  private final static String ALLOC_LOCATION = "db" + File.separator + "alloc" + File.separator + "%s" + File.separator + "%s" + ";shutdown=true"
-  private final static String TRIE_LOCATION  = "db" + File.separator + "trie"  + File.separator + "%s" + File.separator + "%s" + ";shutdown=true"
+  private final static String OPTIONS =
+    ";shutdown=true" +
+    ";hsqldb.default_table_type=cached" +
+    ""
   
-  private def String defaultName(DataBaseID db) {
-    switch (db) {
-      case STATE: "state"
-      case ALLOC: "alloc"
-      case TRIE:  "trie"
-    }
-  }
-  
-  def Connection getConnection(DataBaseID db) {
-    getConnection(db, defaultName(db))
-  }
+  private final static String STATE_LOCATION = "db" + File.separator + "state" + File.separator + "%s" + File.separator + "%s" + OPTIONS
+  private final static String ALLOC_LOCATION = "db" + File.separator + "alloc" + File.separator + "%s" + File.separator + "%s" + OPTIONS
+  private final static String TRIE_LOCATION  = "db" + File.separator + "trie"  + File.separator + "%s" + File.separator + "%s" + OPTIONS
   
   def Connection getConnection(DataBaseID db, String dbName) {
-    LOGGER.debug("accessing db " + db)
+//    LOGGER.debug("accessing db " + db)
     val conn = DriverManager.getConnection("jdbc:hsqldb:file:" + switch (db) {
-      case STATE: String.format(STATE_LOCATION, dbName, dbName),
-      case ALLOC: String.format(ALLOC_LOCATION, dbName, dbName),
+      case STATE: String.format(STATE_LOCATION, dbName, dbName)
+      case ALLOC: String.format(ALLOC_LOCATION, dbName, dbName)
       case TRIE:  String.format(TRIE_LOCATION, dbName, dbName)
     })
     
@@ -46,32 +40,34 @@ final class DataBaseWrapper {
     conn
   }
   
-  def boolean createTable(DataBaseID db, String name, String fields) {
-    createTable(db, defaultName(db), name, fields)
+  def boolean createTable(DataBaseID db, String dbName, String name, String fields) {
+    createTable(db, dbName, name + " " + fields)
   }
   
-  def boolean createTable(DataBaseID db, String dbName, String name, String fields) {
+  def boolean createTable(DataBaseID db, String dbName, String table) {
     val conn = getConnection(db, dbName)
-    val result = createTable(conn, name, fields)
+    val result = createTable(conn, table)
     conn.close
     result 
   }
   
   def boolean createTable(Connection conn, String name, String fields) {
+    createTable(conn, name + " " + fields)
+  }
+  
+  def boolean createTable(Connection conn, String table) {
     try {
-      LOGGER.info("trying to create table: " + name + " " + fields) 
+      LOGGER.info("trying to create table: " + table) 
       conn.createStatement.execute(
-        String.format("CREATE TABLE %s %s", name, fields)
+        String.format("CREATE TABLE %s", table)
       )
       true
     } catch(Exception e) {
-      LOGGER.warn("failed to create table: " + name + " " + fields)
+      if (!e.message.contains("object name already exists")) {
+        LOGGER.warn("failed to create table: " + table + ": " + e.message)
+      }
       false
     }
-  }
-  
-  def ResultSet query(DataBaseID db, String query) {
-    query(db, defaultName(db), query)
   }
   
   def ResultSet query(DataBaseID db, String dbName, String query) {
@@ -83,18 +79,16 @@ final class DataBaseWrapper {
   
   def ResultSet query(Connection conn, String query) {
     try {
-      LOGGER.debug("trying to execute query: " + query)
+//      LOGGER.debug("trying to execute query: " + query)
       val statement = conn.createStatement()
       val hasResult = statement.execute(query)
       if (hasResult) statement.resultSet
     } catch(Exception e) {
-      LOGGER.info("query failed: " + e.message)
+      if (!e.message.contains("integrity constraint violation")) {
+        LOGGER.info("query failed: " + e.message)
+      }
       null
     }
-  }
-  
-  def void executeBatch(DataBaseID db, Statement batch) {
-    executeBatch(db, defaultName(db), batch)
   }
   
   def void executeBatch(DataBaseID db, String dbName, Statement batch) {
@@ -105,10 +99,25 @@ final class DataBaseWrapper {
   
   def void executeBatch(Connection conn, Statement batch) {
     try {
-      LOGGER.debug("trying to execute batch")
+//      LOGGER.debug("trying to execute batch: " + batch.toString)
       batch.executeBatch
     } catch(Exception e) {
-      LOGGER.info("batch failed: " + e.message)
+      if (!e.message.contains("integrity constraint violation")) {
+        LOGGER.info("batch failed: " + e.message)
+      }
+    }
+  }
+  
+  def ResultSet executePreparedStatement(PreparedStatement stmt) {
+    try {
+//      LOGGER.debug("trying to execute prepared statement")
+      stmt.execute
+      stmt.resultSet
+    } catch (Exception e) {
+      if (!e.message.contains("integrity constraint violation")) {
+        LOGGER.info("prepared statement failed: " + e.message)
+      }
+      null
     }
   }
   

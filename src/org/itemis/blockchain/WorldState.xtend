@@ -21,36 +21,40 @@ class WorldState {
   extension Utils u = new Utils
   extension DataBaseWrapper db = new DataBaseWrapper
 
-  private static String EMPTY_EVMWORD = new EVMWord(0).toHexString.substring(2)
+  private final static String INSERT_ACCOUNT_STMT = "INSERT INTO accounts VALUES (?, ?, ?, ?, ?, ?)"
   
-  private final DataBaseID id
+  private final String name
   
-  new(DataBaseID id) {
-    this.id = id
+  new(String name) {
+    this.name = name
   }
 
   def initTables() {
-    val conn = id.connection
+    val conn = DataBaseID.STATE.getConnection(name)
     conn.createTable("accounts", "(address BINARY(32) PRIMARY KEY, nonce BINARY(32) NOT NULL, balance BINARY(32) NOT NULL, storageRoot BINARY(32) NOT NULL, codeHash BINARY(32) NOT NULL, code LONGVARCHAR)")
     conn.createTable("storage", "(account BINARY(32), offset BINARY(32), value BINARY(32), PRIMARY KEY (account, offset))")
     conn.close
   }
 
   def loadGenesisState() {
-    val conn = id.connection
+    val conn = DataBaseID.STATE.getConnection(name)
+    
+    val stmt = conn.prepareStatement(INSERT_ACCOUNT_STMT)
+    
+    val zero = new EVMWord(0)
+    val emptyRoot = new EVMWord(new MerklePatriciaTrie.Null().hash.elements, true)
     
     val iter = MainnetAllocData.mainnetAllocDataQueryIterator
     while(iter.hasNext) {
       val e = iter.next
-      conn.query(String.format(
-        "INSERT INTO accounts VALUES ('%s', '%s', '%s', '%s', '%s', %s)",
-        e.key.formatForQuery,
-        EMPTY_EVMWORD,
-        e.value.formatForQuery,
-        new EVMWord(new MerklePatriciaTrie.Null().hash.elements, true).formatForQuery,
-        keccak256("").formatForQuery,
-        "null"
-      ))
+      
+      stmt.setBytes(1, e.key.toByteArray(true))
+      stmt.setBytes(2, zero.toByteArray(true))
+      stmt.setBytes(3, e.value.toByteArray(true))
+      stmt.setBytes(4, emptyRoot.toByteArray(true))
+      stmt.setBytes(5, keccak256("").toByteArray(true))
+      stmt.setString(6, null)
+      stmt.executePreparedStatement
     }
     
     conn.close
