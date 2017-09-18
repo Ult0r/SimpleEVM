@@ -12,6 +12,7 @@ package org.itemis.types
 
 import java.security.InvalidParameterException
 import org.itemis.utils.Utils
+import org.itemis.evm.OverflowException
 
 //opposing to the signed java.lang.Byte
 class Nibble extends Number implements Comparable<Nibble> {
@@ -118,27 +119,24 @@ class Nibble extends Number implements Comparable<Nibble> {
     }
   }
 
-  def invert() {
-    value = value.bitwiseNot.bitwiseAnd(0x00FF)
+  def Nibble invert() {
+    new Nibble(value.bitwiseNot.bitwiseAnd(0x00FF))
   }
 
-  def Nibble copy() {
-    new Nibble(value)
+  def Nibble inc() {
+    val newValue = value + 1
+    if (newValue > 15) {
+      throw new OverflowException()
+    }
+    new Nibble(newValue.bitwiseAnd(0x00FF))
   }
 
-  // overflow = 1
-  // no overflow = 0
-  def boolean inc() {
-    value = (value + 1).bitwiseAnd(0x000F)
-    value == 0
-  }
-
-  // overflow = 1
-  // no overflow = 0
-  def boolean add(Nibble other) {
+  def Nibble add(Nibble other) {
     val newValue = value + other.getValue
-    value = newValue.bitwiseAnd(0x00FF)
-    newValue > 15
+    if (newValue > 15) {
+      throw new OverflowException()
+    }
+    new Nibble(newValue.bitwiseAnd(0x00FF))
   }
 
 }

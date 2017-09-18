@@ -117,15 +117,15 @@ class NibbleList {
   }
 
   def void add(Nibble n) {
-    elements.add(n.copy)
+    elements.add(n)
   }
 
   def void addAll(NibbleList l) {
-    elements.addAll(l.elements.map[copy])
+    elements.addAll(l.elements)
   }
 
   def Nibble get(int i) {
-    elements.get(i).copy
+    elements.get(i)
   }
 
   def int length() {
