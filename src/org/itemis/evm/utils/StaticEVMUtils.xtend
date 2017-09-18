@@ -18,15 +18,6 @@ import org.itemis.types.EVMWord
 import java.util.function.Predicate
 
 class StaticEVMUtils {
-  def static UnsignedByte[] rlp(Object data) {
-    switch (data) {
-      UnsignedByte[]: rlp(data)
-      List<UnsignedByte[]>: rlp(data)
-      List<? extends Object>: rlp(data.map[rlp])
-      default: throw new IllegalArgumentException
-    }
-  }
-
   // recursive length prefix
   def static UnsignedByte[] rlp(UnsignedByte[] data) {
     if(data === null) {

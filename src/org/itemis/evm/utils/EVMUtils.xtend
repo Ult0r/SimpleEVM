@@ -15,10 +15,6 @@ import org.itemis.types.Node
 import java.util.function.Predicate
 
 class EVMUtils {
-  def UnsignedByte[] rlp(Object data) {
-    StaticEVMUtils.rlp(data)
-  }
-
   // recursive length prefix
   def UnsignedByte[] rlp(UnsignedByte[] data) {
     StaticEVMUtils.rlp(data)
