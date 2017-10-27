@@ -11,8 +11,8 @@ package org.itemis.evm.utils
 
 import org.itemis.types.UnsignedByte
 import java.util.List
-import org.itemis.types.Node
 import java.util.function.Predicate
+import org.itemis.types.TreeNode
 
 class EVMUtils {
   // recursive length prefix
@@ -32,7 +32,7 @@ class EVMUtils {
     StaticEVMUtils.rlp(data, resolveChildren)
   }
 
-  def Node<UnsignedByte[]> reverseRLP(UnsignedByte[] data) {
+  def TreeNode<UnsignedByte[]> reverseRLP(UnsignedByte[] data) {
     StaticEVMUtils.reverseRLP(data)
   }
 
