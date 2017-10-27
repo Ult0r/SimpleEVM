@@ -29,12 +29,15 @@ class Transaction {
   @Accessors private UnsignedByte[] data
   @Accessors private boolean isData // opposing to being init
 
-  new(JsonObject obj) {
-    nonce = new EVMWord(obj.get("nonce").asString.fromHex, false)
-    gasPrice = new EVMWord(obj.get("gasPrice").asString.fromHex, false)
-    gasLimit = new EVMWord(obj.get("gas").asString.fromHex, false)
+  new() {
+  }
 
-    value = new EVMWord(obj.get("value").asString.fromHex, false)
+  new(JsonObject obj) {
+    nonce = new EVMWord(obj.get("nonce").asString.fromHex.reverseView)
+    gasPrice = new EVMWord(obj.get("gasPrice").asString.fromHex.reverseView)
+    gasLimit = new EVMWord(obj.get("gas").asString.fromHex.reverseView)
+
+    value = new EVMWord(obj.get("value").asString.fromHex.reverseView)
 
     v = fromHex(obj.get("v").asString).map[new UnsignedByte(it)].get(0)
     r = EVMWord.fromString(obj.get("r").asString)
@@ -47,6 +50,8 @@ class Transaction {
 
     data = obj.get("input").asString.fromHex.map[new UnsignedByte(it)]
   }
-
-// TODO: calculate hash
+  
+  def EVMWord hash() {
+    //TODO
+  }
 }
