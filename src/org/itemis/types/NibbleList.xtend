@@ -13,7 +13,7 @@ class NibbleList {
   }
 
   new(EVMWord v) {
-    for (b : v.toByteArray) {
+    for (b : v.toUnsignedByteArray) {
       this.elements.add(b.higherNibble)
       this.elements.add(b.lowerNibble)
     }
