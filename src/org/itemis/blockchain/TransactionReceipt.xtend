@@ -31,11 +31,11 @@ class TransactionReceipt {
 
   new(JsonObject obj) {
     transactionHash = EVMWord.fromString(obj.get("transactionHash").asString)
-    transactionIndex = new EVMWord(obj.get("transactionIndex").asString.fromHex, false)
+    transactionIndex = new EVMWord(obj.get("transactionIndex").asString.fromHex.reverseView)
     blockHash = EVMWord.fromString(obj.get("blockHash").asString)
-    blockNumber = new EVMWord(obj.get("blockNumber").asString.fromHex, false)
-    cumulativeGasUsed = new EVMWord(obj.get("cumulativeGasUsed").asString.fromHex, false)
-    gasUsed = new EVMWord(obj.get("gasUsed").asString.fromHex, false)
+    blockNumber = new EVMWord(obj.get("blockNumber").asString.fromHex.reverseView)
+    cumulativeGasUsed = new EVMWord(obj.get("cumulativeGasUsed").asString.fromHex.reverseView)
+    gasUsed = new EVMWord(obj.get("gasUsed").asString.fromHex.reverseView)
 
     isContractCreation = !obj.get("contractAddress").jsonNull
     if(isContractCreation) {
