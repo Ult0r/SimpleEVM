@@ -14,14 +14,14 @@ import java.util.List
 import org.itemis.evm.OverflowException
 import org.itemis.utils.StaticUtils
 import java.math.BigInteger
-import java.io.Serializable
-import java.io.ObjectOutputStream
-import java.io.IOException
+import java.util.ArrayList
 
+  //TODO replace EVMWord with subclasses (address, hash, etc)
+  //TODO make singleton for EVMWord 0
 //256-bit / 32-byte int
 //[0] contains bits 0-7
 //[31] contains bits 248-255
-class EVMWord implements Serializable {
+class EVMWord {
   private UnsignedByte[] value = newArrayOfSize(32)
 
   new() {
@@ -36,24 +36,34 @@ class EVMWord implements Serializable {
     value.set(3, new UnsignedByte((i >> 24).bitwiseAnd(0x000000FF)))
   }
 
+  new(long l) {
+    setToZero
+    value.set(0, new UnsignedByte(l.bitwiseAnd(0x000000FF).byteValue))
+    value.set(1, new UnsignedByte((l >> 8).bitwiseAnd(0x000000FF).byteValue))
+    value.set(2, new UnsignedByte((l >> 16).bitwiseAnd(0x000000FF).byteValue))
+    value.set(3, new UnsignedByte((l >> 24).bitwiseAnd(0x000000FF).byteValue))
+    value.set(4, new UnsignedByte((l >> 32).bitwiseAnd(0x000000FF).byteValue))
+    value.set(5, new UnsignedByte((l >> 40).bitwiseAnd(0x000000FF).byteValue))
+    value.set(6, new UnsignedByte((l >> 48).bitwiseAnd(0x000000FF).byteValue))
+    value.set(7, new UnsignedByte((l >> 56).bitwiseAnd(0x000000FF).byteValue))
+  }
+
   new(EVMWord word) {
     for (i : 0 .. 31) {
       value.set(i, new UnsignedByte(word.getNthField(i).value))
     }
   }
 
-  new(UnsignedByte[] array, boolean bigEndian) {
-    this(array.map[byteValue], bigEndian)
+  new(UnsignedByte[] array) {
+    this(array.map[byteValue])
   }
 
-  new(byte[] array, boolean bigEndian) {
+  new(byte[] array) {
     setToZero
     val length = array.length - 1
-    for (i : 0 .. length) {
-      if(bigEndian) {
+    if (array.length != 0) {
+      for (i : 0 .. length) {
         value.set(i, new UnsignedByte(array.get(i)))
-      } else {
-        value.set(i, new UnsignedByte(array.get(length - i)))
       }
     }
   }
@@ -66,15 +76,7 @@ class EVMWord implements Serializable {
   }
 
   def static EVMWord fromString(String s) {
-    var data = s
-    if(s.startsWith("0x")) {
-      data = s.substring(2)
-    }
-    if (data.length % 2 == 1) {
-      data = data + "0"
-    }
-
-    new EVMWord(StaticUtils.fromHex(data), true)
+    new EVMWord(StaticUtils.fromHex(s))
   }
 
   // n must be between (including) 0 and 31
@@ -106,8 +108,16 @@ class EVMWord implements Serializable {
     result
   }
 
-  def UnsignedByte[] toByteArray() {
+  def UnsignedByte[] toUnsignedByteArray() {
     value
+  }
+
+  def byte[] toByteArray() {
+    var byte[] result = newByteArrayOfSize(32)
+    for (i : 0 .. 31) {
+      result.set(i, getNthField(i).byteValue)
+    }
+    result
   }
 
   def EVMWord setTo(EVMWord other) {
@@ -172,25 +182,34 @@ class EVMWord implements Serializable {
   }
 
   def String toIntString() {
-    new BigInteger(reverse.toByteArray.dropWhile[it.byteValue == 0].map[toString.substring(2)].join, 16).toString
-  }
-
-  def byte[] toByteArray(boolean bigEndian) {
-    var byte[] result = newByteArrayOfSize(32)
-    for (i : 0 .. 31) {
-      if(bigEndian) {
-        result.set(i, getNthField(i).byteValue)
-      } else {
-        result.set(i, getNthField(31 - i).byteValue)
-      }
-    }
-    result
+    new BigInteger(reverse.toUnsignedByteArray.dropWhile[it.byteValue == 0].map[toString.substring(2)].join, 16).toString
   }
 
   // uses 4 bytes from the specified end of the data
   // other bytes are ignored
   def long toUnsignedInt() {
     var long result = getNthField(3).longValue
+    result = result << 8
+    result += getNthField(2).longValue
+    result = result << 8
+    result += getNthField(1).longValue
+    result = result << 8
+    result += getNthField(0).longValue
+    result
+  }
+
+  // uses 63 bit from the specified end of the data
+  // other bytes are ignored
+  def long toUnsignedLong() {
+    var long result = getNthField(7).intValue.bitwiseAnd(0x0FFFFFFF).longValue
+    result = result << 8
+    result += getNthField(6).longValue
+    result = result << 8
+    result += getNthField(5).longValue
+    result = result << 8
+    result += getNthField(4).longValue
+    result = result << 8
+    result += getNthField(3).longValue
     result = result << 8
     result += getNthField(2).longValue
     result = result << 8
@@ -214,6 +233,36 @@ class EVMWord implements Serializable {
 
   override int hashCode() {
     toHexString.hashCode
+  }
+  
+  def boolean greaterThan(EVMWord other) {
+    if (this.isNegative && !other.isNegative) {
+      false
+    } else if (!this.isNegative && other.isNegative) {
+      true
+    } else if (this.isNegative && other.isNegative) {
+      other.negate.greaterThan(this.negate)
+    } else {
+      for (var i = 31; i >= 0; i--) {
+        if (this.getNthField(i) > other.getNthField(i)) {
+          return true
+        }
+      }
+      
+      false
+    }
+  }
+  
+  def boolean greaterThanEquals(EVMWord other) {
+    this.equals(other) || this.greaterThan(other)
+  }
+  
+  def boolean lessThan(EVMWord other) {
+    !this.greaterThanEquals(other)
+  }
+  
+  def boolean lessThanEquals(EVMWord other) {
+    !this.greaterThan(other)
   }
 
   def boolean isZero() {
@@ -247,51 +296,126 @@ class EVMWord implements Serializable {
 
   // for all mathematical functions:
   // interpreting content as 2-complement
+  def BigInteger toBigInteger() {
+    new BigInteger(toByteArray.reverseView)
+  }
+  
+  def BigInteger toUnsignedBigInteger() {
+    val result = newArrayList
+    result.addAll(toByteArray.reverseView)
+    result.add(0, new Byte(0x00 as byte))
+    new BigInteger(result)
+  }
+  
+  def static EVMWord fromBigInteger(BigInteger i) {
+    val List<Byte> l = new ArrayList(i.toByteArray.reverseView)
+    if (i.signum == -1) {
+      while (l.size != 32) {
+        l.add(new Byte(0xFF as byte))
+      }
+    }
+    new EVMWord(l)
+  }
+  
   def boolean isNegative() {
-    (getNthField(31).value >> 7) == 1
+    toBigInteger.signum == -1
   }
 
   def EVMWord negate() {
-    invert.inc
+    toBigInteger.negate.fromBigInteger
   }
 
   def EVMWord inc() {
-    add(new EVMWord(1))
+    toBigInteger.add(BigInteger.ONE).fromBigInteger
   }
 
   def EVMWord dec() {
-    sub(new EVMWord(1))
+    toBigInteger.subtract(BigInteger.ONE).fromBigInteger
   }
 
   def EVMWord add(EVMWord other) {
-    if(this.isNegative && other.isNegative) {
-      this.negate.add(other.negate).negate
-    } else {
-      var overflow = false
-      
-      val result = new EVMWord(0)
-      for (i : 0 .. 31) {
-        var sum = this.getNthField(i).intValue
-        if (overflow) {
-          sum += 1
-        }
-        sum += other.getNthField(i).value
-        overflow = sum > 255
-        result.setNthField(i, sum % 256)
-      }
-      if (!this.isNegative && !other.isNegative && result.isNegative) {
-        throw new OverflowException()
-      }
-      
-      result
+    val _this =  toBigInteger
+    val _other = other.toBigInteger
+    val result = _this.add(_other)
+    if (result.bitLength > 255) {
+      throw new OverflowException()
     }
+    EVMWord.fromBigInteger(result)
   }
 
   def EVMWord sub(EVMWord other) {
-    add(other.negate)
+    println(other)
+    
+    val _this =  toBigInteger
+    val _other = other.toBigInteger
+    val result = _this.subtract(_other)
+    if (result.bitLength > 255) {
+      throw new OverflowException()
+    }
+    EVMWord.fromBigInteger(result)
   }
-
-  def void writeObject(ObjectOutputStream out) throws IOException {
-    out.writeBytes(toString)
+  
+  def EVMWord mul(EVMWord other) {
+    val _this =  toBigInteger
+    val _other = other.toBigInteger
+    val result = _this.multiply(_other)
+    if (result.bitLength > 255) {
+      throw new OverflowException()
+    }
+    EVMWord.fromBigInteger(result)
   }
+  
+  def EVMWord div(EVMWord other) {
+    val _this =  toBigInteger
+    val _other = other.toBigInteger
+    val result = _this.divide(_other)
+    if (result.bitLength > 255) {
+      throw new OverflowException()
+    }
+    EVMWord.fromBigInteger(result)
+  }
+  
+  def int log(EVMWord other) {
+    if (other.negative || other.zero || other.dec.zero) {
+      throw new IllegalArgumentException("log with negative number, 0 or 1")
+    }
+    
+    var result = 0
+    var tmp = this
+    while (tmp.greaterThan(other)) {
+      tmp = tmp.div(other)
+      result++
+    }
+    
+    result
+  }
+  
+  def EVMWord mod(EVMWord other) {
+    val _this =  toBigInteger
+    val _other = other.toBigInteger
+    val result = _this.mod(_other)
+    if (result.bitLength > 255) {
+      throw new OverflowException()
+    }
+    EVMWord.fromBigInteger(result)
+  }
+  
+  def EVMWord divRoundUp(EVMWord other) {
+    val _this = toBigInteger
+    val _other = other.toBigInteger
+    val divRem = _this.divideAndRemainder(_other)
+    
+    if (divRem.get(1).fromBigInteger.zero) divRem.get(0).fromBigInteger.inc else divRem.get(0).fromBigInteger
+  }
+  
+  def EVMWord xor(EVMWord other) {
+    val byte[] bytes = newByteArrayOfSize(32)
+    
+    for (var i = 0; i < 32; i++) {
+      bytes.set(i, this.getNthField(i).byteValue.bitwiseXor(other.getNthField(i).byteValue).byteValue)
+    }
+    
+    new EVMWord(bytes)
+  }
+  
 }
