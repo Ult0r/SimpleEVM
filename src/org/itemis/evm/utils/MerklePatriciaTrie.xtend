@@ -19,11 +19,13 @@ import java.util.Map
 import org.itemis.types.NibbleList
 import org.itemis.evm.utils.MerklePatriciaTrie.Branch
 import org.itemis.evm.utils.MerklePatriciaTrie.Node
-import org.itemis.evm.utils.MerklePatriciaTrie.UnsignedByteList
 import org.itemis.types.EVMWord
 import org.itemis.utils.StaticUtils
+import org.itemis.types.UnsignedByteList
 
 class MerklePatriciaTrie {
+  public static final EVMWord EMPTY_TRIE_HASH = EVMWord.fromString("0x56E81F171BCC55A6FF8345E692C0F86E5B48E01B996CADC001622FB5E363B421")
+  
   private final String name
   @Accessors private Node root = new Null
   private MerklePatriciaTrieCache cache
@@ -43,14 +45,18 @@ class MerklePatriciaTrie {
     if(_root.size < 32) {
       StaticUtils.keccak256(_root.elements.map[byteValue])
     } else {
-      new EVMWord(_root.elements, true)
+      new EVMWord(_root.elements)
     }
   }
 
   def void putElement(NibbleList key, UnsignedByte[] value) {
     root = root.putElement(this, key, value)
   }
-
+  
+  def Node getNode(UnsignedByteList hash) {
+    cache.lookUp(hash)
+  }
+  
   def String toGraphViz() {
     String.format("digraph G {\n%s}", root.toGraphViz(this, "  ROOT"))
   }
@@ -70,13 +76,15 @@ class MerklePatriciaTrie {
         if(rlp.size < 32) {
           rlp
         } else {
-          keccak256(rlp.map[byteValue]).toByteArray
+          keccak256(rlp.map[byteValue]).toUnsignedByteArray
         }
       )
     }
 
     // overrides existent value
     def abstract Node putElement(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value)
+    
+    def abstract Node getNode(MerklePatriciaTrie trie, NibbleList keyFromHere)
 
     def abstract String toGraphViz(MerklePatriciaTrie trie, String prefix)
     
@@ -122,14 +130,17 @@ class MerklePatriciaTrie {
   }
 
   static class Null extends Node {
-    // static: "0x56E81F171BCC55A6FF8345E692C0F86E5B48E01B996CADC001622FB5E363B421"
     override hash() {
       val arr = newByteArrayOfSize(0).map[new UnsignedByte(it)]
-      new UnsignedByteList(keccak256(rlp(arr as UnsignedByte[]).map[byteValue]).toByteArray)
+      new UnsignedByteList(keccak256(rlp(arr as UnsignedByte[]).map[byteValue]).toUnsignedByteArray)
     }
 
     override putElement(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value) {
       new Leaf(trie, key, value)
+    }
+    
+    override getNode(MerklePatriciaTrie trie, NibbleList keyFromHere) {
+      throw new UnsupportedOperationException("This is a Null-Node")
     }
 
     override toGraphViz(MerklePatriciaTrie trie, String prefix) {
@@ -170,15 +181,17 @@ class MerklePatriciaTrie {
 
       super.hashFromRLP(rlp)
     }
-
-    override putElement(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value) {
+    
+    def private NibbleList getThisKey() {
       var int offset = 1
       if(encodedPath.get(0).byteValue != 3) {
         offset = 2
       }
 
-      val thisKey = encodedPath.subList(offset)
-
+      encodedPath.subList(offset)
+    }
+      
+    override putElement(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value) {
       if(thisKey.equals(key)) {
         this.value = value
         this
@@ -187,6 +200,14 @@ class MerklePatriciaTrie {
           trie.cache.removeNode(this)
         }
         Node.fromTwoKeyValuePairs(trie, thisKey, this.value, key, value)
+      }
+    }
+    
+    override getNode(MerklePatriciaTrie trie, NibbleList keyFromHere) {
+      if (keyFromHere.length == 0 || keyFromHere.equals(thisKey) || (keyFromHere.length == 1 && keyFromHere.get(0).equals(new Nibble(0)))) {
+        this
+      } else {
+        throw new IllegalArgumentException("already at a leaf")
       }
     }
 
@@ -215,9 +236,6 @@ class MerklePatriciaTrie {
     }
 
     new(MerklePatriciaTrie trie, NibbleList path, UnsignedByteList key) {
-      if(path.length == 0) {
-        System.err.println(key.elements.toHex)
-      }
       if(path.length % 2 == 0) {
         encodedPath.add(new Nibble(0x0))
         encodedPath.add(new Nibble(0x0))
@@ -240,12 +258,13 @@ class MerklePatriciaTrie {
       super.hashFromRLP(rlp)
     }
 
-    def private encodedPathOffset() {
-      if(encodedPath.get(0).value == 0x1) {
-        1
-      } else {
-        2
+    def private NibbleList getThisKey() {
+      var int offset = 1
+      if(encodedPath.get(0).value != 0x1) {
+        offset = 2
       }
+
+      encodedPath.subList(offset)
     }
 
     override putElement(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value) {
@@ -253,8 +272,6 @@ class MerklePatriciaTrie {
         trie.cache.removeNode(this)
       }
       
-      val thisKey = encodedPath.subList(encodedPathOffset)
-
       if(key.startsWith(thisKey)) { // extension -> branch
         var Node child = trie.cache.lookUp(this.nextKey)
         child = child.putElement(trie, key.unsharedSuffix(thisKey), value)
@@ -302,6 +319,16 @@ class MerklePatriciaTrie {
           val topExtension = new Extension(trie, sharedPrefix, branch.hash)
           topExtension
         }
+      }
+    }
+    
+    override getNode(MerklePatriciaTrie trie, NibbleList keyFromHere) {
+      if (keyFromHere.length == 0) {
+        this
+      } else if (keyFromHere.startsWith(thisKey)) {
+        trie.cache.lookUp(nextKey).getNode(trie, keyFromHere.subList(thisKey.length))
+      } else {
+        throw new IllegalArgumentException("Node doesn't exist")
       }
     }
 
@@ -380,6 +407,15 @@ class MerklePatriciaTrie {
       trie.cache.putNode(this)
       this
     }
+    
+    override getNode(MerklePatriciaTrie trie, NibbleList keyFromHere) {
+      val child = trie.cache.lookUp(this.paths.get(keyFromHere.head.intValue))
+      if (child !== null) {
+        child.getNode(trie, keyFromHere.tail)
+      } else {
+        throw new IllegalArgumentException("Node doesn't exist")
+      }
+    }
 
     override toGraphViz(MerklePatriciaTrie trie, String prefix) {
       var StringBuilder result = new StringBuilder()
@@ -407,43 +443,6 @@ class MerklePatriciaTrie {
       }
 
       result.toString
-    }
-  }
-
-  static class UnsignedByteList {
-    @Accessors private List<UnsignedByte> elements = newArrayList
-
-    new(UnsignedByte[] array) {
-      this.elements.addAll(array)
-    }
-
-    override equals(Object other) {
-      if(other instanceof UnsignedByteList) {
-        if(size == other.size) {
-          for (var i = 0; i < size; i++) {
-            if(!get(i).equals(other.get(i))) {
-              return false
-            }
-          }
-          return true
-        } else {
-          return false
-        }
-      } else {
-        return false
-      }
-    }
-
-    override hashCode() {
-      elements.hashCode
-    }
-
-    def UnsignedByte get(int i) {
-      elements.get(i)
-    }
-
-    def int size() {
-      elements.size
     }
   }
 }
