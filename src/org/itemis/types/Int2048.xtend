@@ -13,6 +13,8 @@ package org.itemis.types
 import java.util.List
 import org.itemis.evm.OverflowException
 import org.itemis.utils.StaticUtils
+import java.math.BigInteger
+import java.util.ArrayList
 
 //2048-bit / 256-byte int
 //[0] contains bits 0-7
@@ -38,21 +40,15 @@ class Int2048 {
     }
   }
 
-  new(UnsignedByte[] array, boolean bigEndian) {
-    this(array.map[byteValue], bigEndian)
+  new(UnsignedByte[] array) {
+    this(array.map[byteValue])
   }
 
-  new(byte[] array, boolean littleEndian) {
+  new(byte[] array) {
     setToZero
     val length = array.length - 1
-    if(littleEndian) {
-      for (i : 0 .. length) {
-        value.set(i, new UnsignedByte(array.get(i)))
-      }
-    } else {
-      for (i : 255 .. (255 - length)) {
-        value.set(255 - i, new UnsignedByte(array.get(i)))
-      }
+    for (i : 255 .. (255 - length)) {
+      value.set(255 - i, new UnsignedByte(array.get(i)))
     }
   }
 
@@ -69,7 +65,7 @@ class Int2048 {
       data = s.substring(2)
     }
 
-    new Int2048(StaticUtils.fromHex(data), false)
+    new Int2048(StaticUtils.fromHex(data))
   }
 
   // n must be between (including) 0 and 255
@@ -98,8 +94,16 @@ class Int2048 {
     result
   }
 
-  def UnsignedByte[] toByteArray() {
+  def UnsignedByte[] toUnsignedByteArray() {
     value
+  }
+
+  def byte[] toByteArray() {
+    var byte[] result = newByteArrayOfSize(256)
+    for (i : 0 .. 255) {
+      result.set(i, getNthField(i).byteValue)
+    }
+    result
   }
 
   def Int2048 setTo(Int2048 other) {
@@ -177,48 +181,75 @@ class Int2048 {
 
   // for all mathematical functions:
   // interpreting content as 2-complement
+  def BigInteger toBigInteger() {
+    new BigInteger(toByteArray.reverseView)
+  }
+  
+  def static Int2048 fromBigInteger(BigInteger i) {
+    val List<Byte> l = new ArrayList(i.toByteArray.reverseView)
+    if (i.signum == -1) {
+      while (l.size != 32) {
+        l.add(new Byte(0xFF as byte))
+      }
+    }
+    new Int2048(l)
+  }
+  
   def boolean isNegative() {
-    (getNthField(255).value >> 7) == 1
+    toBigInteger.signum == -1
   }
 
   def Int2048 negate() {
-    invert.inc
+    toBigInteger.negate.fromBigInteger
   }
 
   def Int2048 inc() {
-    add(new Int2048(1))
+    toBigInteger.add(BigInteger.ONE).fromBigInteger
   }
 
   def Int2048 dec() {
-    sub(new Int2048(1))
+    toBigInteger.subtract(BigInteger.ONE).fromBigInteger
   }
 
   def Int2048 add(Int2048 other) {
-    if(this.isNegative && other.isNegative) {
-      this.negate.add(other.negate).negate
-    } else {
-      var overflow = false
-      
-      val result = new Int2048(0)
-      for (i : 0 .. 31) {
-        var sum = this.getNthField(i).intValue
-        if (overflow) {
-          sum += 1
-        }
-        sum += other.getNthField(i).value
-        overflow = sum > 255
-        result.setNthField(i, sum)
-      }
-      if (!this.isNegative && !other.isNegative && result.isNegative) {
-        throw new OverflowException()
-      }
-      
-      result
+    val _this =  toBigInteger
+    val _other = other.toBigInteger
+    val result = _this.add(_other)
+    if (result.bitLength > 255) {
+      throw new OverflowException()
     }
+    Int2048.fromBigInteger(result)
   }
 
   def Int2048 sub(Int2048 other) {
-    add(other.negate)
+    println(other)
+    
+    val _this =  toBigInteger
+    val _other = other.toBigInteger
+    val result = _this.subtract(_other)
+    if (result.bitLength > 255) {
+      throw new OverflowException()
+    }
+    Int2048.fromBigInteger(result)
   }
-
+  
+  def Int2048 mul(Int2048 other) {
+    val _this =  toBigInteger
+    val _other = other.toBigInteger
+    val result = _this.multiply(_other)
+    if (result.bitLength > 255) {
+      throw new OverflowException()
+    }
+    Int2048.fromBigInteger(result)
+  }
+  
+  def Int2048 div(Int2048 other) {
+    val _this =  toBigInteger
+    val _other = other.toBigInteger
+    val result = _this.divide(_other)
+    if (result.bitLength > 255) {
+      throw new OverflowException()
+    }
+    Int2048.fromBigInteger(result)
+  }
 }
