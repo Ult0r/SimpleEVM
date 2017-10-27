@@ -10,14 +10,18 @@ import java.sql.ResultSet
 import org.itemis.utils.StaticUtils
 import org.itemis.types.UnsignedByte
 import org.itemis.types.EVMWord
-import org.itemis.evm.utils.MerklePatriciaTrie.UnsignedByteList
 import org.itemis.evm.utils.MerklePatriciaTrie.Node
 import org.itemis.evm.utils.MerklePatriciaTrie.Null
 import org.itemis.evm.utils.MerklePatriciaTrie.Leaf
 import org.itemis.evm.utils.MerklePatriciaTrie.Extension
 import org.itemis.evm.utils.MerklePatriciaTrie.Branch
+import org.itemis.types.UnsignedByteList
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class MerklePatriciaTrieCache {
+  private final static Logger LOGGER = LoggerFactory.getLogger("Trie")
+  
   private final static int MAX_CACHE_SIZE = 10000
   private final static String TABLE_STR = "nodes (hash VARBINARY(32) PRIMARY KEY, type TINYINT NOT NULL, " + (0..15).map[String.format("v%d VARBINARY(32)", it)].join(", ") + ", prefix VARBINARY(%d), value VARBINARY(%d))"
   private final static String INSERT_STMT_STR = "INSERT INTO nodes VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
@@ -45,10 +49,9 @@ class MerklePatriciaTrieCache {
     
     this.cache = new TwoLevelDBCache<UnsignedByteList, Node>(
       MAX_CACHE_SIZE,
-      MAX_CACHE_SIZE / 10,
       DataBaseID.TRIE,
       name,
-      newArrayList(String.format(TABLE_STR, maxPrefixLength + 1, maxDataLength)),
+      String.format(TABLE_STR, maxPrefixLength + 1, maxDataLength),
       INSERT_STMT_STR,
       [MerklePatriciaTrieCache::fillInsertStatement(it)],
       SELECT_STMT_STR,
@@ -75,12 +78,12 @@ class MerklePatriciaTrieCache {
     cache.flush
   }
   
-  protected static def PreparedStatement fillInsertStatement(Triple<UnsignedByteList, Node, PreparedStatement> triple) {
+  private static def PreparedStatement fillInsertStatement(Triple<UnsignedByteList, Node, PreparedStatement> triple) {
     val hash = triple.left
     val node = triple.middle
     val stmt = triple.right
     
-    val _hash = new EVMWord(hash.elements, true).toByteArray(true)
+    val _hash = new EVMWord(hash.elements).toByteArray
     val type = switch (node) {
       Null: 0
       Leaf: 1
@@ -90,8 +93,8 @@ class MerklePatriciaTrieCache {
     }
     val values = switch (node) {
       Null, Leaf, Extension: newArrayList(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null)
-      Branch: node.paths.map[if (it !== null) new EVMWord(it.elements, true)]
-    }.map[if (it !== null) toByteArray(true)]
+      Branch: node.paths.map[if (it !== null) new EVMWord(it.elements)]
+    }.map[if (it !== null) toByteArray]
     val prefix = switch (node) {
       Null, Branch: null
       Leaf: node.encodedPath.toUnsignedBytes
@@ -115,23 +118,23 @@ class MerklePatriciaTrieCache {
     stmt
   }
   
-  protected static def PreparedStatement fillSelectStatement(Pair<UnsignedByteList, PreparedStatement> pair) {
+  private static def PreparedStatement fillSelectStatement(Pair<UnsignedByteList, PreparedStatement> pair) {
     val hash = pair.key
     val stmt = pair.value
     
-    stmt.setBytes(1, new EVMWord(hash.elements, true).toByteArray(true))
+    stmt.setBytes(1, new EVMWord(hash.elements).toByteArray)
     stmt
   }
   
-  protected static def PreparedStatement fillDeleteStatement(Triple<UnsignedByteList, Node, PreparedStatement> triple) {
-    val hash = triple.left
-    val stmt = triple.right
+  private static def PreparedStatement fillDeleteStatement(Pair<UnsignedByteList, PreparedStatement> pair) {
+    val hash = pair.key
+    val stmt = pair.value
     
-    stmt.setBytes(1, new EVMWord(hash.elements, true).toByteArray(true))
+    stmt.setBytes(1, new EVMWord(hash.elements).toByteArray)
     stmt
   }
   
-  protected static def Node readNodeFromResultSet(Pair<ResultSet, UnsignedByteList> pair) {
+  private static def Node readNodeFromResultSet(Pair<ResultSet, UnsignedByteList> pair) {
     val resultSet = pair.key
     val hash = pair.value
     
@@ -177,7 +180,7 @@ class MerklePatriciaTrieCache {
       
       node
     } catch (Exception e) {
-      System.err.println(e.message)
+      LOGGER.warn(e.message)
       null
     }
   }
