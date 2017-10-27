@@ -27,7 +27,7 @@ import org.itemis.utils.db.DataBaseWrapper
 import org.itemis.utils.db.DataBaseWrapper.DataBaseID
 
 abstract class MainnetAllocData {
-  static extension DataBaseWrapper db = new DataBaseWrapper()
+  static extension DataBaseWrapper db = new DataBaseWrapper
   
   private final static Logger LOGGER = LoggerFactory.getLogger("General")
   
@@ -168,11 +168,11 @@ abstract class MainnetAllocData {
         if (fis.read(buffer) != 32) {
           throw new IllegalArgumentException("shortened file in wrong format")
         }
-        val address = new EVMWord(buffer, true)
+        val address = new EVMWord(buffer)
         if (fis.read(buffer) != 32) {
           throw new IllegalArgumentException("shortened file in wrong format")
         }
-        val balance = new EVMWord(buffer, true)
+        val balance = new EVMWord(buffer)
         entries.add(Pair.of(address, balance))
       }
       
@@ -186,13 +186,13 @@ abstract class MainnetAllocData {
         while (left.length < 20) {
           left.add(0, new UnsignedByte(0))
         }
-        val address = new EVMWord(left, true)
+        val address = new EVMWord(left)
         
         val right = if (c.children.length == 2) c.children.get(1).data
         val balance = if (right === null) {
           new EVMWord(0)
         } else {
-          new EVMWord(right, false)
+          new EVMWord(right.reverseView)
         }
         
         entries.add(Pair.of(address, balance))
@@ -201,15 +201,15 @@ abstract class MainnetAllocData {
       //write data to shortened
       val fos = new FileOutputStream(shortened)
       for (e: entries) {
-        fos.write(e.key.toByteArray.map[byteValue])
-        fos.write(e.value.toByteArray.map[byteValue])
+        fos.write(e.key.toUnsignedByteArray.map[byteValue])
+        fos.write(e.value.toUnsignedByteArray.map[byteValue])
       }
       fos.close
     }
-    
-    DataBaseID.ALLOC.createTable("alloc", "alloc", "(address BINARY(32) PRIMARY KEY, balance BINARY(32) NOT NULL)")
 
-    val conn = DataBaseID.ALLOC.getConnection("alloc")
+    val conn = DataBaseWrapper.getConnection(DataBaseID.ALLOC, "alloc")
+    
+    conn.createTable("alloc", "(address BINARY(32) PRIMARY KEY, balance BINARY(32) NOT NULL)")
     for (e : entries) {
       val query = String.format(
         "INSERT INTO alloc VALUES ('%s', '%s')",
@@ -218,7 +218,6 @@ abstract class MainnetAllocData {
       )
       conn.query(query)
     }
-    conn.close
   }
 
   def static EVMWord getBalanceForAddress(EVMWord address) {
@@ -230,7 +229,7 @@ abstract class MainnetAllocData {
     )
     val result = DataBaseID.ALLOC.query("alloc", query)
     result.next
-    new EVMWord(result.getBytes("balance"), true)
+    new EVMWord(result.getBytes("balance"))
   }
 
   def static AllocDataIterator getMainnetAllocDataQueryIterator() {
@@ -258,8 +257,8 @@ abstract class MainnetAllocData {
       val address = set.getBytes("address")
       val balance = set.getBytes("balance")
       Pair.of(
-        new EVMWord(address.map[new UnsignedByte(it)], true),
-        new EVMWord(balance.map[new UnsignedByte(it)], true)
+        new EVMWord(address.map[new UnsignedByte(it)]),
+        new EVMWord(balance.map[new UnsignedByte(it)])
       )
     }
 
