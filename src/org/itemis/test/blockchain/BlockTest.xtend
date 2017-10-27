@@ -19,7 +19,6 @@ class BlockTest {
   @Test
   def void testGenesis() {
     val Block genesis = Block.genesisBlock
-    Assert.assertEquals(genesis.parentHash, new EVMWord(0))
-  // TODO
+    Assert.assertEquals(genesis.hash, EVMWord.fromString("0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3"))
   }
 }
