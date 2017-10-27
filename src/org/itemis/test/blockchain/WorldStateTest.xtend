@@ -11,22 +11,25 @@ package org.itemis.test.blockchain
 
 import org.junit.Test
 import org.itemis.blockchain.WorldState
-import org.itemis.utils.db.DataBaseWrapper.DataBaseID
 import org.itemis.utils.db.DataBaseWrapper
 import org.junit.Assert
+import org.itemis.types.EVMWord
+import org.itemis.ressources.JsonRPCWrapper
 
 class WorldStateTest {
-  extension DataBaseWrapper db = new DataBaseWrapper
+  extension JsonRPCWrapper j = new JsonRPCWrapper
     
   @Test
   def void testInitWorldState() {
     val ws = new WorldState("testInitWorldState")
-    ws.initTables
     ws.loadGenesisState
     
-    val conn = DataBaseID.STATE.getConnection("testInitWorldState")
-    val result = conn.query("SELECT COUNT(*) FROM accounts")
-    result.next
-    Assert.assertEquals(result.getLong(1), 8893)
+    val size = ws.accountCount
+    val root = ws.stateRoot
+    
+    DataBaseWrapper.closeAllConnections
+    
+    Assert.assertEquals(size, 8893)
+    Assert.assertEquals(root, eth_getBlockByNumber(new EVMWord(0), null).stateRoot)
   }
 }
