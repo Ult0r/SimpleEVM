@@ -14,6 +14,7 @@ import org.itemis.types.UnsignedByte
 import org.itemis.types.EVMWord
 import java.io.Serializable
 import org.itemis.types.Nibble
+import java.math.BigInteger
 
 //uses implementations in static utils
 class Utils implements Serializable {
@@ -30,6 +31,10 @@ class Utils implements Serializable {
 
   def String toHex(UnsignedByte b) {
     StaticUtils.toHex(b)
+  }
+
+  def String toHex(byte[] array) {
+    StaticUtils.toHex(array)
   }
 
   def String toHex(UnsignedByte[] array) {
@@ -60,11 +65,23 @@ class Utils implements Serializable {
     StaticUtils.keccak256(input)
   }
 
+  def static byte[] keccak512(String input) {
+    StaticUtils.keccak512(input)
+  }
+
+  def static byte[] keccak512(byte[] input) {
+    StaticUtils.keccak512(input)
+  }
+
   def String rightPad(String input, int length) {
     StaticUtils.rightPad(input, length)
   }
 
   def void ensureDirExists(String path) {
     StaticUtils.ensureDirExists(path)
+  }
+  
+  def boolean isPrime(BigInteger number) {
+    StaticUtils.isPrime(number)
   }
 }
