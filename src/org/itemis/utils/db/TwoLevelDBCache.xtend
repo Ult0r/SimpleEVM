@@ -24,68 +24,55 @@ final class TwoLevelDBCache<K, V> {
 
   private final String dbName
   private final DataBaseID dbType
-  private final List<String> dbTables
+  private final String dbTable
   private final LoadingCache<K, V> firstLevelCache
   private final DBBufferCache<K, V> secondLevelCache
   
-  private final Function<Connection, PreparedStatement> getInsertStatement
+  private final PreparedStatement insertStatement
   private final Function<Triple<K, V, PreparedStatement>, PreparedStatement> fillInsertStatement
-  private final Function<Connection, PreparedStatement> getSelectStatement
+  private final PreparedStatement selectStatement
   private final Function<Pair<K, PreparedStatement>, PreparedStatement> fillSelectStatement
   private final Function<Pair<ResultSet, K>, V> parseSelectResult
-  private final Function<Connection, PreparedStatement> getDeleteStatement
-  private final Function<Triple<K, V, PreparedStatement>, PreparedStatement> fillDeleteStatement
+  private final PreparedStatement deleteStatement
+  private final Function<Pair<K, PreparedStatement>, PreparedStatement> fillDeleteStatement
   
-  private boolean databaseCreated = false
   private boolean flushing = false
   
-  new(int maxCacheSize, int writeCacheSize, DataBaseID dbType, String dbName, List<String> dbTables,
-    String getInsertStatement,
+  new(int maxCacheSize, DataBaseID dbType, String dbName, String dbTable,
+    String insertStatement,
     Function<Triple<K, V, PreparedStatement>, PreparedStatement> fillInsertStatement,
-    String getSelectStatement,
+    String selectStatement,
     Function<Pair<K, PreparedStatement>, PreparedStatement> fillSelectStatement,
     Function<Pair<ResultSet, K>, V> parseSelectResult,
-    String getDeleteStatement,
-    Function<Triple<K, V, PreparedStatement>, PreparedStatement> fillDeleteStatement) {
-      this(
-        maxCacheSize,
-        writeCacheSize,
-        dbType,
-        dbName,
-        dbTables,
-        new Function<Connection, PreparedStatement>() {
-         override apply(Connection t) {
-            t.prepareStatement(getInsertStatement)
-          }
-        },
-        fillInsertStatement,
-        new Function<Connection, PreparedStatement>() {
-         override apply(Connection t) {
-            t.prepareStatement(getSelectStatement)
-          }
-        },
-        fillSelectStatement,
-        parseSelectResult,
-        new Function<Connection, PreparedStatement>() {
-         override apply(Connection t) {
-            t.prepareStatement(getDeleteStatement)
-          }
-        },
-        fillDeleteStatement
-      )
-    }
-
-  new(int maxCacheSize, int writeCacheSize, DataBaseID dbType, String dbName, List<String> dbTables,
-    Function<Connection, PreparedStatement> getInsertStatement,
+    String deleteStatement,
+    Function<Pair<K, PreparedStatement>, PreparedStatement> fillDeleteStatement) {
+    this(
+      maxCacheSize,
+      Math.max(maxCacheSize / 10, 50),
+      dbType,
+      dbName,
+      dbTable,
+      insertStatement,
+      fillInsertStatement,
+      selectStatement,
+      fillSelectStatement,
+      parseSelectResult,
+      deleteStatement,
+      fillDeleteStatement
+    )
+  }
+  
+  new(int maxCacheSize, int writeCacheSize, DataBaseID dbType, String dbName, String dbTable,
+    String insertStatement,
     Function<Triple<K, V, PreparedStatement>, PreparedStatement> fillInsertStatement,
-    Function<Connection, PreparedStatement> getSelectStatement,
+    String selectStatement,
     Function<Pair<K, PreparedStatement>, PreparedStatement> fillSelectStatement,
     Function<Pair<ResultSet, K>, V> parseSelectResult,
-    Function<Connection, PreparedStatement> getDeleteStatement,
-    Function<Triple<K, V, PreparedStatement>, PreparedStatement> fillDeleteStatement) {
+    String deleteStatement,
+    Function<Pair<K, PreparedStatement>, PreparedStatement> fillDeleteStatement) {
     this.dbName = dbName
     this.dbType = dbType
-    this.dbTables = dbTables
+    this.dbTable = dbTable
     this.secondLevelCache = new DBBufferCache(this, writeCacheSize)
     this.firstLevelCache = CacheBuilder.newBuilder().maximumSize(maxCacheSize).removalListener(secondLevelCache).build(
       new CacheLoader<K, V>() {
@@ -96,12 +83,14 @@ final class TwoLevelDBCache<K, V> {
       }
     )
     
-    this.getInsertStatement = getInsertStatement
+    createDatabase
+    
+    this.insertStatement = DataBaseWrapper.getConnection(dbType, dbName).createPreparedStatement(insertStatement)
     this.fillInsertStatement = fillInsertStatement
-    this.getSelectStatement = getSelectStatement
+    this.selectStatement = DataBaseWrapper.getConnection(dbType, dbName).createPreparedStatement(selectStatement)
     this.fillSelectStatement = fillSelectStatement
     this.parseSelectResult = parseSelectResult
-    this.getDeleteStatement = getDeleteStatement
+    this.deleteStatement = DataBaseWrapper.getConnection(dbType, dbName).createPreparedStatement(deleteStatement)
     this.fillDeleteStatement = fillDeleteStatement
   }
 
@@ -110,55 +99,42 @@ final class TwoLevelDBCache<K, V> {
   }
   
   def void put(K key, V value) {
-    if (!databaseCreated) {
-      createDatabase
-    }
-    
     flushing = false
     firstLevelCache.put(key, value)
   }
-
+  
   def void remove(K key) {
     firstLevelCache.invalidate(key)
   }
-
+  
   def void flush() {
-    LOGGER.debug(firstLevelCache.size.toString)
-    if (!databaseCreated) {
-      createDatabase
-    }
-    var conn = dbType.getConnection(dbName)
+    //TODO: shutdown hook
+    var conn = DataBaseWrapper.getConnection(dbType, dbName)
     conn.query("SET FILES LOG FALSE")
     conn.commit
     conn.autoCommit = false
-    val stmt = getInsertStatement.apply(conn) 
     for (n: firstLevelCache.asMap.entrySet.toList) {
-      fillInsertStatement.apply(Triple.of(n.key, n.value, stmt))
+      insertStatement.writeValueToDB(n.key, n.value)
     }
     conn.commit
     conn.query("SET FILES LOG TRUE")
     conn.commit
-    conn.close
+    conn.autoCommit = true
     flushing = true
-    firstLevelCache.invalidateAll
     firstLevelCache.cleanUp
     secondLevelCache.flushWriteCache
   }
   
   private def void createDatabase() {
-    for (table : dbTables) {
-      dbType.createTable(dbName, table)
-    }
-
-    databaseCreated = true
+    dbType.createTable(dbName, dbTable)
   }
   
   protected def void writeValueToDB(K key, V value) {
-    writeValueToDB(dbType.getConnection(dbName), key, value)
+    writeValueToDB(DataBaseWrapper.getConnection(dbType, dbName), key, value)
   }
   
   protected def void writeValueToDB(Connection conn, K key, V value) {
-    writeValueToDB(getInsertStatement.apply(conn), key, value)
+    writeValueToDB(insertStatement, key, value)
   }
   
   protected def void writeValueToDB(PreparedStatement stmt, K key, V value) {
@@ -171,11 +147,11 @@ final class TwoLevelDBCache<K, V> {
   }
 
   protected def V readValueFromDB(K key) {
-    readValueFromDB(dbType.getConnection(dbName), key)
+    readValueFromDB(DataBaseWrapper.getConnection(dbType, dbName), key)
   }
   
   protected def V readValueFromDB(Connection conn, K key) {
-    readValueFromDB(getSelectStatement.apply(conn), key)
+    readValueFromDB(selectStatement, key)
   }
   
   protected def V readValueFromDB(PreparedStatement stmt, K key) {
@@ -188,17 +164,17 @@ final class TwoLevelDBCache<K, V> {
     }
   }
   
-  protected def void removeValueFromDB(K key, V value) {
-    removeValueFromDB(dbType.getConnection(dbName), key, value)
+  protected def void removeValueFromDB(K key) {
+    removeValueFromDB(DataBaseWrapper.getConnection(dbType, dbName), key)
   }
   
-  protected def void removeValueFromDB(Connection conn, K key, V value) {
-    removeValueFromDB(getDeleteStatement.apply(conn), key, value)
+  protected def void removeValueFromDB(Connection conn, K key) {
+    removeValueFromDB(deleteStatement, key)
   }
   
-  protected def void removeValueFromDB(PreparedStatement stmt, K key, V value) {
+  protected def void removeValueFromDB(PreparedStatement stmt, K key) {
     try {
-      val _stmt = fillDeleteStatement.apply(Triple.of(key, value, stmt))
+      val _stmt = fillDeleteStatement.apply(Pair.of(key, stmt))
       _stmt.executePreparedStatement
     } catch (Exception e) {
       LOGGER.trace(e.message)
@@ -219,8 +195,10 @@ final class TwoLevelDBCache<K, V> {
     }
 
     override onRemoval(RemovalNotification<K, V> notification) {
-      writeCache.add(notification)
-      if(!firstLevelCache.flushing && writeCache.size > writeCacheSize) {
+//      if (!firstLevelCache.flushing) {
+        writeCache.add(notification)
+//      }
+      if(writeCache.size > writeCacheSize) {
         this.flushWriteCache
       }
     }
@@ -235,23 +213,21 @@ final class TwoLevelDBCache<K, V> {
     }
 
     def void flushWriteCache() {
-      LOGGER.debug(writeCache.size.toString)
-      val conn = DataBaseID.TRIE.getConnection(firstLevelCache.dbName)
+      val conn = DataBaseWrapper.getConnection(firstLevelCache.dbType, firstLevelCache.dbName)
       conn.query("SET FILES LOG FALSE")
       conn.commit
       conn.autoCommit = false
-      var stmt = firstLevelCache.getInsertStatement.apply(conn)
       
       val iter = writeCache.iterator
       while (iter.hasNext) {
         val n = iter.next
-        firstLevelCache.writeValueToDB(stmt, n.key, n.value)
+        firstLevelCache.writeValueToDB(firstLevelCache.insertStatement, n.key, n.value)
       }
       conn.commit
       writeCache.clear
       conn.query("SET FILES LOG TRUE")
       conn.commit
-      conn.close
+      conn.autoCommit = true
     }
   }
 }
