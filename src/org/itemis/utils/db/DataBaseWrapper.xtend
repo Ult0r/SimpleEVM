@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory
 import java.sql.Statement
 import org.itemis.types.EVMWord
 import java.sql.PreparedStatement
+import java.util.Map
 
 final class DataBaseWrapper {
   private final static Logger LOGGER = LoggerFactory.getLogger("Database")
@@ -16,7 +17,8 @@ final class DataBaseWrapper {
   public enum DataBaseID {
     STATE,
     ALLOC,
-    TRIE
+    TRIE,
+    CHAINDATA
   }
   
   private final static String OPTIONS =
@@ -27,17 +29,48 @@ final class DataBaseWrapper {
   private final static String STATE_LOCATION = "db" + File.separator + "state" + File.separator + "%s" + File.separator + "%s" + OPTIONS
   private final static String ALLOC_LOCATION = "db" + File.separator + "alloc" + File.separator + "%s" + File.separator + "%s" + OPTIONS
   private final static String TRIE_LOCATION  = "db" + File.separator + "trie"  + File.separator + "%s" + File.separator + "%s" + OPTIONS
+  private final static String CHAINDATA_LOCATION  = "db" + File.separator + "chaindata"  + File.separator + "%s" + File.separator + "%s" + OPTIONS
   
-  def Connection getConnection(DataBaseID db, String dbName) {
-//    LOGGER.debug("accessing db " + db)
-    val conn = DriverManager.getConnection("jdbc:hsqldb:file:" + switch (db) {
-      case STATE: String.format(STATE_LOCATION, dbName, dbName)
-      case ALLOC: String.format(ALLOC_LOCATION, dbName, dbName)
-      case TRIE:  String.format(TRIE_LOCATION, dbName, dbName)
-    })
-    
-    conn.autoCommit = true
-    conn
+  private final static Map<Pair<DataBaseID, String>, Connection> connections = newHashMap 
+  
+  def static Connection getConnection(DataBaseID db, String dbName) {
+    if (connections.containsKey(Pair.of(db, dbName))) {
+      connections.get(Pair.of(db, dbName))
+    } else {
+      LOGGER.debug("connecting to '" + dbName + "' of type " + db.toString)
+      val conn = DriverManager.getConnection("jdbc:hsqldb:file:" + switch (db) {
+        case STATE: String.format(STATE_LOCATION, dbName, dbName)
+        case ALLOC: String.format(ALLOC_LOCATION, dbName, dbName)
+        case TRIE:  String.format(TRIE_LOCATION, dbName, dbName)
+        case CHAINDATA: String.format(CHAINDATA_LOCATION, dbName, dbName)
+      })
+      conn.autoCommit = true
+      connections.put(Pair.of(db, dbName), conn)
+      conn
+    }
+  }
+  
+  def static void closeAllConnections() {
+    //TODO: shutdown hook
+    val list = connections.entrySet.toList.map[key].toList
+    for (conn: list) {
+      closeConnection(conn.key, conn.value)
+    }
+  }
+  
+  def static void closeConnection(DataBaseID db, String dbName) {
+    val conn = connections.get(Pair.of(db, dbName))
+    LOGGER.debug("closing '" + dbName + "' of type " + db.toString)
+    if (conn !== null) {
+      try {
+        conn.createStatement().execute("SHUTDOWN")
+      } catch(Exception e) {
+        LOGGER.info("shutdown query failed: " + e.message)
+      }
+      conn.commit
+      conn.close
+    }
+    connections.remove(Pair.of(db, dbName))
   }
   
   def boolean createTable(DataBaseID db, String dbName, String name, String fields) {
@@ -47,8 +80,7 @@ final class DataBaseWrapper {
   def boolean createTable(DataBaseID db, String dbName, String table) {
     val conn = getConnection(db, dbName)
     val result = createTable(conn, table)
-    conn.close
-    result 
+    result
   }
   
   def boolean createTable(Connection conn, String name, String fields) {
@@ -73,7 +105,6 @@ final class DataBaseWrapper {
   def ResultSet query(DataBaseID db, String dbName, String query) {
     val conn = getConnection(db, dbName)
     val result = query(conn, query)
-    conn.close
     result 
   }
   
@@ -94,7 +125,6 @@ final class DataBaseWrapper {
   def void executeBatch(DataBaseID db, String dbName, Statement batch) {
     val conn = getConnection(db, dbName)
     executeBatch(conn, batch)
-    conn.close
   }
   
   def void executeBatch(Connection conn, Statement batch) {
@@ -105,6 +135,15 @@ final class DataBaseWrapper {
       if (!e.message.contains("integrity constraint violation")) {
         LOGGER.info("batch failed: " + e.message)
       }
+    }
+  }
+  
+  def PreparedStatement createPreparedStatement(Connection conn, String query) {
+    try {
+      conn.prepareStatement(query)
+    } catch (Exception e) {
+      LOGGER.error("preparing statement failed: " + e.message)
+      null
     }
   }
   
