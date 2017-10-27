@@ -106,14 +106,14 @@ class EVMWordTest {
   def void testByteArrayConstructor() {
     init()
     val byte[] array = #[42 as byte]
-    Assert.assertEquals(new EVMWord(array, true).toHexString,
+    Assert.assertEquals(new EVMWord(array).toHexString,
       "0x2A00000000000000000000000000000000000000000000000000000000000000")
-    Assert.assertEquals(new EVMWord(array, false).toHexString,
+    Assert.assertEquals(new EVMWord(array.reverseView).toHexString,
       "0x2A00000000000000000000000000000000000000000000000000000000000000")
     val byte[] array2 = #[42 as byte, 17 as byte]
-    Assert.assertEquals(new EVMWord(array2, true).toHexString,
+    Assert.assertEquals(new EVMWord(array2).toHexString,
       "0x2A11000000000000000000000000000000000000000000000000000000000000")
-    Assert.assertEquals(new EVMWord(array2, false).toHexString,
+    Assert.assertEquals(new EVMWord(array2.reverseView).toHexString,
       "0x112A000000000000000000000000000000000000000000000000000000000000")
   }
 
@@ -231,12 +231,12 @@ class EVMWordTest {
   @Test(expected=OverflowException)
   def void testAddOverflow() {
     init()
-    maxEVMWord.inc
+    maxEVMWord.add(new EVMWord(1))
   }
 
   @Test(expected=OverflowException)
   def void testSubOverflow() {
     init()
-    maxEVMWord.negate.dec
+    maxEVMWord.negate.sub(new EVMWord(2))
   }
 }
