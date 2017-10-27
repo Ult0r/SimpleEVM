@@ -16,6 +16,7 @@ import org.bouncycastle.jcajce.provider.digest.Keccak
 import java.io.File
 import java.nio.file.Files
 import org.itemis.types.Nibble
+import java.math.BigInteger
 
 abstract class StaticUtils {
   // if n = 0, results in bits 0-7
@@ -50,7 +51,12 @@ abstract class StaticUtils {
       default: b.toHexString
     }
   }
+  
+  def static String toHex(byte[] array) {
+    toHex(array.map[new UnsignedByte(it)])
+  }
 
+  //TODO remove usage of this for byte[]
   def static String toHex(UnsignedByte[] array) {
     var result = new StringBuilder("0x")
 
@@ -139,9 +145,18 @@ abstract class StaticUtils {
     keccak256(input.bytes)
   }
 
+  //TODO: change to byte[]
   def static EVMWord keccak256(byte[] input) {
     val byte[] digest = new Keccak.Digest256().digest(input)
-    new EVMWord(digest, true)
+    new EVMWord(digest)
+  }
+
+  def static byte[] keccak512(String input) {
+    keccak512(input.bytes)
+  }
+
+  def static byte[] keccak512(byte[] input) {
+    new Keccak.Digest512().digest(input)
   }
 
   def static String rightPad(String input, int length) {
@@ -165,5 +180,23 @@ abstract class StaticUtils {
     if(!dir.exists) {
       Files.createDirectories(dir.toPath)
     }
+  }
+  
+  def static boolean isPrime(BigInteger number) {
+    if (!number.isProbablePrime(4)) {
+      return false
+    }
+    
+    val BigInteger two = new BigInteger("2")
+    if (!two.equals(number) && BigInteger.ZERO.equals(number.mod(two))) {
+      return false
+    }
+
+    for (var BigInteger i = new BigInteger("3"); i.multiply(i).compareTo(number) < 1; i = i.add(two)) {
+      if (BigInteger.ZERO.equals(number.mod(i))) {
+        return false
+      }
+    }
+    return true
   }
 }
