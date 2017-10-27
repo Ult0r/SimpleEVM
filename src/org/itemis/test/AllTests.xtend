@@ -13,7 +13,6 @@ package org.itemis.test;
 import org.itemis.test.types.EVMWordTest;
 import org.itemis.test.types.UnsignedByteTest;
 import org.itemis.test.utils.UtilsTest;
-import org.itemis.test.ressources.AllocTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -23,6 +22,7 @@ import org.itemis.test.ressources.DataFetchTest
 import org.itemis.test.evm.utils.EVMUtilsTest
 import org.itemis.test.evm.utils.MerklePatriciaTrieTest
 import org.itemis.test.blockchain.WorldStateTest
+import org.itemis.test.ressources.MainnetAllocDataTest
 
 @RunWith(Suite)
 @SuiteClasses(BlockTest,
@@ -31,7 +31,7 @@ import org.itemis.test.blockchain.WorldStateTest
   EVMUtilsTest,
   MerklePatriciaTrieTest,
   
-  AllocTest,
+  MainnetAllocDataTest,
   DataFetchTest,
   JsonRPCWrapperTest,
   
