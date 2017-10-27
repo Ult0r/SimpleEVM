@@ -7,12 +7,12 @@
   
   <Appenders>
     <Console name="System.out" target="SYSTEM_OUT">
-      <PatternLayout pattern="${log_pattern}"/>
+      <PatternLayout pattern="${debug_pattern}"/>
       <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>
     </Console>
 	
     <Console name="System.err" target="SYSTEM_ERR">
-      <PatternLayout pattern="${log_pattern}"/>
+      <PatternLayout pattern="${debug_pattern}"/>
     </Console>
 	
     <File name="Tests" fileName="log/tests.log" append="false">
