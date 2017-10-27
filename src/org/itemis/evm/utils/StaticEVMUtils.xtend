@@ -13,9 +13,9 @@ import org.itemis.types.UnsignedByte
 import java.util.List
 import java.util.Arrays
 import org.itemis.utils.StaticUtils
-import org.itemis.types.Node
 import org.itemis.types.EVMWord
 import java.util.function.Predicate
+import org.itemis.types.TreeNode
 
 class StaticEVMUtils {
   // recursive length prefix
@@ -34,14 +34,13 @@ class StaticEVMUtils {
       for (e : data) {
         result.add(e)
       }
-      result.add(0, StaticUtils.getNthByteOfInteger(data.length, 0))
 
-      var size = 1
+      var size = 0
       while(data.length >= (1 << (8 * size))) {
         result.add(0, StaticUtils.getNthByteOfInteger(data.length, size))
         size++
       }
-      result.add(0, new UnsignedByte(Math.max(1, size - 1) + 0xB7))
+      result.add(0, new UnsignedByte(Math.max(1, size) + 0xB7))
       result
     }
   }
@@ -82,9 +81,9 @@ class StaticEVMUtils {
     result
   }
 
-  def private static List<Node<UnsignedByte[]>> _reverseRLP(UnsignedByte[] data) {
+  def private static List<TreeNode<UnsignedByte[]>> _reverseRLP(UnsignedByte[] data) {
 //    println("_reverseRLP: " + data.size)
-    var List<Node<UnsignedByte[]>> result = newArrayList
+    var List<TreeNode<UnsignedByte[]>> result = newArrayList
     var usedLength = 0
 
     if(data === null) { // invalid
@@ -102,32 +101,32 @@ class StaticEVMUtils {
             usedLength = 1
           }
           case head < 0x80: {
-            val node = new Node(newArrayList(_head) as UnsignedByte[])
+            val node = new TreeNode(newArrayList(_head) as UnsignedByte[])
             result.add(node)
             usedLength = 1
           }
           case head <= 0xB7: {
             val dataLength = head - 0x80
-            result.add(new Node(Arrays.copyOfRange(_data, 1, 1 + dataLength)))
+            result.add(new TreeNode(Arrays.copyOfRange(_data, 1, 1 + dataLength)))
             usedLength = 1 + dataLength
           }
           case head < 0xC0: {
             val sizeLength = head - 0xB7
-            val dataLength = new EVMWord(_data.subList(1, sizeLength + 1), false).toUnsignedInt().intValue
-            result.add(new Node(Arrays.copyOfRange(_data, 1 + sizeLength, 1 + sizeLength + dataLength)))
+            val dataLength = new EVMWord(_data.subList(1, sizeLength + 1).reverseView).toUnsignedInt().intValue
+            result.add(new TreeNode(Arrays.copyOfRange(_data, 1 + sizeLength, 1 + sizeLength + dataLength)))
             usedLength = 1 + sizeLength + dataLength
           }
           case head <= 0xF7: {
             val dataLength = head - 0xC0
-            var node = new Node()
+            var node = new TreeNode()
             node.children.addAll(_reverseRLP(_data.subList(1, dataLength + 1)))
             result.add(node)
             usedLength = 1 + dataLength
           }
           case head > 0xF7: {
             val sizeLength = head - 0xF7
-            val dataLength = new EVMWord(_data.subList(1, sizeLength + 1), false).toUnsignedInt().intValue
-            var node = new Node()
+            val dataLength = new EVMWord(_data.subList(1, sizeLength + 1).reverseView).toUnsignedInt().intValue
+            var node = new TreeNode()
             node.children.addAll(_reverseRLP(_data.subList(1 + sizeLength, 1 + sizeLength + dataLength)))
             result.add(node)
             usedLength = 1 + sizeLength + dataLength
@@ -140,7 +139,7 @@ class StaticEVMUtils {
     result
   }
 
-  def static Node<UnsignedByte[]> reverseRLP(UnsignedByte[] data) {
+  def static TreeNode<UnsignedByte[]> reverseRLP(UnsignedByte[] data) {
 //    println("reverseRLP")
     if(data.length == 0) {
       throw new IllegalArgumentException("invalid rlp data")
@@ -150,7 +149,7 @@ class StaticEVMUtils {
     if(result.length == 1) {
       result.get(0)
     } else {
-      var node = new Node()
+      var node = new TreeNode()
       node.children.addAll(result)
       node
     }
