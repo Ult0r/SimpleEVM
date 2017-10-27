@@ -166,7 +166,7 @@ class JsonRPCWrapper {
 
   def EVMWord eth_getBalance(EVMWord address, EVMWord blockNumber, String tag) {
     val params = String.format('["%s","%s"]', address.toAddressString, identifyBlock(blockNumber, tag))
-    new EVMWord(wrapDataFetch("eth_getBalance", params).asJsonObject.get("result").asString.fromHex, false)
+    new EVMWord(wrapDataFetch("eth_getBalance", params).asJsonObject.get("result").asString.fromHex.reverseView)
   }
 
   def EVMWord eth_getStorageAt(EVMWord address, EVMWord offset, EVMWord blockNumber, String tag) {
@@ -177,7 +177,7 @@ class JsonRPCWrapper {
 
   def EVMWord eth_getTransactionCount(EVMWord address, EVMWord blockNumber, String tag) {
     val params = String.format('["%s","%s"]', address.toAddressString, identifyBlock(blockNumber, tag))
-    new EVMWord(wrapDataFetch("eth_getTransactionCount", params).asJsonObject.get("result").asString.fromHex, false)
+    new EVMWord(wrapDataFetch("eth_getTransactionCount", params).asJsonObject.get("result").asString.fromHex.reverseView)
   }
 
   def EVMWord eth_getBlockTransactionCountByHash(EVMWord blockHash) {
@@ -193,12 +193,12 @@ class JsonRPCWrapper {
 
   def EVMWord eth_getUncleCountByBlockHash(EVMWord blockHash) {
     val params = String.format('["%s"]', blockHash.toString)
-    new EVMWord(wrapDataFetch("eth_getUncleCountByBlockHash", params).asJsonObject.get("result").asString.fromHex, false)
+    new EVMWord(wrapDataFetch("eth_getUncleCountByBlockHash", params).asJsonObject.get("result").asString.fromHex.reverseView)
   }
 
   def EVMWord eth_getUncleCountByBlockNumber(EVMWord blockNumber, String tag) {
     val params = String.format('["%s"]', identifyBlock(blockNumber, tag))
-    new EVMWord(wrapDataFetch("eth_getUncleCountByBlockNumber", params).asJsonObject.get("result").asString.fromHex, false)
+    new EVMWord(wrapDataFetch("eth_getUncleCountByBlockNumber", params).asJsonObject.get("result").asString.fromHex.reverseView)
   }
 
   def UnsignedByte[] eth_getCode(EVMWord address, EVMWord blockNumber, String tag) {
@@ -264,7 +264,7 @@ class JsonRPCWrapper {
   def EVMWord eth_getBlockByHash_size(EVMWord blockHash) {
     val params = String.format('["%s", false]', blockHash)
     val fetchResult = wrapDataFetch("eth_getBlockByHash", params).asJsonObject.get("result").asJsonObject
-    new EVMWord(fetchResult.get("size").asString.fromHex, false)
+    new EVMWord(fetchResult.get("size").asString.fromHex.reverseView)
   }
 
   def List<EVMWord> eth_getBlockByHash_transactionHashes(EVMWord blockHash) {
@@ -295,7 +295,7 @@ class JsonRPCWrapper {
   def EVMWord eth_getBlockByNumber_size(EVMWord blockNumber, String tag) {
     val params = String.format('["%s", false]', identifyBlock(blockNumber, tag))
     val fetchResult = wrapDataFetch("eth_getBlockByNumber", params).asJsonObject.get("result").asJsonObject
-    new EVMWord(fetchResult.get("size").asString.fromHex, false)
+    new EVMWord(fetchResult.get("size").asString.fromHex.reverseView)
   }
 
   def List<EVMWord> eth_getBlockByNumber_transactionHashes(EVMWord blockNumber, String tag) {
