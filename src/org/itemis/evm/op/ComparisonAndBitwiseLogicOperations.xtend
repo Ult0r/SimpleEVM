@@ -3,117 +3,98 @@ package org.itemis.evm.op
 import org.itemis.evm.EVMOperation
 import org.itemis.evm.EVMRuntime
 import org.itemis.types.EVMWord
+import org.itemis.evm.EVMOperation.FeeClass
 
 abstract class ComparisonAndBitwiseLogicOperations {
-  static class EQ extends EVMOperation {
-    override execute(EVMRuntime runtime) {
-      val s0 = runtime.stack.pop
-      val s1 = runtime.stack.pop
-      
-      runtime.stack.push(if (s0.equals(s1)) new EVMWord(1) else new EVMWord(0))
-      Pair.of(FEE_SCHEDULE.get(FeeClass.VERYLOW), null)
-    }
+  def static EQ(EVMRuntime runtime) {
+    val s0 = runtime.popStackItem
+    val s1 = runtime.popStackItem
+
+    runtime.pushStackItem(if(s0.equals(s1)) new EVMWord(1) else new EVMWord(0))
+    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
   }
-  
-  static class GT extends EVMOperation {
-    override execute(EVMRuntime runtime) {
-      val s0 = runtime.stack.pop
-      val s1 = runtime.stack.pop
-      
-      runtime.stack.push(if (s1.toUnsignedBigInteger.subtract(s0.toUnsignedBigInteger).signum == -1) new EVMWord(1) else new EVMWord(0))
-      Pair.of(FEE_SCHEDULE.get(FeeClass.VERYLOW), null)
-    }
+
+  def static GT(EVMRuntime runtime) {
+    val s0 = runtime.popStackItem
+    val s1 = runtime.popStackItem
+
+    runtime.pushStackItem(
+      if(s1.toUnsignedBigInteger.subtract(s0.toUnsignedBigInteger).signum == -1) new EVMWord(1) else new EVMWord(0))
+    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
   }
-  
-  static class LT extends EVMOperation {
-    override execute(EVMRuntime runtime) {
-      val s0 = runtime.stack.pop
-      val s1 = runtime.stack.pop
-      
-      runtime.stack.push(if (s0.toUnsignedBigInteger.subtract(s1.toUnsignedBigInteger).signum == -1) new EVMWord(1) else new EVMWord(0))
-      Pair.of(FEE_SCHEDULE.get(FeeClass.VERYLOW), null)
-    }
+
+  def static LT(EVMRuntime runtime) {
+    val s0 = runtime.popStackItem
+    val s1 = runtime.popStackItem
+
+    runtime.pushStackItem(
+      if(s0.toUnsignedBigInteger.subtract(s1.toUnsignedBigInteger).signum == -1) new EVMWord(1) else new EVMWord(0))
+    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
   }
-  
-  static class SGT extends EVMOperation {
-    override execute(EVMRuntime runtime) {
-      val s0 = runtime.stack.pop
-      val s1 = runtime.stack.pop
-      
-      runtime.stack.push(if (s0.greaterThan(s1)) new EVMWord(1) else new EVMWord(0))
-      Pair.of(FEE_SCHEDULE.get(FeeClass.VERYLOW), null)
-    }
+
+  def static SGT(EVMRuntime runtime) {
+    val s0 = runtime.popStackItem
+    val s1 = runtime.popStackItem
+
+    runtime.pushStackItem(if(s0.greaterThan(s1)) new EVMWord(1) else new EVMWord(0))
+    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
   }
-  
-  static class SLT extends EVMOperation {
-    override execute(EVMRuntime runtime) {
-      val s0 = runtime.stack.pop
-      val s1 = runtime.stack.pop
-      
-      runtime.stack.push(if (s0.lessThan(s1)) new EVMWord(1) else new EVMWord(0))
-      Pair.of(FEE_SCHEDULE.get(FeeClass.VERYLOW), null)
-    }
+
+  def static SLT(EVMRuntime runtime) {
+    val s0 = runtime.popStackItem
+    val s1 = runtime.popStackItem
+
+    runtime.pushStackItem(if(s0.lessThan(s1)) new EVMWord(1) else new EVMWord(0))
+    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
   }
-  
-  static class ISZERO extends EVMOperation {
-    override execute(EVMRuntime runtime) {
-      val s0 = runtime.stack.pop
-      
-      runtime.stack.push(if (s0.zero) new EVMWord(1) else new EVMWord(0))
-      Pair.of(FEE_SCHEDULE.get(FeeClass.VERYLOW), null)
-    }
+
+  def static ISZERO(EVMRuntime runtime) {
+    val s0 = runtime.popStackItem
+
+    runtime.pushStackItem(if(s0.zero) new EVMWord(1) else new EVMWord(0))
+    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
   }
-  
-  static class AND extends EVMOperation {
-    override execute(EVMRuntime runtime) {
-      val s0 = runtime.stack.pop
-      val s1 = runtime.stack.pop
-      
-      runtime.stack.push(EVMWord.fromBigInteger(s0.toBigInteger.and(s1.toBigInteger)))
-      Pair.of(FEE_SCHEDULE.get(FeeClass.VERYLOW), null)
-    }
+
+  def static AND(EVMRuntime runtime) {
+    val s0 = runtime.popStackItem
+    val s1 = runtime.popStackItem
+
+    runtime.pushStackItem(EVMWord.fromBigInteger(s0.toBigInteger.and(s1.toBigInteger)))
+    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
   }
-  
-  static class OR extends EVMOperation {
-    override execute(EVMRuntime runtime) {
-      val s0 = runtime.stack.pop
-      val s1 = runtime.stack.pop
-      
-      runtime.stack.push(EVMWord.fromBigInteger(s0.toBigInteger.or(s1.toBigInteger)))
-      Pair.of(FEE_SCHEDULE.get(FeeClass.VERYLOW), null)
-    }
+
+  def static OR(EVMRuntime runtime) {
+    val s0 = runtime.popStackItem
+    val s1 = runtime.popStackItem
+
+    runtime.pushStackItem(EVMWord.fromBigInteger(s0.toBigInteger.or(s1.toBigInteger)))
+    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
   }
-  
-  static class XOR extends EVMOperation {
-    override execute(EVMRuntime runtime) {
-      val s0 = runtime.stack.pop
-      val s1 = runtime.stack.pop
-      
-      runtime.stack.push(EVMWord.fromBigInteger(s0.toBigInteger.xor(s1.toBigInteger)))
-      Pair.of(FEE_SCHEDULE.get(FeeClass.VERYLOW), null)
-    }
+
+  def static XOR(EVMRuntime runtime) {
+    val s0 = runtime.popStackItem
+    val s1 = runtime.popStackItem
+
+    runtime.pushStackItem(EVMWord.fromBigInteger(s0.toBigInteger.xor(s1.toBigInteger)))
+    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
   }
-  
-  static class NOT extends EVMOperation {
-    override execute(EVMRuntime runtime) {
-      val s0 = runtime.stack.pop
-      
-      runtime.stack.push(EVMWord.fromBigInteger(s0.toBigInteger.not))
-      Pair.of(FEE_SCHEDULE.get(FeeClass.VERYLOW), null)
-    }
+
+  def static NOT(EVMRuntime runtime) {
+    val s0 = runtime.popStackItem
+
+    runtime.pushStackItem(EVMWord.fromBigInteger(s0.toBigInteger.not))
+    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
   }
-  
-  static class BYTE extends EVMOperation {
-  override execute(EVMRuntime runtime) {
-    val s0 = runtime.stack.pop
-    val s1 = runtime.stack.pop
-    
-    if (s0.lessThan(new EVMWord(32))) {
-      runtime.stack.push(new EVMWord(s1.getNthField(31 - s0.getNthField(0).intValue).intValue))      
+
+  def static BYTE(EVMRuntime runtime) {
+    val s0 = runtime.popStackItem
+    val s1 = runtime.popStackItem
+
+    if(s0.lessThan(new EVMWord(32))) {
+      runtime.pushStackItem(new EVMWord(s1.getNthField(31 - s0.getNthField(0).intValue).intValue))
     } else {
-      runtime.stack.push(new EVMWord(0))
+      runtime.pushStackItem(new EVMWord(0))
     }
-    Pair.of(FEE_SCHEDULE.get(FeeClass.VERYLOW), null)
+    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
   }
-}
 }
