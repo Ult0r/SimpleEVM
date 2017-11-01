@@ -264,7 +264,11 @@ class EVMWord {
   def boolean lessThanEquals(EVMWord other) {
     !this.greaterThan(other)
   }
-
+  
+  def static EVMWord max(EVMWord one, EVMWord other) {
+    if (one.greaterThan(other)) one else other
+  }
+  
   def boolean isZero() {
     for (i : 0 .. 31) {
       if(!this.getNthField(i).isZero) {
