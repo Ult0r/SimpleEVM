@@ -1,5 +1,7 @@
 package org.itemis.evm
 
-class RuntimeException extends Exception {
-  
+final class RuntimeException extends Exception {
+  new(String message) {
+    super(message)
+  }
 }
