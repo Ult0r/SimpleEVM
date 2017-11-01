@@ -8,7 +8,7 @@ import org.itemis.evm.EVMOperation.FeeClass
 abstract class StackMemoryStorageAndFlowOperations {
   def static POP(EVMRuntime runtime) {
     runtime.popStackItem
-    runtime.gasUsed.add(EVMOperation.FEE_SCHEDULE.get(FeeClass.BASE))
+    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.BASE))
   }
 
   def static MLOAD(EVMRuntime runtime) {

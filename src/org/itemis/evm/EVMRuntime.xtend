@@ -16,7 +16,7 @@ final class EVMRuntime {
   @Accessors private int pc
   @Accessors private EVMMemory memory
   @Accessors private EVMWord memorySize
-  @Accessors private EVMStack stack
+  private EVMStack stack
   
   @Accessors private EVMWord codeAddress                         //Ia
   @Accessors private EVMWord originAddress                       //Io
@@ -34,7 +34,7 @@ final class EVMRuntime {
   @Accessors private List<EVMWord> selfdestructSet
   @Accessors private List<EVMLog> logs
   @Accessors private EVMWord refundBalance
-  @Accessors private EVMWord gasUsed
+  private EVMWord gasUsed
   
   new(WorldState ws) {
     worldState = ws
@@ -86,11 +86,22 @@ final class EVMRuntime {
     stack.pop
   }
   
+  def EVMWord getStackItem(int n) {
+    if (stack.size <= n) {
+      throw new RuntimeException("Stack index out of bounds")
+    }
+    stack.get(n)
+  }
+  
   def pushStackItem(EVMWord value) {
     if (stack.size == EVMStack.EVM_MAX_STACK_SIZE) {
       throw new RuntimeException("Push on full stack")
     }
     stack.push(value)
+  }
+  
+  def EVMWord getGasUsed() {
+    gasUsed
   }
   
   def void addGasCost(EVMWord gasAmount) {
