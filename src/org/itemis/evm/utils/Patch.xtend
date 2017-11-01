@@ -4,7 +4,6 @@ import java.util.Map
 import org.itemis.types.EVMWord
 import org.apache.commons.lang3.tuple.Triple
 import org.itemis.blockchain.WorldState
-import java.util.List
 
 final class Patch {
   //address -> (balance, nonce, (offset -> value))
@@ -15,26 +14,48 @@ final class Patch {
     //TODO
   }
   
-  def void mergePatches(Patch other) {
-    if (other !== null) {
-      //TODO
+  def void setBalance(EVMWord address, EVMWord balance) {
+    if (changes.containsKey(address)) {
+      val currentValue = changes.get(address)
+      changes.put(address, Triple.of(balance, currentValue.middle, currentValue.right))
+    } else {
+      changes.put(address, Triple.of(balance, null, newHashMap))
     }
   }
   
-  def static boolean hasChanged(WorldState ws, List<Patch> patches, EVMWord address) {
-    //TODO
-    false
+  def void setNonce(EVMWord address, EVMWord nonce) {
+    if (changes.containsKey(address)) {
+      val currentValue = changes.get(address)
+      changes.put(address, Triple.of(currentValue.left, nonce, currentValue.right))
+    } else {
+      changes.put(address, Triple.of(null, nonce, newHashMap))
+    }
   }
   
-  def static EVMWord getBalance(WorldState ws, List<Patch> patches, EVMWord address) {
+  def void setStorageValue(EVMWord address, EVMWord offset, EVMWord value) {
+    if (changes.containsKey(address)) {
+      val currentValue = changes.get(address)
+      currentValue.right.put(offset, value)
+    } else {
+      val storageMap = newHashMap
+      storageMap.put(offset, value)
+      changes.put(address, Triple.of(null, null, storageMap))
+    }
+  }
+  
+  def boolean hasChanged(EVMWord address) {
+    return changes.containsKey(address)
+  }
+  
+  def EVMWord getBalance(WorldState ws, EVMWord address) {
     //TODO
   }
   
-  def static EVMWord getNonce(WorldState ws, List<Patch> patches, EVMWord address) {
+  def EVMWord getNonce(WorldState ws, EVMWord address) {
     //TODO
   }
   
-  def static EVMWord getStorageAt(WorldState ws, List<Patch> patches, EVMWord address, EVMWord offset) {
+  def EVMWord getStorageAt(WorldState ws, EVMWord address, EVMWord offset) {
     //TODO
   }
 }
