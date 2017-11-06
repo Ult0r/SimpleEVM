@@ -185,6 +185,8 @@ class EVMWord {
     new BigInteger(reverse.toUnsignedByteArray.dropWhile[it.byteValue == 0].map[toString.substring(2)].join, 16).toString
   }
 
+  //TODO: def int intValue()
+  
   // uses 4 bytes from the specified end of the data
   // other bytes are ignored
   def long toUnsignedInt() {
