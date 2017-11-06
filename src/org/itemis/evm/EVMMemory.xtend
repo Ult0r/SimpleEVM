@@ -38,4 +38,9 @@ class EVMMemory {
   def EVMWord size() {
     size
   }
+  
+  def void clear() {
+    size = new EVMWord(0)
+    elements.clear
+  }
 }
