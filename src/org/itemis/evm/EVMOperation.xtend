@@ -15,6 +15,7 @@ import org.itemis.evm.op.PushOperations
 import org.itemis.evm.op.DuplicationOperations
 import org.itemis.evm.op.ExchangeOperations
 import org.itemis.evm.op.LoggingOperations
+import org.itemis.evm.op.SystemOperations
 
 abstract class EVMOperation {
   public static enum OpCode {
@@ -153,7 +154,7 @@ abstract class EVMOperation {
   
   //<OpValue, words taken from stack, words added to stack> 
   public static final EnumMap<OpCode, Triple<UnsignedByte, Pair<UnsignedByte, UnsignedByte>, Consumer<EVMRuntime>>> OP_INFO = {
-    val result = new EnumMap(OpCode)
+    val EnumMap<OpCode, Triple<UnsignedByte, Pair<UnsignedByte, UnsignedByte>, Consumer<EVMRuntime>>> result = new EnumMap(OpCode)
     result.put(OpCode.STOP,          Triple.of(new UnsignedByte(0x00), Pair.of(new UnsignedByte(0),  new UnsignedByte(0)),  [StopAndArithmeticOperations::STOP(it)]))           
     result.put(OpCode.ADD,           Triple.of(new UnsignedByte(0x01), Pair.of(new UnsignedByte(2),  new UnsignedByte(1)),  [StopAndArithmeticOperations::ADD(it)]))               
     result.put(OpCode.MUL,           Triple.of(new UnsignedByte(0x02), Pair.of(new UnsignedByte(2),  new UnsignedByte(1)),  [StopAndArithmeticOperations::MUL(it)]))               
@@ -278,13 +279,13 @@ abstract class EVMOperation {
     result.put(OpCode.LOG2,          Triple.of(new UnsignedByte(0xA2), Pair.of(new UnsignedByte(4),  new UnsignedByte(0)),  [LoggingOperations::LOGN(2, it)]))
     result.put(OpCode.LOG3,          Triple.of(new UnsignedByte(0xA3), Pair.of(new UnsignedByte(5),  new UnsignedByte(0)),  [LoggingOperations::LOGN(3, it)]))
     result.put(OpCode.LOG4,          Triple.of(new UnsignedByte(0xA4), Pair.of(new UnsignedByte(6),  new UnsignedByte(0)),  [LoggingOperations::LOGN(4, it)]))
-    result.put(OpCode.CREATE,        Triple.of(new UnsignedByte(0xF0), Pair.of(new UnsignedByte(3),  new UnsignedByte(1)),  [EVMOperation::CREATE(it)]))
-    result.put(OpCode.CALL,          Triple.of(new UnsignedByte(0xF1), Pair.of(new UnsignedByte(7),  new UnsignedByte(1)),  [EVMOperation::CALL(it)]))
-    result.put(OpCode.CALLCODE,      Triple.of(new UnsignedByte(0xF2), Pair.of(new UnsignedByte(7),  new UnsignedByte(1)),  [EVMOperation::CALLCODE(it)]))
-    result.put(OpCode.RETURN,        Triple.of(new UnsignedByte(0xF3), Pair.of(new UnsignedByte(2),  new UnsignedByte(0)),  [EVMOperation::RETURN(it)]))
-    result.put(OpCode.DELEGATECALL,  Triple.of(new UnsignedByte(0xF4), Pair.of(new UnsignedByte(6),  new UnsignedByte(1)),  [EVMOperation::DELEGATECALL(it)]))
-    result.put(OpCode.INVALID,       Triple.of(new UnsignedByte(0xFE), Pair.of(new UnsignedByte(0),  new UnsignedByte(0)),  [EVMOperation::INVALID(it)]))
-    result.put(OpCode.SELFDESTRUCT,  Triple.of(new UnsignedByte(0xFF), Pair.of(new UnsignedByte(1),  new UnsignedByte(0)),  [EVMOperation::SELFDESTRUCT(it)]))
+    result.put(OpCode.CREATE,        Triple.of(new UnsignedByte(0xF0), Pair.of(new UnsignedByte(3),  new UnsignedByte(1)),  [SystemOperations::CREATE(it)]))
+    result.put(OpCode.CALL,          Triple.of(new UnsignedByte(0xF1), Pair.of(new UnsignedByte(7),  new UnsignedByte(1)),  [SystemOperations::CALL(it)]))
+    result.put(OpCode.CALLCODE,      Triple.of(new UnsignedByte(0xF2), Pair.of(new UnsignedByte(7),  new UnsignedByte(1)),  [SystemOperations::CALLCODE(it)]))
+    result.put(OpCode.RETURN,        Triple.of(new UnsignedByte(0xF3), Pair.of(new UnsignedByte(2),  new UnsignedByte(0)),  [SystemOperations::RETURN(it)]))
+    result.put(OpCode.DELEGATECALL,  Triple.of(new UnsignedByte(0xF4), Pair.of(new UnsignedByte(6),  new UnsignedByte(1)),  [SystemOperations::DELEGATECALL(it)]))
+    result.put(OpCode.INVALID,       Triple.of(new UnsignedByte(0xFE), Pair.of(new UnsignedByte(0),  new UnsignedByte(0)),  [SystemOperations::INVALID(it)]))
+    result.put(OpCode.SELFDESTRUCT,  Triple.of(new UnsignedByte(0xFF), Pair.of(new UnsignedByte(1),  new UnsignedByte(0)),  [SystemOperations::SELFDESTRUCT(it)]))
     result
   }
   
