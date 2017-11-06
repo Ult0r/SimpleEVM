@@ -31,6 +31,7 @@ import org.itemis.types.NibbleList
 import org.itemis.evm.utils.MerklePatriciaTrie.Leaf
 import org.itemis.utils.Utils
 import org.itemis.evm.utils.EVMUtils
+import org.eclipse.xtend.lib.annotations.Accessors
 
 class WorldState {
   extension Utils u = new Utils
@@ -81,6 +82,9 @@ class WorldState {
           }
         }
       )
+      
+  @Accessors private EVMWord currentBlockNumber = new EVMWord(0)
+  @Accessors private EVMWord executedTransactions = new EVMWord(0) //in this block
   
   new(String name) {
     this.name = name
@@ -341,5 +345,9 @@ class WorldState {
     acc.insertIntoTrie(accountTrie, address)
     
     storageCache.put(Pair.of(address, offset), value)
+  }
+  
+  def EVMWord getCurrentBlock() {
+    //TODO
   }
 }
