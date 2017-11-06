@@ -10,13 +10,18 @@ import org.itemis.types.UnsignedByte
 import org.itemis.evm.EVMOperation.OpCode
 import org.itemis.blockchain.Block
 import java.util.Optional
+import org.itemis.types.UnsignedByteList
+import org.itemis.blockchain.BlockchainData
+import java.util.Set
 
 final class EVMRuntime {
-  @Accessors private EVMWord gasAvailable
-  @Accessors private int pc
-  @Accessors private EVMMemory memory
-  @Accessors private EVMWord memorySize
-  private EVMStack stack
+  @Accessors private final WorldState worldState
+  
+  @Accessors private EVMWord gasAvailable = new EVMWord(0)
+  @Accessors private int pc = 0
+  @Accessors private EVMMemory memory = new EVMMemory()
+  @Accessors private EVMWord memorySize = new EVMWord(0)
+  private EVMStack stack = new EVMStack()
   
   @Accessors private EVMWord codeAddress                         //Ia
   @Accessors private EVMWord originAddress                       //Io
@@ -28,16 +33,72 @@ final class EVMRuntime {
   @Accessors private Block currentBlock                          //IH
   @Accessors private EVMWord depth                               //Ie
   
-  @Accessors private final WorldState worldState
-  @Accessors private Patch patch
-  
-  @Accessors private List<EVMWord> selfdestructSet
-  @Accessors private List<EVMLog> logs
-  @Accessors private EVMWord refundBalance
-  private EVMWord gasUsed
+  @Accessors private Patch patch = new Patch()
+  @Accessors private Set<EVMWord> selfdestructSet = newHashSet
+  @Accessors private List<EVMLog> logs = newArrayList
+  @Accessors private EVMWord refundBalance = new EVMWord(0)
+  private EVMWord gasUsed = new EVMWord(0)
   
   new(WorldState ws) {
     worldState = ws
+  }
+  
+  def EVMRuntime createNestedRuntime(EVMWord value, byte[] code) {
+    val result = new EVMRuntime(worldState)
+    
+    result.fillEnvironmentInfo(
+      null, //TODO: new account address
+      originAddress,
+      gasPrice,
+      null, //no data
+      codeAddress,
+      value,
+      new UnsignedByteList(code.map[new UnsignedByte(it)]).parseCode,
+      currentBlock,
+      depth.inc
+    )
+    
+    result
+  }
+  
+  def private Pair<Optional<OpCode>, UnsignedByte>[] parseCode(UnsignedByteList code) {
+    //TODO
+  }
+  
+  def void fillEnvironmentInfo(Transaction t) {
+    fillEnvironmentInfo(
+      t.to,
+      t.sender,
+      t.gasPrice,
+      t.getData,
+      t.sender,
+      t.value,
+      worldState.getCodeAt(t.to).parseCode,
+      BlockchainData.getBlockByNumber(worldState.currentBlockNumber),
+      new EVMWord(0)
+    )
+  }
+  
+  def void fillEnvironmentInfo(
+    EVMWord codeAddress,
+    EVMWord originAddress,
+    EVMWord gasPrice,
+    UnsignedByte[] inputData,
+    EVMWord callerAddress,
+    EVMWord value,
+    Pair<Optional<OpCode>, UnsignedByte>[] code,
+    Block currentBlock,
+    EVMWord depth
+  ) {
+    this.codeAddress = codeAddress
+    this.originAddress = originAddress
+    this.gasPrice = gasPrice
+    this.inputData = inputData
+    this.callerAddress = callerAddress
+    this.value = value
+    this.code = code
+    this.currentBlock = currentBlock
+    this.depth = depth
   }
   
   def private boolean _run() {
@@ -62,6 +123,7 @@ final class EVMRuntime {
   
   def private void cleanup() {
     //TODO
+    //flush patch
   }
   
   def boolean run() {
@@ -74,7 +136,8 @@ final class EVMRuntime {
   
   def void executeTransaction(Transaction t) {
     //TODO
-    //sets private fields
+    //set private fields
+    //run
     //apply patches
     //clean up runtime
   }
@@ -104,6 +167,7 @@ final class EVMRuntime {
     gasUsed
   }
   
+  //TODO: change parameter to FeeClass
   def void addGasCost(EVMWord gasAmount) {
     gasUsed = gasUsed.add(gasAmount)
     if (gasUsed.greaterThan(currentBlock.gasLimit)) {
