@@ -54,4 +54,8 @@ class Transaction {
   def EVMWord hash() {
     //TODO
   }
+  
+  def EVMWord getSender() {
+    //TODO
+  }
 }
