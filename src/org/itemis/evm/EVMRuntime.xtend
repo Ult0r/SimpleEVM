@@ -17,7 +17,6 @@ import java.util.Set
 final class EVMRuntime {
   @Accessors private final WorldState worldState
   
-  @Accessors private EVMWord gasAvailable = new EVMWord(0)
   @Accessors private int pc = 0
   @Accessors private EVMMemory memory = new EVMMemory()
   @Accessors private EVMWord memorySize = new EVMWord(0)
@@ -34,7 +33,7 @@ final class EVMRuntime {
   @Accessors private EVMWord depth                               //Ie
   
   @Accessors private Patch patch = new Patch()
-  @Accessors private Set<EVMWord> selfdestructSet = newHashSet
+  @Accessors private Set<EVMWord> selfDestructSet = newHashSet
   @Accessors private List<EVMLog> logs = newArrayList
   @Accessors private EVMWord refundBalance = new EVMWord(0)
   private EVMWord gasUsed = new EVMWord(0)
@@ -62,7 +61,18 @@ final class EVMRuntime {
   }
   
   def private Pair<Optional<OpCode>, UnsignedByte>[] parseCode(UnsignedByteList code) {
-    //TODO
+    val result = newArrayOfSize(code.size)
+    
+    for (var i = 0; i < code.size; i++) {
+      val opCode = EVMOperation.getOp(code.get(i))
+      result.set(i, Pair.of(Optional.of(opCode), code.get(i)))
+      
+      for (var j = 0; j < EVMOperation.getParameterCount(opCode); j++) {
+        result.set(i + j, Pair.of(Optional.empty, code.get(i)))
+      }
+    }
+    
+    result
   }
   
   def void fillEnvironmentInfo(Transaction t) {
@@ -122,24 +132,41 @@ final class EVMRuntime {
   }
   
   def private void cleanup() {
-    //TODO
-    //flush patch
+    val unusedGas = currentBlock.gasLimit.sub(gasUsed)
+    val refund = EVMWord.min(gasUsed.div(new EVMWord(2)), refundBalance)
+    
+    patch.addBalance(worldState, callerAddress, unusedGas.add(refund))
+    patch.applyChanges(worldState)
+    
+    worldState.incExecutedTransaction
   }
   
   def boolean run() {
+    //TODO: validate logs
     val success = _run
-    if (success) {
+    if (success /*&& logs valid */) {
       cleanup
     }
     success
   }
   
   def void executeTransaction(Transaction t) {
-    //TODO
-    //set private fields
-    //run
-    //apply patches
-    //clean up runtime
+    patch.subtractBalance(worldState, t.sender, t.gasLimit)
+    
+    pc = 0
+    memory.clear
+    memorySize = new EVMWord(0)
+    stack.clear
+    
+    fillEnvironmentInfo(t)
+    
+    patch.clear
+    selfDestructSet.clear
+    logs.clear
+    refundBalance = new EVMWord(0)
+    gasUsed = new EVMWord(0)
+    
+    run
   }
   
   def EVMWord popStackItem() {
