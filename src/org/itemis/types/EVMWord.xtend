@@ -267,6 +267,10 @@ class EVMWord {
     !this.greaterThan(other)
   }
   
+  def static EVMWord min(EVMWord one, EVMWord other) {
+    if (one.lessThan(other)) one else other
+  }
+  
   def static EVMWord max(EVMWord one, EVMWord other) {
     if (one.greaterThan(other)) one else other
   }
@@ -339,6 +343,7 @@ class EVMWord {
     toBigInteger.subtract(BigInteger.ONE).fromBigInteger
   }
 
+  //TODO with int/biginteger and static
   def EVMWord add(EVMWord other) {
     val _this =  toBigInteger
     val _other = other.toBigInteger
@@ -349,6 +354,7 @@ class EVMWord {
     EVMWord.fromBigInteger(result)
   }
 
+  //TODO with int/biginteger and static
   def EVMWord sub(EVMWord other) {
     println(other)
     
@@ -360,7 +366,8 @@ class EVMWord {
     }
     EVMWord.fromBigInteger(result)
   }
-  
+
+  //TODO with int/biginteger and static
   def EVMWord mul(EVMWord other) {
     val _this =  toBigInteger
     val _other = other.toBigInteger
@@ -370,7 +377,8 @@ class EVMWord {
     }
     EVMWord.fromBigInteger(result)
   }
-  
+
+  //TODO with int/biginteger and static
   def EVMWord div(EVMWord other) {
     val _this =  toBigInteger
     val _other = other.toBigInteger
@@ -380,7 +388,8 @@ class EVMWord {
     }
     EVMWord.fromBigInteger(result)
   }
-  
+
+  //TODO with int/biginteger and static
   def int log(EVMWord other) {
     if (other.negative || other.zero || other.dec.zero) {
       throw new IllegalArgumentException("log with negative number, 0 or 1")
@@ -395,7 +404,8 @@ class EVMWord {
     
     result
   }
-  
+
+  //TODO with int/biginteger and static
   def EVMWord mod(EVMWord other) {
     val _this =  toBigInteger
     val _other = other.toBigInteger
@@ -405,7 +415,8 @@ class EVMWord {
     }
     EVMWord.fromBigInteger(result)
   }
-  
+
+  //TODO with int/biginteger and static
   def EVMWord divRoundUp(EVMWord other) {
     val _this = toBigInteger
     val _other = other.toBigInteger
