@@ -302,6 +302,44 @@ abstract class EVMOperation {
     OP_INFO.get(opCode)
   }
   
+  def public static int getParameterCount(OpCode opCode) {
+    switch opCode {
+      case PUSH1: 1
+      case PUSH2: 2
+      case PUSH3: 3
+      case PUSH4: 4
+      case PUSH5: 5
+      case PUSH6: 6
+      case PUSH7: 7
+      case PUSH8: 8
+      case PUSH9: 9
+      case PUSH10: 10
+      case PUSH11: 11
+      case PUSH12: 12
+      case PUSH13: 13
+      case PUSH14: 14
+      case PUSH15: 15
+      case PUSH16: 16
+      case PUSH17: 17
+      case PUSH18: 18
+      case PUSH19: 19
+      case PUSH20: 20
+      case PUSH21: 21
+      case PUSH22: 22
+      case PUSH23: 23
+      case PUSH24: 24
+      case PUSH25: 25
+      case PUSH26: 26
+      case PUSH27: 27
+      case PUSH28: 28
+      case PUSH29: 29
+      case PUSH30: 30
+      case PUSH31: 31
+      case PUSH32: 32
+      default: 0
+    }
+  }
+  
   def public static void executeOp(OpCode opCode, EVMRuntime runtime) {
     opCode.opInfo.right.accept(runtime)
   }
