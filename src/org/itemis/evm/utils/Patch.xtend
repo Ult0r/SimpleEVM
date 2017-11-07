@@ -4,14 +4,56 @@ import java.util.Map
 import org.itemis.types.EVMWord
 import org.apache.commons.lang3.tuple.Triple
 import org.itemis.blockchain.WorldState
+import java.util.Set
 
 final class Patch {
   //address -> (balance, nonce, (offset -> value))
   private final Map<EVMWord, Triple<EVMWord, EVMWord, Map<EVMWord, EVMWord>>> changes = newHashMap
+  private final Set<EVMWord> selfDestructSet = newHashSet
+  
+  def void clear() {
+    changes.clear
+  }
   
   //returns patch that undoes this patch
   def Patch applyChanges(WorldState ws) {
-    //TODO
+    val result = new Patch()
+    for (acc: changes.entrySet) {
+      val addr = acc.key
+      val oldAccount = ws.getAccount(addr)
+      
+      result.setBalance(addr, oldAccount.balance)
+      result.setNonce(addr, oldAccount.nonce)
+      
+      for (cell: acc.value.right.entrySet) {
+        if (!ws.getStorageAt(addr, cell.key).equals(cell.value)) {
+          result.setStorageValue(addr, cell.key, cell.value)
+        }
+      }
+      
+      oldAccount.balance = acc.value.left
+      oldAccount.balance = acc.value.middle
+      ws.setAccount(addr, oldAccount)
+      
+      for (cell: acc.value.right.entrySet) {
+        ws.setStorageAt(addr, cell.key, cell.value)
+      }
+    }
+    
+    for (addr: selfDestructSet) {
+      val oldAccount = ws.getAccount(addr)
+      
+      result.setBalance(addr, oldAccount.balance)
+      result.setNonce(addr, oldAccount.nonce)
+      
+      for (cell: ws.getStorage(addr).entrySet) {
+        result.setStorageValue(addr, cell.key, cell.value)
+      }
+      
+      ws.deleteAccount(addr)
+    }
+    
+    result
   }
   
   def void setBalance(EVMWord address, EVMWord balance) {
@@ -21,6 +63,14 @@ final class Patch {
     } else {
       changes.put(address, Triple.of(balance, null, newHashMap))
     }
+  }
+  
+  def void addBalance(WorldState ws, EVMWord address, EVMWord balance) {
+    setBalance(address, getBalance(ws, address).add(balance))
+  }
+  
+  def void subtractBalance(WorldState ws, EVMWord address, EVMWord balance) {
+    setBalance(address, getBalance(ws, address).sub(balance))
   }
   
   def void setNonce(EVMWord address, EVMWord nonce) {
