@@ -85,6 +85,8 @@ class MerklePatriciaTrie {
     def abstract Node putElement(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value)
     
     def abstract Node getNode(MerklePatriciaTrie trie, NibbleList keyFromHere)
+    
+    def abstract Map<NibbleList, UnsignedByte[]> getNodes(MerklePatriciaTrie trie)
 
     def abstract String toGraphViz(MerklePatriciaTrie trie, String prefix)
     
@@ -141,6 +143,10 @@ class MerklePatriciaTrie {
     
     override getNode(MerklePatriciaTrie trie, NibbleList keyFromHere) {
       throw new UnsupportedOperationException("This is a Null-Node")
+    }
+    
+    override Map<NibbleList, UnsignedByte[]> getNodes(MerklePatriciaTrie trie) {
+      return newHashMap
     }
 
     override toGraphViz(MerklePatriciaTrie trie, String prefix) {
@@ -209,6 +215,12 @@ class MerklePatriciaTrie {
       } else {
         throw new IllegalArgumentException("already at a leaf")
       }
+    }
+    
+    override Map<NibbleList, UnsignedByte[]> getNodes(MerklePatriciaTrie trie) {
+      val map = newHashMap
+      map.put(thisKey, value)
+      map
     }
 
     override toGraphViz(MerklePatriciaTrie trie, String prefix) {
@@ -331,6 +343,19 @@ class MerklePatriciaTrie {
         throw new IllegalArgumentException("Node doesn't exist")
       }
     }
+    
+    override Map<NibbleList, UnsignedByte[]> getNodes(MerklePatriciaTrie trie) {
+      val children = trie.cache.lookUp(nextKey).getNodes(trie)
+      val result = newHashMap
+      
+      for (c: children.entrySet) {
+        val concatedKey = thisKey
+        concatedKey.addAll(c.key)
+        result.put(concatedKey, c.value)
+      }
+      
+      result
+    }
 
     override toGraphViz(MerklePatriciaTrie trie, String prefix) {
       String.format(
@@ -415,6 +440,26 @@ class MerklePatriciaTrie {
       } else {
         throw new IllegalArgumentException("Node doesn't exist")
       }
+    }
+    
+    override Map<NibbleList, UnsignedByte[]> getNodes(MerklePatriciaTrie trie) {
+      val result = newHashMap
+      
+      for (var i = 0; i < 16; i++) {
+        val nibble = new Nibble(i)
+        val children = if (paths.get(i) === null) newHashMap else trie.cache.lookUp(paths.get(i)).getNodes(trie)
+        for (c: children.entrySet) {
+          val concatedKey = new NibbleList(newArrayList(nibble))
+          concatedKey.addAll(c.key)
+          result.put(concatedKey, c.value)
+        }
+      }
+      
+      if (value !== null) {
+        result.put(new NibbleList(newArrayList), value)
+      }
+      
+      result
     }
 
     override toGraphViz(MerklePatriciaTrie trie, String prefix) {
