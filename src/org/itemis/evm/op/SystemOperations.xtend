@@ -28,7 +28,7 @@ abstract class SystemOperations {
       contractRuntime.patch = runtime.patch
       
       if (contractRuntime.run) {
-        runtime.selfdestructSet.addAll(contractRuntime.selfdestructSet)
+        runtime.getSelfDestructSet.addAll(contractRuntime.getSelfDestructSet)
         runtime.logs.addAll(contractRuntime.logs)
         runtime.refundBalance.add(contractRuntime.refundBalance)
         
