@@ -238,10 +238,20 @@ class WorldState {
     }
   }
   
+  //for new accounts
   def void putAccount(EVMWord blockNumber, EVMWord address, Account account) {
     accountCache.put(address, account)
     accountDB.put(address, blockNumber.toUnsignedLong)
     account.insertIntoTrie(accountTrie, address)
+  }
+  
+  //for overwriting accounts
+  def void setAccount(EVMWord address, Account account) {
+    account.insertIntoTrie(accountTrie, address)
+  }
+  
+  def void deleteAccount(EVMWord address) {
+    //TODO
   }
   
   def boolean accountExists(EVMWord address) {
@@ -318,6 +328,23 @@ class WorldState {
     acc.insertIntoTrie(accountTrie, address)
   }
   
+  def Map<EVMWord, EVMWord> getStorage(EVMWord address) {
+    val trie = address.storageTrie
+    
+    try {
+      val result = newHashMap
+      trie.root.getNodes(trie).entrySet.forEach[{
+        val _key = new EVMWord(key.toUnsignedBytes)
+        val _value = new EVMWord(value)
+        
+        result.put(_key, _value)
+      }]
+      result
+    } catch (Exception e) {
+      null
+    }
+  }
+  
   def EVMWord getStorageAt(EVMWord address, EVMWord offset) {
     storageCache.getIfPresent(Pair.of(address, offset)) ?: getStorageAt(address.storageTrie.trieRoot, address, offset)
   }
@@ -347,7 +374,11 @@ class WorldState {
     storageCache.put(Pair.of(address, offset), value)
   }
   
-  def EVMWord getCurrentBlock() {
-    //TODO
+  def void incCurrentBlock() {
+    currentBlockNumber = currentBlockNumber.inc
+  }
+  
+  def void incExecutedTransaction() {
+    executedTransactions = executedTransactions.inc
   }
 }
