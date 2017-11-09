@@ -16,6 +16,13 @@ import org.itemis.utils.Utils
 import org.eclipse.xtend.lib.annotations.Accessors
 import java.util.List
 import org.itemis.evm.utils.EVMUtils
+import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec
+import org.bouncycastle.jce.ECNamedCurveTable
+import java.security.KeyFactory
+import org.bouncycastle.jce.provider.BouncyCastleProvider
+import org.bouncycastle.jce.spec.ECNamedCurveSpec
+import org.bouncycastle.jce.ECPointUtil
+import org.bouncycastle.math.ec.ECPoint
 
 class Transaction {
   extension Utils u = new Utils
@@ -53,8 +60,13 @@ class Transaction {
     data = obj.get("input").asString.fromHex.map[new UnsignedByte(it)]
   }
   
+  //TODO: Test
   def EVMWord hash() {
-    keccak256(rlp(fields).map[byteValue])
+    val fields = fields
+    val _fields = fields.take(5).toList
+    _fields.add(fields.last)
+    
+    keccak256(rlp(_fields).map[byteValue])
   }
   
   //TODO: Test
@@ -63,7 +75,11 @@ class Transaction {
     fields.add(nonce.toByteArray.reverseView.dropWhile[it == 0].toList.map[new UnsignedByte(it)])
     fields.add(gasPrice.toByteArray.reverseView.dropWhile[it == 0].toList.map[new UnsignedByte(it)])
     fields.add(gasLimit.toByteArray.reverseView.dropWhile[it == 0].toList.map[new UnsignedByte(it)])
-    fields.add(to.toByteArray.take(20).map[new UnsignedByte(it)])
+    if (to !== null) {
+      fields.add(to.toByteArray.take(20).map[new UnsignedByte(it)])
+    } else {
+      fields.add(newArrayOfSize(0))
+    }
     fields.add(value.toByteArray.reverseView.dropWhile[it == 0].toList.map[new UnsignedByte(it)])
     val vArray = newArrayOfSize(1)
     vArray.set(0, v)
@@ -77,5 +93,9 @@ class Transaction {
   
   def EVMWord getSender() {
     //TODO
+    //Cipolla
+    //p = secp256k1n
+    //n = r
+    null
   }
 }
