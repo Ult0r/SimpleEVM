@@ -27,7 +27,6 @@ class Transaction {
   @Accessors private EVMWord r
   @Accessors private EVMWord s
   @Accessors private UnsignedByte[] data
-  @Accessors private boolean isData // opposing to being init
 
   new() {
   }
@@ -43,7 +42,7 @@ class Transaction {
     r = EVMWord.fromString(obj.get("r").asString)
     s = EVMWord.fromString(obj.get("s").asString)
 
-    isData = !obj.get("to").jsonNull
+    val isData = !obj.get("to").jsonNull
     if(isData) {
       to = EVMWord.fromString(obj.get("to").asString)
     }
