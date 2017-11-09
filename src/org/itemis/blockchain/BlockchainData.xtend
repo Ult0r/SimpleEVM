@@ -414,7 +414,6 @@ abstract class BlockchainData {
       resultTransaction.r = new EVMWord(resultSet.getBytes("r"))
       resultTransaction.s = new EVMWord(resultSet.getBytes("s"))
       resultTransaction.data = resultSet.getBytes("data").map[new UnsignedByte(it)]
-      resultTransaction.isData = _to !== null
       
       resultTransaction
     } catch (Exception e) {
