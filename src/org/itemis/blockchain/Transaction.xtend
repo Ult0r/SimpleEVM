@@ -14,9 +14,12 @@ import org.itemis.types.UnsignedByte
 import com.google.gson.JsonObject
 import org.itemis.utils.Utils
 import org.eclipse.xtend.lib.annotations.Accessors
+import java.util.List
+import org.itemis.evm.utils.EVMUtils
 
 class Transaction {
   extension Utils u = new Utils
+  extension EVMUtils e = new EVMUtils
 
   @Accessors private EVMWord nonce
   @Accessors private EVMWord gasPrice
@@ -51,7 +54,25 @@ class Transaction {
   }
   
   def EVMWord hash() {
-    //TODO
+    keccak256(rlp(fields).map[byteValue])
+  }
+  
+  //TODO: Test
+  def List<UnsignedByte[]> getFields() {
+    val List<UnsignedByte[]> fields = newArrayList
+    fields.add(nonce.toByteArray.reverseView.dropWhile[it == 0].toList.map[new UnsignedByte(it)])
+    fields.add(gasPrice.toByteArray.reverseView.dropWhile[it == 0].toList.map[new UnsignedByte(it)])
+    fields.add(gasLimit.toByteArray.reverseView.dropWhile[it == 0].toList.map[new UnsignedByte(it)])
+    fields.add(to.toByteArray.take(20).map[new UnsignedByte(it)])
+    fields.add(value.toByteArray.reverseView.dropWhile[it == 0].toList.map[new UnsignedByte(it)])
+    val vArray = newArrayOfSize(1)
+    vArray.set(0, v)
+    fields.add(vArray)
+    fields.add(r.toByteArray.reverseView.dropWhile[it == 0].toList.map[new UnsignedByte(it)])
+    fields.add(s.toByteArray.reverseView.dropWhile[it == 0].toList.map[new UnsignedByte(it)])
+    fields.add(data)
+    
+    fields
   }
   
   def EVMWord getSender() {
