@@ -98,14 +98,34 @@ final class Patch {
   }
   
   def EVMWord getBalance(WorldState ws, EVMWord address) {
-    //TODO
+    val changesVal = changes.get(address)
+    if (changesVal !== null && changesVal.left !== null) {
+      changesVal.left
+    } else {
+      ws.getBalance(address)
+    }
   }
   
   def EVMWord getNonce(WorldState ws, EVMWord address) {
-    //TODO
+    val changesVal = changes.get(address)
+    if (changesVal !== null && changesVal.middle !== null) {
+      changesVal.middle
+    } else {
+      ws.getNonce(address)
+    }
   }
   
   def EVMWord getStorageAt(WorldState ws, EVMWord address, EVMWord offset) {
-    //TODO
+    val changesVal = changes.get(address)
+    if (changesVal !== null) {
+      val storageValue = changesVal.right.get(offset)
+      if (storageValue !== null) {
+        storageValue
+      } else {
+        ws.getStorageAt(address, offset)
+      }
+    } else {
+      ws.getStorageAt(address, offset)
+    }
   }
 }
