@@ -45,7 +45,7 @@ abstract class StackMemoryStorageAndFlowOperations {
 
     runtime.memory.put(s0, s1.toByteArray.get(0))
 
-    runtime.memorySize = EVMRuntime.calcMemorySize(runtime.memorySize, s0, new EVMWord(1))
+    runtime.memorySize = EVMRuntime.calcMemorySize(runtime.memorySize, s0, EVMWord.ONE)
 
     runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
   }

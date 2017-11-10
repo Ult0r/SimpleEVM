@@ -31,12 +31,12 @@ class Account {
   @Accessors private EVMWord codeHash
   
   new() {
-    this(new EVMWord(0))
+    this(EVMWord.ZERO)
   }
   
   new(EVMWord balance) {
     this(
-      new EVMWord(0),
+      EVMWord.ZERO,
       balance,
       MerklePatriciaTrie.EMPTY_TRIE_HASH,
       StaticUtils.keccak256("")
@@ -67,10 +67,10 @@ class Account {
       this.storageRoot = new EVMWord(tree.children.get(2).data.map[byteValue])
       this.codeHash = new EVMWord(tree.children.get(3).data.map[byteValue])
     } catch (Exception e) {
-      this.nonce = new EVMWord(0)
-      this.balance = new EVMWord(0)
-      this.storageRoot = new EVMWord(0)
-      this.codeHash = new EVMWord(0)
+      this.nonce = EVMWord.ZERO
+      this.balance = EVMWord.ZERO
+      this.storageRoot = EVMWord.ZERO
+      this.codeHash = EVMWord.ZERO
     }
   }
   
@@ -87,4 +87,9 @@ class Account {
 
     trie.putElement(new NibbleList(path), value)
   }
+  
+  def removeFromTrie(MerklePatriciaTrie trie, EVMWord word) {
+    throw new UnsupportedOperationException("TODO: auto-generated method stub")
+  }
+  
 }

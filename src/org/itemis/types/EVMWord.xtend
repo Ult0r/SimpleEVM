@@ -17,11 +17,13 @@ import java.math.BigInteger
 import java.util.ArrayList
 
   //TODO replace EVMWord with subclasses (address, hash, etc)
-  //TODO make singleton for EVMWord 0
 //256-bit / 32-byte int
 //[0] contains bits 0-7
 //[31] contains bits 248-255
 class EVMWord {
+  public static final EVMWord ZERO = new EVMWord(0)
+  public static final EVMWord ONE  = new EVMWord(1)
+  
   private UnsignedByte[] value = newArrayOfSize(32)
 
   new() {
@@ -285,7 +287,7 @@ class EVMWord {
   }
   
   def EVMWord reverse() {
-    val result = new EVMWord(0)
+    val result = EVMWord.ZERO
     
     for (i : 0 .. 31) {
       result.setNthField(i, this.getNthField(31 - i))
@@ -295,7 +297,7 @@ class EVMWord {
   }
 
   def EVMWord invert() {
-    val result = new EVMWord(0)
+    val result = EVMWord.ZERO
     
     for (i : 0 .. 31) {
       result.setNthField(i, this.getNthField(i).invert)

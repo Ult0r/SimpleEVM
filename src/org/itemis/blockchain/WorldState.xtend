@@ -64,8 +64,8 @@ class WorldState {
   private final Map<EVMWord, MerklePatriciaTrie> storageTries = newHashMap
   private final Cache<Pair<EVMWord, EVMWord>, EVMWord> storageCache = CacheBuilder.newBuilder().maximumSize(MAX_STORAGE_CACHE_SIZE).build()
       
-  @Accessors private EVMWord currentBlockNumber = new EVMWord(0)
-  @Accessors private EVMWord executedTransactions = new EVMWord(0) //in this block
+  @Accessors private EVMWord currentBlockNumber = EVMWord.ZERO
+  @Accessors private EVMWord executedTransactions = EVMWord.ZERO //in this block
   
   new(String name) {
     this.name = name
@@ -214,7 +214,7 @@ class WorldState {
       val balance = e.value
       val account = new Account(balance)
       
-      putAccount(new EVMWord(0), address, account)
+      putAccount(EVMWord.ZERO, address, account)
       println(i++)
     }
   }
@@ -232,7 +232,10 @@ class WorldState {
   }
   
   def void deleteAccount(EVMWord address) {
-    //TODO
+    getAccount(address).removeFromTrie(accountTrie, address)
+    accountCache.invalidate(address)
+    accountCache.cleanUp
+    accountDB.remove(address)
   }
   
   def boolean accountExists(EVMWord address) {

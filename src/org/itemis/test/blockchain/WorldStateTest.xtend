@@ -30,6 +30,6 @@ class WorldStateTest {
     DataBaseWrapper.closeAllConnections
     
     Assert.assertEquals(size, 8893)
-    Assert.assertEquals(root, eth_getBlockByNumber(new EVMWord(0), null).stateRoot)
+    Assert.assertEquals(root, eth_getBlockByNumber(EVMWord.ZERO, null).stateRoot)
   }
 }

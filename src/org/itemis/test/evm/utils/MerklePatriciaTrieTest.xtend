@@ -58,7 +58,7 @@ class MerklePatriciaTrieTest {
 
   @Test
   def void testWithAllocData() {
-    println(eth_getBlockByNumber(new EVMWord(0), null).stateRoot)
+    println(eth_getBlockByNumber(EVMWord.ZERO, null).stateRoot)
     
     val MerklePatriciaTrie trie = new MerklePatriciaTrie("testWithAllocData")
 
@@ -76,7 +76,7 @@ class MerklePatriciaTrieTest {
     val size = res.getLong(1)
     
     Assert.assertEquals(size, 44410)
-    Assert.assertEquals(trie.trieRoot, eth_getBlockByNumber(new EVMWord(0), null).stateRoot)
+    Assert.assertEquals(trie.trieRoot, eth_getBlockByNumber(EVMWord.ZERO, null).stateRoot)
     
     DataBaseWrapper.closeAllConnections
   }

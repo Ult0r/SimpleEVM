@@ -10,7 +10,7 @@ abstract class ComparisonAndBitwiseLogicOperations {
     val s0 = runtime.popStackItem
     val s1 = runtime.popStackItem
 
-    runtime.pushStackItem(if(s0.equals(s1)) new EVMWord(1) else new EVMWord(0))
+    runtime.pushStackItem(if(s0.equals(s1)) EVMWord.ONE else EVMWord.ZERO)
     runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
   }
 
@@ -19,7 +19,7 @@ abstract class ComparisonAndBitwiseLogicOperations {
     val s1 = runtime.popStackItem
 
     runtime.pushStackItem(
-      if(s1.toUnsignedBigInteger.subtract(s0.toUnsignedBigInteger).signum == -1) new EVMWord(1) else new EVMWord(0))
+      if(s1.toUnsignedBigInteger.subtract(s0.toUnsignedBigInteger).signum == -1) EVMWord.ONE else EVMWord.ZERO)
     runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
   }
 
@@ -28,7 +28,7 @@ abstract class ComparisonAndBitwiseLogicOperations {
     val s1 = runtime.popStackItem
 
     runtime.pushStackItem(
-      if(s0.toUnsignedBigInteger.subtract(s1.toUnsignedBigInteger).signum == -1) new EVMWord(1) else new EVMWord(0))
+      if(s0.toUnsignedBigInteger.subtract(s1.toUnsignedBigInteger).signum == -1) EVMWord.ONE else EVMWord.ZERO)
     runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
   }
 
@@ -36,7 +36,7 @@ abstract class ComparisonAndBitwiseLogicOperations {
     val s0 = runtime.popStackItem
     val s1 = runtime.popStackItem
 
-    runtime.pushStackItem(if(s0.greaterThan(s1)) new EVMWord(1) else new EVMWord(0))
+    runtime.pushStackItem(if(s0.greaterThan(s1)) EVMWord.ONE else EVMWord.ZERO)
     runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
   }
 
@@ -44,14 +44,14 @@ abstract class ComparisonAndBitwiseLogicOperations {
     val s0 = runtime.popStackItem
     val s1 = runtime.popStackItem
 
-    runtime.pushStackItem(if(s0.lessThan(s1)) new EVMWord(1) else new EVMWord(0))
+    runtime.pushStackItem(if(s0.lessThan(s1)) EVMWord.ONE else EVMWord.ZERO)
     runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
   }
 
   def static ISZERO(EVMRuntime runtime) {
     val s0 = runtime.popStackItem
 
-    runtime.pushStackItem(if(s0.zero) new EVMWord(1) else new EVMWord(0))
+    runtime.pushStackItem(if(s0.zero) EVMWord.ONE else EVMWord.ZERO)
     runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
   }
 
@@ -93,7 +93,7 @@ abstract class ComparisonAndBitwiseLogicOperations {
     if(s0.lessThan(new EVMWord(32))) {
       runtime.pushStackItem(new EVMWord(s1.getNthField(31 - s0.getNthField(0).intValue).intValue))
     } else {
-      runtime.pushStackItem(new EVMWord(0))
+      runtime.pushStackItem(EVMWord.ZERO)
     }
     runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
   }

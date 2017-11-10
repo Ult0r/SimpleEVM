@@ -112,7 +112,7 @@ abstract class StopAndArithmeticOperations {
     val s1 = runtime.popStackItem
 
     if(s1.zero) {
-      runtime.pushStackItem(new EVMWord(1))
+      runtime.pushStackItem(EVMWord.ONE)
       runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.EXP))
     } else {
       runtime.pushStackItem(EVMWord.fromBigInteger(s0.toBigInteger.modPow(s1.toBigInteger, MAX_VALUE)))

@@ -19,7 +19,7 @@ final class EVMRuntime {
   
   @Accessors private int pc = 0
   @Accessors private EVMMemory memory = new EVMMemory()
-  @Accessors private EVMWord memorySize = new EVMWord(0)
+  @Accessors private EVMWord memorySize = EVMWord.ZERO
   private EVMStack stack = new EVMStack()
   
   @Accessors private EVMWord codeAddress                         //Ia
@@ -35,8 +35,8 @@ final class EVMRuntime {
   @Accessors private Patch patch = new Patch()
   @Accessors private Set<EVMWord> selfDestructSet = newHashSet
   @Accessors private List<EVMLog> logs = newArrayList
-  @Accessors private EVMWord refundBalance = new EVMWord(0)
-  private EVMWord gasUsed = new EVMWord(0)
+  @Accessors private EVMWord refundBalance = EVMWord.ZERO
+  private EVMWord gasUsed = EVMWord.ZERO
   
   new(WorldState ws) {
     worldState = ws
@@ -85,7 +85,7 @@ final class EVMRuntime {
       t.value,
       worldState.getCodeAt(t.to).parseCode,
       BlockchainData.getBlockByNumber(worldState.currentBlockNumber),
-      new EVMWord(0)
+      EVMWord.ZERO
     )
   }
   
@@ -155,7 +155,7 @@ final class EVMRuntime {
     
     pc = 0
     memory.clear
-    memorySize = new EVMWord(0)
+    memorySize = EVMWord.ZERO
     stack.clear
     
     fillEnvironmentInfo(t)
@@ -163,8 +163,8 @@ final class EVMRuntime {
     patch.clear
     selfDestructSet.clear
     logs.clear
-    refundBalance = new EVMWord(0)
-    gasUsed = new EVMWord(0)
+    refundBalance = EVMWord.ZERO
+    gasUsed = EVMWord.ZERO
     
     run
   }

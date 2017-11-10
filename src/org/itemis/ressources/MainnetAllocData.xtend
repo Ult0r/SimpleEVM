@@ -190,7 +190,7 @@ abstract class MainnetAllocData {
         
         val right = if (c.children.length == 2) c.children.get(1).data
         val balance = if (right === null) {
-          new EVMWord(0)
+          EVMWord.ZERO
         } else {
           new EVMWord(right.reverseView)
         }

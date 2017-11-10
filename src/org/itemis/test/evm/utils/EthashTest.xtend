@@ -24,7 +24,7 @@ class EthashTest {
   @Test
   def public void testSeedHash() { //works
     Assert.assertEquals(
-      StaticUtils.toHex(Ethash.getSeedHash(new EVMWord(0)).toByteArray),
+      StaticUtils.toHex(Ethash.getSeedHash(EVMWord.ZERO).toByteArray),
       "0x0000000000000000000000000000000000000000000000000000000000000000"
     )
     Assert.assertEquals(
@@ -36,11 +36,11 @@ class EthashTest {
   @Test
   def public void testCache() { //works
     Assert.assertEquals(
-      StaticUtils.toHex(Ethash.initCache(new EVMWord(0)).take(36).toList),
+      StaticUtils.toHex(Ethash.initCache(EVMWord.ZERO).take(36).toList),
       "0x0F6F7226432C21D4DFA2A1538A1FDC72EE1FAF405A60E5F408B344A2F5AAB2DDFF0F9C17"
     )
     Assert.assertEquals(
-      StaticUtils.toHex(Ethash.getCache(new EVMWord(0)).take(36).toList),
+      StaticUtils.toHex(Ethash.getCache(EVMWord.ZERO).take(36).toList),
       "0x5E493E76A1318E50815C6CE77950425532964EBBB8DCF94718991FA9A82EAF37658DE68C"
     )
     Assert.assertEquals(
@@ -55,13 +55,13 @@ class EthashTest {
   
   @Test
   def public void testDataset() { //works
-    var cache = Ethash.getCache(new EVMWord(0))
+    var cache = Ethash.getCache(EVMWord.ZERO)
     Assert.assertEquals(
-      StaticUtils.toHex(Ethash.calcDataSetItem(cache, 0L, new EVMWord(0)).take(32).toList),
+      StaticUtils.toHex(Ethash.calcDataSetItem(cache, 0L, EVMWord.ZERO).take(32).toList),
       "0x22DB2229CC516C46D2210086F1AB417E0BD1C3827C5ECC6AF7D3A33F8DAE332B"
     )
     Assert.assertEquals(
-      StaticUtils.toHex(Ethash.calcDataSetItem(cache, 1337L, new EVMWord(0)).take(32).toList),
+      StaticUtils.toHex(Ethash.calcDataSetItem(cache, 1337L, EVMWord.ZERO).take(32).toList),
       "0x857FA970BF666A43C5AE0B6B9C4D7D59445B915A34BA69C61A7C00967CBA2931"
     )
     cache = Ethash.getCache(new EVMWord(40000))
@@ -77,7 +77,7 @@ class EthashTest {
   
   @Test
   def public void testNewHashimoto() {
-    val block1 = BlockchainData.getBlockByNumber(new EVMWord(1))
+    val block1 = BlockchainData.getBlockByNumber(EVMWord.ONE)
     val result = Ethash.proofOfWork(block1)
     Assert.assertEquals(new EVMWord(result.key), block1.mixHash)
     Assert.assertTrue(new BigInteger(result.value).compareTo(TWO.pow(256).divide(block1.difficulty.toBigInteger)) == -1)

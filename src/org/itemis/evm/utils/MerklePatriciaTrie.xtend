@@ -84,6 +84,8 @@ class MerklePatriciaTrie {
     // overrides existent value
     def abstract Node putElement(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value)
     
+    def abstract Node removeElement(MerklePatriciaTrie trie, NibbleList key)
+    
     def abstract Node getNode(MerklePatriciaTrie trie, NibbleList keyFromHere)
     
     def abstract Map<NibbleList, UnsignedByte[]> getNodes(MerklePatriciaTrie trie)
@@ -139,6 +141,10 @@ class MerklePatriciaTrie {
 
     override putElement(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value) {
       new Leaf(trie, key, value)
+    }
+    
+    override removeElement(MerklePatriciaTrie trie, NibbleList key) {
+      new Null() 
     }
     
     override getNode(MerklePatriciaTrie trie, NibbleList keyFromHere) {
@@ -206,6 +212,14 @@ class MerklePatriciaTrie {
           trie.cache.removeNode(this)
         }
         Node.fromTwoKeyValuePairs(trie, thisKey, this.value, key, value)
+      }
+    }
+    
+    override removeElement(MerklePatriciaTrie trie, NibbleList key) {
+      if (key.equals(thisKey)) {
+        new Null()
+      } else {
+        this
       }
     }
     
@@ -334,6 +348,16 @@ class MerklePatriciaTrie {
       }
     }
     
+    override removeElement(MerklePatriciaTrie trie, NibbleList key) {
+      if (key.length == 0) {
+        this
+      } else if (thisKey.startsWith(key)) {
+        trie.getNode(nextKey).removeElement(trie, key.unsharedSuffix(thisKey))
+      } else {
+        this
+      }
+    }
+    
     override getNode(MerklePatriciaTrie trie, NibbleList keyFromHere) {
       if (keyFromHere.length == 0) {
         this
@@ -431,6 +455,21 @@ class MerklePatriciaTrie {
 
       trie.cache.putNode(this)
       this
+    }
+    
+    override removeElement(MerklePatriciaTrie trie, NibbleList key) {
+      if (key.length == 0) {
+        value = null
+        trie.cache.putNode(this)
+        this
+      } else {
+        val head = key.head.intValue
+        if (paths.get(head) !== null) {
+          trie.getNode(paths.get(head)).removeElement(trie, key.tail)
+        } else {
+          this
+        }
+      }
     }
     
     override getNode(MerklePatriciaTrie trie, NibbleList keyFromHere) {

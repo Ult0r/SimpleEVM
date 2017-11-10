@@ -36,10 +36,10 @@ abstract class SystemOperations {
         
         runtime.pushStackItem(new EVMWord(1337)) //TODO: new account address
       } else {
-        runtime.pushStackItem(new EVMWord(0))
+        runtime.pushStackItem(EVMWord.ZERO)
       }
     } else {
-      runtime.pushStackItem(new EVMWord(0))
+      runtime.pushStackItem(EVMWord.ZERO)
     }
     
     runtime.memorySize = EVMRuntime.calcMemorySize(runtime.memorySize, s1, s2)

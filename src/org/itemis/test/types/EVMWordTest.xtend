@@ -21,7 +21,7 @@ class EVMWordTest {
   private var EVMWord maxEVMWord = new EVMWord()
 
   def void init() {
-    zero = new EVMWord(0)
+    zero = EVMWord.ZERO
     initVarious
     initMaxEVMWord
   }
@@ -185,7 +185,7 @@ class EVMWordTest {
   @Test
   def void testInvert() {
     init()
-    var word = new EVMWord(0)
+    var word = EVMWord.ZERO
     Assert.assertEquals(word.invert.toHexString, "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
     Assert.assertEquals(various.invert.toHexString, "0xEFCDAB8967452301FFEEDDCCBBAA998877665544332211001041522141450135")
   }
@@ -231,7 +231,7 @@ class EVMWordTest {
   @Test(expected=OverflowException)
   def void testAddOverflow() {
     init()
-    maxEVMWord.add(new EVMWord(1))
+    maxEVMWord.add(EVMWord.ONE)
   }
 
   @Test(expected=OverflowException)

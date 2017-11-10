@@ -23,7 +23,7 @@ class JsonRPCWrapperTest {
   // HELPER
   @Test
   def void testIdentifyBlock() {
-    val EVMWord zero = new EVMWord(0)
+    val EVMWord zero = EVMWord.ZERO
 
     Assert.assertEquals(identifyBlock(zero, null), "0x0")
     Assert.assertEquals(identifyBlock(zero, "earliest"), "0x0")
@@ -157,7 +157,7 @@ class JsonRPCWrapperTest {
   @Test
   def void testEth_getStorageAt() {
     val EVMWord address = EVMWord.fromString("0xe9e7684b674679599b66c3b1c65826ecc9b4d302")
-    val EVMWord offset = new EVMWord(0)
+    val EVMWord offset = EVMWord.ZERO
     val EVMWord block = new EVMWord(4000000)
 
     val EVMWord result = EVMWord.fromString("0x000000000000000000000000000001f568875f378bf6d170b790967fe429c81a")
@@ -212,12 +212,12 @@ class JsonRPCWrapperTest {
 
   @Test(expected=UnsupportedOperationException)
   def void testEth_sign() {
-    eth_sign(new EVMWord(0), newArrayOfSize(0))
+    eth_sign(EVMWord.ZERO, newArrayOfSize(0))
   }
 
   @Test(expected=UnsupportedOperationException)
   def void testEth_sendTransaction() {
-    eth_sendTransaction(new EVMWord(0), new EVMWord(0), new EVMWord(0), new EVMWord(0), new EVMWord(0),
+    eth_sendTransaction(EVMWord.ZERO, EVMWord.ZERO, EVMWord.ZERO, EVMWord.ZERO, EVMWord.ZERO,
       newArrayOfSize(0))
   }
 
@@ -334,7 +334,7 @@ class JsonRPCWrapperTest {
   @Test
   def void testEth_getTransactionByBlockHashAndIndex() {
     val EVMWord blockHash = EVMWord.fromString("0xb8a3f7f5cfc1748f91a684f20fe89031202cbadcd15078c49b85ec2a57f43853")
-    val EVMWord index = new EVMWord(0)
+    val EVMWord index = EVMWord.ZERO
 
     Assert.assertEquals(eth_getTransactionByBlockHashAndIndex(blockHash, index).nonce, new EVMWord(5))
   }
@@ -342,7 +342,7 @@ class JsonRPCWrapperTest {
   @Test
   def void testEth_getTransactionByBlockNumberAndIndex() {
     val EVMWord blockNumber = new EVMWord(4000000)
-    val EVMWord index = new EVMWord(0)
+    val EVMWord index = EVMWord.ZERO
 
     Assert.assertEquals(eth_getTransactionByBlockNumberAndIndex(blockNumber, null, index).nonce, new EVMWord(5))
   }
@@ -359,7 +359,7 @@ class JsonRPCWrapperTest {
   @Test
   def void testEth_getUncleByBlockHashAndIndex() {
     val EVMWord blockHash = EVMWord.fromString("0x7a0736de3a3cdcaec721ebb7735af79dd9dc0c8b99ddb0ffd4fa793d770499e3")
-    val EVMWord index = new EVMWord(0)
+    val EVMWord index = EVMWord.ZERO
     val EVMWord parentHash = EVMWord.fromString("0x5dbeb17d3c0d0b21167254259274022d8ead55a43453c8492f7568ec9e1b7c16")
 
     Assert.assertEquals(eth_getUncleByBlockHashAndIndex(blockHash, index).parentHash, parentHash)
@@ -368,7 +368,7 @@ class JsonRPCWrapperTest {
   @Test
   def void testEth_getUncleByBlockNumberAndIndex() {
     val EVMWord blockNumber = new EVMWord(4000014)
-    val EVMWord index = new EVMWord(0)
+    val EVMWord index = EVMWord.ZERO
     val EVMWord parentHash = EVMWord.fromString("0x5dbeb17d3c0d0b21167254259274022d8ead55a43453c8492f7568ec9e1b7c16")
 
     Assert.assertEquals(eth_getUncleByBlockNumberAndIndex(blockNumber, null, index).parentHash, parentHash)

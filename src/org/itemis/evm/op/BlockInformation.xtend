@@ -15,7 +15,7 @@ abstract class BlockInformation {
       if(diff.toUnsignedInt <= 256) {
         BlockchainData.getBlockHashByNumber(s0)
       } else {
-        new EVMWord(0)
+        EVMWord.ZERO
       }
     )
 

@@ -47,20 +47,20 @@ class Block {
 
   def static Block getGenesisBlock() { //XXX: varies from the paper a lot
     val genesis = new Block()
-    genesis.parentHash = new EVMWord(0)
+    genesis.parentHash = EVMWord.ZERO
     genesis.ommersHash = StaticUtils.keccak256(StaticEVMUtils.rlp(newArrayList()).map[byteValue]) //0x1dcc4de8dec75d7aab85b567b6ccd41ad312451b948a7413f0a142fd40d49347
-    genesis.beneficiary = new EVMWord(0)
+    genesis.beneficiary = EVMWord.ZERO
 		genesis.stateRoot = EVMWord.fromString("0xD7F8974FB5AC78D9AC099B9AD5018BEDC2CE0A72DAD1827A1709DA30580F0544")
     genesis.transactionsRoot = MerklePatriciaTrie.EMPTY_TRIE_HASH
     genesis.receiptsRoot = MerklePatriciaTrie.EMPTY_TRIE_HASH
     genesis.logsBloom = new Int2048(0)
     genesis.difficulty = EVMWord.fromBigInteger(new BigInteger("400000000", 16))
-    genesis.number = new EVMWord(0)
+    genesis.number = EVMWord.ZERO
     genesis.gasLimit = EVMWord.fromString("0x8813")
-    genesis.gasUsed = new EVMWord(0)
+    genesis.gasUsed = EVMWord.ZERO
     genesis.timestamp = new EVMWord(1438269973) // Jul-30-2015 15:26:13 UTC //XXX: paper specifies 0 here
     genesis.extraData = StaticUtils.fromHex("0x11bbe8db4e347b4e8c937c1c8370e4b5ed33adb3db69cbdb7a38e1e50b1b82fa")
-    genesis.mixHash = new EVMWord(0)
+    genesis.mixHash = EVMWord.ZERO
     genesis.nonce = EVMWord.fromString("0x0000000000000042") //66 dec
     genesis.ommers = newArrayList
     genesis.transactions = newArrayList

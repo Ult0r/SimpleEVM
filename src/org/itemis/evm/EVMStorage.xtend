@@ -17,7 +17,7 @@ import java.util.Map
 //volatile and dynamically sized
 class EVMStorage {
   private final Map<EVMWord, EVMWord> elements = newHashMap
-  private EVMWord size = new EVMWord(0)
+  private EVMWord size = EVMWord.ZERO
 
   def EVMWord get(EVMWord index) {
     elements.get(index)

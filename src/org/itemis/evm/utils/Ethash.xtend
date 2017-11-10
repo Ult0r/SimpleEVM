@@ -93,7 +93,7 @@ abstract class Ethash {
   
   def public static EVMWord getSeedHash(BigInteger epoch) {
     if (epoch.equals(BigInteger.ZERO)) {
-      new EVMWord(0) //XXX: NOT KEC(0^^32) like described in the paper
+      EVMWord.ZERO //XXX: NOT KEC(0^^32) like described in the paper
     } else {
       StaticUtils.keccak256(getSeedHash(epoch.subtract(BigInteger.ONE)).toByteArray)
     }

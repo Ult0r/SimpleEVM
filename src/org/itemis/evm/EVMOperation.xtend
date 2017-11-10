@@ -384,7 +384,7 @@ abstract class EVMOperation {
   
   public static final EnumMap<FeeClass, EVMWord> FEE_SCHEDULE = {
     val result = new EnumMap(FeeClass)
-    result.put(FeeClass.ZERO          , new EVMWord(    0))
+    result.put(FeeClass.ZERO          , EVMWord.ZERO)
     result.put(FeeClass.BASE          , new EVMWord(    2))
     result.put(FeeClass.VERYLOW       , new EVMWord(    3))
     result.put(FeeClass.LOW           , new EVMWord(    5))
