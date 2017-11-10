@@ -108,9 +108,6 @@ abstract class Ethash {
     try {
       Arrays.copyOfRange(array, index * hashBytes, index * hashBytes + hashBytes)
     } catch (Exception e) {
-      //TODO remove
-      println(array.length)
-      println(index)
       throw e
     }
   }
@@ -134,9 +131,6 @@ abstract class Ethash {
       concat.set(0, 0 as byte)
       new BigInteger(concat).longValue
     } catch (Exception e) {
-      //TODO remove
-      println(array.length)
-      println(index)
       throw e
     }
   }
@@ -148,9 +142,6 @@ abstract class Ethash {
       bytes.add(0, 0 as byte)
     }
     if (bytes.size != 4) {
-      //TODO remove
-      println(value)
-      println(bytes.map[toString])
       throw new IllegalArgumentException("value has length " + bytes.size)
     }
     for (var i = 0; i < 4; i++) {
