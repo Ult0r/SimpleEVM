@@ -9,6 +9,10 @@ class UnsignedByteList {
   new() {
 
   }
+  
+  new(byte[] array) {
+    this(array.map[new UnsignedByte(it)])
+  }
 
   new(UnsignedByte[] array) {
     this.elements.addAll(array)

@@ -27,79 +27,79 @@ class EVMWordTest {
   }
 
   def void initVarious() {
-    various.set(0, 0x10)
-    various.set(1, 0x32)
-    various.set(2, 0x54)
-    various.set(3, 0x76)
-    various.set(4, 0x98)
-    various.set(5, 0xBA)
-    various.set(6, 0xDC)
-    various.set(7, 0xFE)
+    various = various.set(0, 0x10)
+    various = various.set(1, 0x32)
+    various = various.set(2, 0x54)
+    various = various.set(3, 0x76)
+    various = various.set(4, 0x98)
+    various = various.set(5, 0xBA)
+    various = various.set(6, 0xDC)
+    various = various.set(7, 0xFE)
 
-    various.set(8, 0x00)
-    various.set(9, 0x11)
-    various.set(10, 0x22)
-    various.set(11, 0x33)
-    various.set(12, 0x44)
-    various.set(13, 0x55)
-    various.set(14, 0x66)
-    various.set(15, 0x77)
+    various = various.set(8, 0x00)
+    various = various.set(9, 0x11)
+    various = various.set(10, 0x22)
+    various = various.set(11, 0x33)
+    various = various.set(12, 0x44)
+    various = various.set(13, 0x55)
+    various = various.set(14, 0x66)
+    various = various.set(15, 0x77)
 
-    various.set(16, 0x88)
-    various.set(17, 0x99)
-    various.set(18, 0xAA)
-    various.set(19, 0xBB)
-    various.set(20, 0xCC)
-    various.set(21, 0xDD)
-    various.set(22, 0xEE)
-    various.set(23, 0xFF)
+    various = various.set(16, 0x88)
+    various = various.set(17, 0x99)
+    various = various.set(18, 0xAA)
+    various = various.set(19, 0xBB)
+    various = various.set(20, 0xCC)
+    various = various.set(21, 0xDD)
+    various = various.set(22, 0xEE)
+    various = various.set(23, 0xFF)
 
-    various.set(24, 0xEF)
-    various.set(25, 0xBE)
-    various.set(26, 0xAD)
-    various.set(27, 0xDE)
-    various.set(28, 0xBE)
-    various.set(29, 0xBA)
-    various.set(30, 0xFE)
-    various.set(31, 0xCA)
+    various = various.set(24, 0xEF)
+    various = various.set(25, 0xBE)
+    various = various.set(26, 0xAD)
+    various = various.set(27, 0xDE)
+    various = various.set(28, 0xBE)
+    various = various.set(29, 0xBA)
+    various = various.set(30, 0xFE)
+    various = various.set(31, 0xCA)
   }
 
   def void initMaxEVMWord() {
-    maxEVMWord.set(0, 0xFF)
-    maxEVMWord.set(1, 0xFF)
-    maxEVMWord.set(2, 0xFF)
-    maxEVMWord.set(3, 0xFF)
-    maxEVMWord.set(4, 0xFF)
-    maxEVMWord.set(5, 0xFF)
-    maxEVMWord.set(6, 0xFF)
-    maxEVMWord.set(7, 0xFF)
+    maxEVMWord = maxEVMWord.set(0, 0xFF)
+    maxEVMWord = maxEVMWord.set(1, 0xFF)
+    maxEVMWord = maxEVMWord.set(2, 0xFF)
+    maxEVMWord = maxEVMWord.set(3, 0xFF)
+    maxEVMWord = maxEVMWord.set(4, 0xFF)
+    maxEVMWord = maxEVMWord.set(5, 0xFF)
+    maxEVMWord = maxEVMWord.set(6, 0xFF)
+    maxEVMWord = maxEVMWord.set(7, 0xFF)
 
-    maxEVMWord.set(8, 0xFF)
-    maxEVMWord.set(9, 0xFF)
-    maxEVMWord.set(10, 0xFF)
-    maxEVMWord.set(11, 0xFF)
-    maxEVMWord.set(12, 0xFF)
-    maxEVMWord.set(13, 0xFF)
-    maxEVMWord.set(14, 0xFF)
-    maxEVMWord.set(15, 0xFF)
+    maxEVMWord = maxEVMWord.set(8, 0xFF)
+    maxEVMWord = maxEVMWord.set(9, 0xFF)
+    maxEVMWord = maxEVMWord.set(10, 0xFF)
+    maxEVMWord = maxEVMWord.set(11, 0xFF)
+    maxEVMWord = maxEVMWord.set(12, 0xFF)
+    maxEVMWord = maxEVMWord.set(13, 0xFF)
+    maxEVMWord = maxEVMWord.set(14, 0xFF)
+    maxEVMWord = maxEVMWord.set(15, 0xFF)
 
-    maxEVMWord.set(16, 0xFF)
-    maxEVMWord.set(17, 0xFF)
-    maxEVMWord.set(18, 0xFF)
-    maxEVMWord.set(19, 0xFF)
-    maxEVMWord.set(20, 0xFF)
-    maxEVMWord.set(21, 0xFF)
-    maxEVMWord.set(22, 0xFF)
-    maxEVMWord.set(23, 0xFF)
+    maxEVMWord = maxEVMWord.set(16, 0xFF)
+    maxEVMWord = maxEVMWord.set(17, 0xFF)
+    maxEVMWord = maxEVMWord.set(18, 0xFF)
+    maxEVMWord = maxEVMWord.set(19, 0xFF)
+    maxEVMWord = maxEVMWord.set(20, 0xFF)
+    maxEVMWord = maxEVMWord.set(21, 0xFF)
+    maxEVMWord = maxEVMWord.set(22, 0xFF)
+    maxEVMWord = maxEVMWord.set(23, 0xFF)
 
-    maxEVMWord.set(24, 0xFF)
-    maxEVMWord.set(25, 0xFF)
-    maxEVMWord.set(26, 0xFF)
-    maxEVMWord.set(27, 0xFF)
-    maxEVMWord.set(28, 0xFF)
-    maxEVMWord.set(29, 0xFF)
-    maxEVMWord.set(30, 0xFF)
-    maxEVMWord.set(31, 0x7F)
+    maxEVMWord = maxEVMWord.set(24, 0xFF)
+    maxEVMWord = maxEVMWord.set(25, 0xFF)
+    maxEVMWord = maxEVMWord.set(26, 0xFF)
+    maxEVMWord = maxEVMWord.set(27, 0xFF)
+    maxEVMWord = maxEVMWord.set(28, 0xFF)
+    maxEVMWord = maxEVMWord.set(29, 0xFF)
+    maxEVMWord = maxEVMWord.set(30, 0xFF)
+    maxEVMWord = maxEVMWord.set(31, 0x7F)
   }
 
   @Test
@@ -125,15 +125,6 @@ class EVMWordTest {
   }
 
   @Test
-  def void testToBitString() {
-    init()
-    Assert.assertEquals(zero.toBitString,
-      "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
-    Assert.assertEquals(various.toBitString,
-      "0001000000110010010101000111011010011000101110101101110011111110000000000001000100100010001100110100010001010101011001100111011110001000100110011010101010111011110011001101110111101110111111111110111110111110101011011101111010111110101110101111111011001010")
-  }
-
-  @Test
   def void testToString() {
     init()
     Assert.assertEquals(zero.toString, "0x0000000000000000000000000000000000000000000000000000000000000000")
@@ -148,24 +139,10 @@ class EVMWordTest {
   }
 
   @Test
-  def void testSetToZero() {
-    init()
-    Assert.assertNotEquals(zero, various)
-    Assert.assertEquals(zero, various.setToZero)
-  }
-
-  @Test
   def void testFromString() {
     init()
     Assert.assertEquals(EVMWord.fromString("0x400000000").toHexString,
       "0x4000000000000000000000000000000000000000000000000000000000000000")
-  }
-
-  @Test
-  def void testGetNth16BitField() {
-    init()
-    Assert.assertEquals(various.getNth16BitField(0), 0x3210)
-    Assert.assertEquals(various.getNth16BitField(15), 0xCAFE)
   }
 
   @Test
@@ -179,7 +156,7 @@ class EVMWordTest {
   def void testIntConstructor() {
     init()
     var word = new EVMWord(0xABCD)
-    Assert.assertEquals(word.getNth16BitField(0), 0xABCD)
+    Assert.assertEquals(word.intValue, 0xABCD)
   }
 
   @Test

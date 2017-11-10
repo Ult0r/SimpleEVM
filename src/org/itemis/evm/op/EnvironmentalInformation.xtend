@@ -7,27 +7,28 @@ import java.util.List
 import org.itemis.types.EVMWord
 import org.itemis.evm.EVMOperation.FeeClass
 import org.itemis.evm.EVMOperation.OpCode
+import org.itemis.types.Address
 
 abstract class EnvironmentalInformation {
   def static ADDRESS(EVMRuntime runtime) {
-    runtime.pushStackItem(runtime.codeAddress)
+    runtime.pushStackItem(runtime.codeAddress.toEVMWord)
     runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.BASE))
   }
 
   def static BALANCE(EVMRuntime runtime) {
     val s0 = runtime.popStackItem
-    val balance = runtime.patch.getBalance(runtime.worldState, s0)
+    val balance = runtime.patch.getBalance(runtime.worldState, new Address(s0))
     runtime.pushStackItem(balance)
     runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.BALANCE))
   }
 
   def static ORIGIN(EVMRuntime runtime) {
-    runtime.pushStackItem(runtime.originAddress)
+    runtime.pushStackItem(runtime.originAddress.toEVMWord)
     runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.BASE))
   }
 
   def static CALLER(EVMRuntime runtime) {
-    runtime.pushStackItem(runtime.callerAddress)
+    runtime.pushStackItem(runtime.callerAddress.toEVMWord)
     runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.BASE))
   }
 
@@ -131,7 +132,7 @@ abstract class EnvironmentalInformation {
 
   def static EXTCODESIZE(EVMRuntime runtime) {
     val s0 = runtime.popStackItem
-    runtime.pushStackItem(new EVMWord(runtime.worldState.getCodeAt(s0).size))
+    runtime.pushStackItem(new EVMWord(runtime.worldState.getCodeAt(new Address(s0)).size))
     runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.EXTCODE))
   }
 
@@ -153,7 +154,7 @@ abstract class EnvironmentalInformation {
 
     for (var i = 0; i < _s3; i++) {
       runtime.memory.put(s1.add(i), EVMOperation.OP_INFO.get(try {
-        runtime.worldState.getCodeAt(s0).get(_s2 + i)
+        runtime.worldState.getCodeAt(new Address(s0)).get(_s2 + i)
       } catch(Exception e) {
         OpCode.STOP
       }).left.byteValue)

@@ -19,13 +19,12 @@ import java.util.Map
 import org.itemis.types.NibbleList
 import org.itemis.evm.utils.MerklePatriciaTrie.Branch
 import org.itemis.evm.utils.MerklePatriciaTrie.Node
-import org.itemis.types.EVMWord
 import org.itemis.utils.StaticUtils
 import org.itemis.types.UnsignedByteList
 import org.itemis.types.Hash256
 
 class MerklePatriciaTrie {
-  public static final Hash256 EMPTY_TRIE_HASH = EVMWord.fromString("0x56E81F171BCC55A6FF8345E692C0F86E5B48E01B996CADC001622FB5E363B421")
+  public static final Hash256 EMPTY_TRIE_HASH = Hash256.fromString("0x56E81F171BCC55A6FF8345E692C0F86E5B48E01B996CADC001622FB5E363B421")
   
   private final String name
   @Accessors private Node root = new Null
@@ -46,7 +45,7 @@ class MerklePatriciaTrie {
     if(_root.size < 32) {
       StaticUtils.keccak256(_root.elements.map[byteValue])
     } else {
-      new EVMWord(_root.elements)
+      new Hash256(_root.elements)
     }
   }
 
@@ -73,13 +72,11 @@ class MerklePatriciaTrie {
     def abstract UnsignedByteList hash()
 
     def UnsignedByteList hashFromRLP(List<UnsignedByte> rlp) {
-      new UnsignedByteList(
-        if(rlp.size < 32) {
-          rlp
-        } else {
-          keccak256(rlp.map[byteValue]).toUnsignedByteArray
-        }
-      )
+      if(rlp.size < 32) {
+        new UnsignedByteList(rlp)
+      } else {
+        new UnsignedByteList(keccak256(rlp.map[byteValue]).toByteArray)
+      }
     }
 
     // overrides existent value
@@ -137,7 +134,7 @@ class MerklePatriciaTrie {
   static class Null extends Node {
     override hash() {
       val arr = newByteArrayOfSize(0).map[new UnsignedByte(it)]
-      new UnsignedByteList(keccak256(rlp(arr as UnsignedByte[]).map[byteValue]).toUnsignedByteArray)
+      new UnsignedByteList(keccak256(rlp(arr as UnsignedByte[]).map[byteValue]).toByteArray)
     }
 
     override putElement(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value) {
@@ -276,7 +273,6 @@ class MerklePatriciaTrie {
     }
 
     override hash() {
-//      println("extension#hash")
       val List<UnsignedByte[]> list = newArrayList
       list.add(encodedPath.toUnsignedBytes as UnsignedByte[])
       list.add(nextKey.elements)

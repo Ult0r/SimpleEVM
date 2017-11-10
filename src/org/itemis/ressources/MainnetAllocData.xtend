@@ -242,7 +242,7 @@ abstract class MainnetAllocData {
     new AllocDataIterator(DataBaseID.ALLOC.query("alloc", query))
   }
 
-  public static class AllocDataIterator implements Iterator<Pair<EVMWord, EVMWord>> {
+  public static class AllocDataIterator implements Iterator<Pair<Address, EVMWord>> {
     private final ResultSet set
 
     protected new(ResultSet set) {
@@ -258,8 +258,8 @@ abstract class MainnetAllocData {
       val address = set.getBytes("address")
       val balance = set.getBytes("balance")
       Pair.of(
-        new EVMWord(address.map[new UnsignedByte(it)]),
-        new EVMWord(balance.map[new UnsignedByte(it)])
+        new Address(address),
+        new EVMWord(balance)
       )
     }
 

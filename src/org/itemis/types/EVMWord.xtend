@@ -23,39 +23,34 @@ class EVMWord {
   public static final EVMWord ZERO = new EVMWord(0)
   public static final EVMWord ONE  = new EVMWord(1)
   
-  private final UnsignedByteArray array = new UnsignedByteArray(32)
+  private final UnsignedByteArray array
 
   new() {
-    array.setToZero
+    array = new UnsignedByteArray(32)
   }
 
   new(int i) {
-    array.setInt(i)
+    array = new UnsignedByteArray(32).setInt(i)
   }
 
   new(long l) {
-    array.setLong(l)
+    array = new UnsignedByteArray(32).setLong(l)
   }
 
   new(EVMWord word) {
-    array.setUnsignedByteArray(word.toUnsignedByteArray)
+    array = new UnsignedByteArray(32, word.toUnsignedByteArray)
   }
 
   new(byte[] array) {
-    this.array.setByteArray(array)
+    array = new UnsignedByteArray(32, array)
   }
 
   new(UnsignedByte[] array) {
-    this.array.setUnsignedByteArray(array)
+    array = new UnsignedByteArray(32, array)
   }
 
   new(UnsignedByteArray array) {
-    this.array.setUnsignedByteArray(array)
-  }
-
-  def EVMWord setToZero() {
-    array.setToZero
-    this
+    this.array = new UnsignedByteArray(32, array)
   }
 
   def static EVMWord fromString(String s) {
@@ -75,20 +70,20 @@ class EVMWord {
   }
 
   def EVMWord set(Integer n, int newValue) {
-    val newArray = new UnsignedByteArray(array)
-    newArray.set(n, newValue)
+    var newArray = new UnsignedByteArray(array)
+    newArray = newArray.set(n, newValue)
     new EVMWord(newArray)
   }
 
-  def EVMWord setNthField(Integer n, short newValue) {
-    val newArray = new UnsignedByteArray(array)
-    newArray.set(n, newValue)
+  def EVMWord set(Integer n, short newValue) {
+    var newArray = new UnsignedByteArray(array)
+    newArray = newArray.set(n, newValue)
     new EVMWord(newArray)
   }
 
-  def EVMWord setNthField(Integer n, UnsignedByte newValue) {
-    val newArray = new UnsignedByteArray(array)
-    newArray.set(n, newValue)
+  def EVMWord set(Integer n, UnsignedByte newValue) {
+    var newArray = new UnsignedByteArray(array)
+    newArray = newArray.set(n, newValue)
     new EVMWord(newArray)
   }
 
@@ -227,13 +222,13 @@ class EVMWord {
     add(new EVMWord(other))
   }
   
-  def EVMWord add(BigInteger other) {
-    add(EVMWord.fromBigInteger(other))
+  def EVMWord add(EVMWord other) {
+    add(other.toBigInteger)
   }
   
-  def EVMWord add(EVMWord other) {
+  def EVMWord add(BigInteger other) {
     val _this =  toBigInteger
-    val _other = other.toBigInteger
+    val _other = other
     val result = _this.add(_other)
     if (result.bitLength > 255) {
       throw new OverflowException()
@@ -245,15 +240,13 @@ class EVMWord {
     sub(new EVMWord(other))
   }
   
-  def EVMWord sub(BigInteger other) {
-    sub(EVMWord.fromBigInteger(other))
+  def EVMWord sub(EVMWord other) {
+    sub(other.toBigInteger)
   }
   
-  def EVMWord sub(EVMWord other) {
-    println(other)
-    
+  def EVMWord sub(BigInteger other) {
     val _this =  toBigInteger
-    val _other = other.toBigInteger
+    val _other = other
     val result = _this.subtract(_other)
     if (result.bitLength > 255) {
       throw new OverflowException()
@@ -265,13 +258,13 @@ class EVMWord {
     mul(new EVMWord(other))
   }
   
-  def EVMWord mul(BigInteger other) {
-    mul(EVMWord.fromBigInteger(other))
+  def EVMWord mul(EVMWord other) {
+    mul(other.toBigInteger)
   }
   
-  def EVMWord mul(EVMWord other) {
+  def EVMWord mul(BigInteger other) {
     val _this =  toBigInteger
-    val _other = other.toBigInteger
+    val _other = other
     val result = _this.multiply(_other)
     if (result.bitLength > 255) {
       throw new OverflowException()
@@ -283,13 +276,13 @@ class EVMWord {
     div(new EVMWord(other))
   }
   
-  def EVMWord div(BigInteger other) {
-    div(EVMWord.fromBigInteger(other))
+  def EVMWord div(EVMWord other) {
+    div(other.toBigInteger)
   }
   
-  def EVMWord div(EVMWord other) {
+  def EVMWord div(BigInteger other) {
     val _this =  toBigInteger
-    val _other = other.toBigInteger
+    val _other = other
     val result = _this.divide(_other)
     if (result.bitLength > 255) {
       throw new OverflowException()
@@ -324,13 +317,13 @@ class EVMWord {
     mod(new EVMWord(other))
   }
   
-  def EVMWord mod(BigInteger other) {
-    mod(EVMWord.fromBigInteger(other))
+  def EVMWord mod(EVMWord other) {
+    mod(other.toBigInteger)
   }
   
-  def EVMWord mod(EVMWord other) {
+  def EVMWord mod(BigInteger other) {
     val _this =  toBigInteger
-    val _other = other.toBigInteger
+    val _other = other
     val result = _this.mod(_other)
     if (result.bitLength > 255) {
       throw new OverflowException()
@@ -341,14 +334,14 @@ class EVMWord {
   def EVMWord divRoundUp(int other) {
     divRoundUp(new EVMWord(other))
   }
-  
-  def EVMWord divRoundUp(BigInteger other) {
-    divRoundUp(EVMWord.fromBigInteger(other))
-  }
 
   def EVMWord divRoundUp(EVMWord other) {
+    divRoundUp(other.toBigInteger)
+  }
+  
+  def EVMWord divRoundUp(BigInteger other) {
     val _this = toBigInteger
-    val _other = other.toBigInteger
+    val _other = other
     val divRem = _this.divideAndRemainder(_other)
     
     if (divRem.get(1).fromBigInteger.zero) divRem.get(0).fromBigInteger.inc else divRem.get(0).fromBigInteger

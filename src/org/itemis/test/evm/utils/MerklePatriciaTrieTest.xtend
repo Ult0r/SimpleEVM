@@ -58,8 +58,6 @@ class MerklePatriciaTrieTest {
 
   @Test
   def void testWithAllocData() {
-    println(eth_getBlockByNumber(EVMWord.ZERO, null).stateRoot)
-    
     val MerklePatriciaTrie trie = new MerklePatriciaTrie("testWithAllocData")
 
     val iter = MainnetAllocData.mainnetAllocDataQueryIterator

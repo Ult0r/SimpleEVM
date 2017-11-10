@@ -21,7 +21,6 @@ final class UnsignedByteArray {
   
   new(UnsignedByte[] array) {
     this.array = array
-    setToZero
   }
   
   new(UnsignedByteArray other) {
@@ -33,26 +32,27 @@ final class UnsignedByteArray {
   
   new(int length, byte[] array) {
     this(length)
-    setByteArray(array)
+    _setByteArray(array)
   }
   
   new(int length, UnsignedByte[] array) {
     this(length)
-    setUnsignedByteArray(array)
+    _setUnsignedByteArray(array)
   }
   
   new(int length, UnsignedByteArray array) {
     this(length)
-    setUnsignedByteArray(array)
+    _setUnsignedByteArray(array)
   }
   
   def int length() {
     array.length
   }
   
-  def void setToZero() {
+  //TODO: UnsignedByte(0) singleton
+  def private void setToZero() {
     for (var i = 0; i < length; i++) {
-      set(i, 0)
+      array.set(i, new UnsignedByte(0))
     }
   }
   
@@ -79,8 +79,24 @@ final class UnsignedByteArray {
     }
     
     val result = new UnsignedByteArray(array)
-    result.set(i, b)
+    result.array.set(i, b)
     result
+  }
+  
+  def private void _set(int i, byte value) {
+    _set(i, new UnsignedByte(value))
+  }
+  
+  def private void _set(int i, int value) {
+    _set(i, new UnsignedByte(value))
+  }
+  
+  def private void _set(int i, UnsignedByte b) {
+    if (i < 0 || i >= length) {
+      throw new IllegalArgumentException(String.format("%d is not between 0 and %d", i, length))
+    }
+    
+    array.set(i, b)
   }
   
   def UnsignedByteArray setInt(int value) {
@@ -89,10 +105,11 @@ final class UnsignedByteArray {
     }
     
     setToZero
-    set(0, value.bitwiseAnd(0x000000FF))
-    set(1, (value >> 8).bitwiseAnd(0x000000FF))
-    set(2, (value >> 16).bitwiseAnd(0x000000FF))
-    set(3, (value >> 24).bitwiseAnd(0x000000FF))
+    _set(0, value.bitwiseAnd(0x000000FF))
+    _set(1, (value >> 8).bitwiseAnd(0x000000FF))
+    _set(2, (value >> 16).bitwiseAnd(0x000000FF))
+    _set(3, (value >> 24).bitwiseAnd(0x000000FF))
+    this
   }
   
   def UnsignedByteArray setLong(long value) {
@@ -101,14 +118,29 @@ final class UnsignedByteArray {
     }
     
     setToZero
-    set(0, value.bitwiseAnd(0x000000FF).byteValue)
-    set(1, (value >> 8).bitwiseAnd(0x000000FF).byteValue)
-    set(2, (value >> 16).bitwiseAnd(0x000000FF).byteValue)
-    set(3, (value >> 24).bitwiseAnd(0x000000FF).byteValue)
-    set(4, (value >> 32).bitwiseAnd(0x000000FF).byteValue)
-    set(5, (value >> 40).bitwiseAnd(0x000000FF).byteValue)
-    set(6, (value >> 48).bitwiseAnd(0x000000FF).byteValue)
-    set(7, (value >> 56).bitwiseAnd(0x000000FF).byteValue)
+    _set(0, value.bitwiseAnd(0x000000FF).byteValue)
+    _set(1, (value >> 8).bitwiseAnd(0x000000FF).byteValue)
+    _set(2, (value >> 16).bitwiseAnd(0x000000FF).byteValue)
+    _set(3, (value >> 24).bitwiseAnd(0x000000FF).byteValue)
+    _set(4, (value >> 32).bitwiseAnd(0x000000FF).byteValue)
+    _set(5, (value >> 40).bitwiseAnd(0x000000FF).byteValue)
+    _set(6, (value >> 48).bitwiseAnd(0x000000FF).byteValue)
+    _set(7, (value >> 56).bitwiseAnd(0x000000FF).byteValue)
+    this
+  }
+  
+  def private void _setByteArray(byte[] array) {
+    _setUnsignedByteArray(array.map[new UnsignedByte(it)])
+  }
+  
+  def private void _setUnsignedByteArray(UnsignedByte[] array) {
+    for (var i = 0; i < Math.min(array.length, length); i++) {
+      _set(i, array.get(i))
+    }
+  }
+  
+  def private void _setUnsignedByteArray(UnsignedByteArray array) {
+    _setUnsignedByteArray(array.array)
   }
   
   def UnsignedByteArray setByteArray(byte[] array) {
@@ -129,6 +161,10 @@ final class UnsignedByteArray {
   
   def static UnsignedByteArray fromString(String s) {
     new UnsignedByteArray(StaticUtils.fromHex(s))
+  }
+  
+  def static UnsignedByteArray fromString(int length, String s) {
+    new UnsignedByteArray(length, StaticUtils.fromHex(s))
   }
   
   def byte[] toByteArray() {
@@ -152,122 +188,61 @@ final class UnsignedByteArray {
   }
   
   def String toIntString() {
-    toIntString(true)
-  }
-  
-  def String toIntString(boolean bigEndian) {
-    if (bigEndian) {
-      new BigInteger(toByteArray).toString(10)
-    } else {
-      new BigInteger(toByteArray.reverseView).toString(10)
-    }
-  }
-  
-  def int intValue() {
-    intValue(true)
+    new BigInteger(toByteArray.reverseView.dropWhile[it == 0].toList).toString(10)
   }
   
   //take lowest significance bytes
-  def int intValue(boolean bigEndian) {
+  def int intValue() {
     if (length < 4) {
       throw new IllegalArgumentException("Array is less than 4 bytes long")
     }
     
-    if (bigEndian) {
-      var int result = get(0).intValue
-      result = result << 8
-      result += get(1).intValue
-      result = result << 8
-      result += get(2).intValue
-      result = result << 8
-      result += get(3).intValue
-      result
-    } else {
-      var int result = get(length - 1).intValue
-      result = result << 8
-      result += get(length - 2).intValue
-      result = result << 8
-      result += get(length - 3).intValue
-      result = result << 8
-      result += get(length - 4).intValue
-      result
-    }
+    var int result = get(3).intValue
+    result = result << 8
+    result += get(2).intValue
+    result = result << 8
+    result += get(1).intValue
+    result = result << 8
+    result += get(0).intValue
+    result
   }
   
   def long unsignedIntValue() {
-    unsignedIntValue(true)
-  }
-  
-  def long unsignedIntValue(boolean bigEndian) {
     if (length < 4) {
       throw new IllegalArgumentException("Array is less than 4 bytes long")
     }
     
-    if (bigEndian) {
-      var long result = get(0).longValue
-      result = result << 8
-      result += get(1).longValue
-      result = result << 8
-      result += get(2).longValue
-      result = result << 8
-      result += get(3).longValue
-      result
-    } else {
-      var long result = get(length - 1).longValue
-      result = result << 8
-      result += get(length - 2).longValue
-      result = result << 8
-      result += get(length - 3).longValue
-      result = result << 8
-      result += get(length - 4).longValue
-      result
-    }
+    var long result = get(3).longValue
+    result = result << 8
+    result += get(2).longValue
+    result = result << 8
+    result += get(1).longValue
+    result = result << 8
+    result += get(0).longValue
+    result
   }
   
   def long longValue() {
-    longValue(true)
-  }
-  
-  def long longValue(boolean bigEndian) {
     if (length < 8) {
       throw new IllegalArgumentException("Array is less than 8 bytes long")
     }
     
-    if (bigEndian) {
-      var long result = get(0).longValue
-      result = result << 8
-      result += get(1).longValue
-      result = result << 8
-      result += get(2).longValue
-      result = result << 8
-      result += get(3).longValue
-      result = result << 8
-      result += get(4).longValue
-      result = result << 8
-      result += get(5).longValue
+      var long result = get(7).longValue
       result = result << 8
       result += get(6).longValue
       result = result << 8
-      result += get(7).longValue
+      result += get(5).longValue
+      result = result << 8
+      result += get(4).longValue
+      result = result << 8
+      result += get(3).longValue
+      result = result << 8
+      result += get(2).longValue
+      result = result << 8
+      result += get(1).longValue
+      result = result << 8
+      result += get(0).longValue
       result
-    } else {
-      var long result = get(length - 1).longValue
-      result = result << 8
-      result += get(length - 2).longValue
-      result = result << 8
-      result += get(length - 3).longValue
-      result = result << 8
-      result += get(length - 4).longValue
-      result = result << 8
-      result += get(length - 5).longValue
-      result = result << 8
-      result += get(length - 6).longValue
-      result = result << 8
-      result += get(length - 7).longValue
-      result = result << 8
-      result += get(length - 8).longValue
-      result
-    }
   }
   
   override boolean equals(Object other) {

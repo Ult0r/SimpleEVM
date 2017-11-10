@@ -21,6 +21,7 @@ import org.itemis.evm.utils.EVMUtils
 import org.itemis.types.UnsignedByteList
 import org.itemis.evm.utils.MerklePatriciaTrie.Leaf
 import org.itemis.types.Hash256
+import org.itemis.types.Address
 
 class Account {
   extension Utils u = new Utils
@@ -44,38 +45,38 @@ class Account {
     )
   }
   
-  new(EVMWord nonce, EVMWord balance, EVMWord storageRoot, EVMWord codeHash) {
+  new(EVMWord nonce, EVMWord balance, Hash256 storageRoot, Hash256 codeHash) {
     this.nonce = nonce
     this.balance = balance
     this.storageRoot = storageRoot
     this.codeHash = codeHash
   }
   
-  new(MerklePatriciaTrie trie, EVMWord address) {
+  new(MerklePatriciaTrie trie, Address address) {
     this(trie, trie.trieRoot, address)    
   }
   
-  new(MerklePatriciaTrie trie, EVMWord rootHash, EVMWord address) {
+  new(MerklePatriciaTrie trie, Hash256 rootHash, Address address) {
     val root = trie.getNode(new UnsignedByteList(rootHash.toUnsignedByteArray))
     val path = keccak256(address.toUnsignedByteArray.map[byteValue].take(20))
     
     try {
-      val node = root.getNode(trie, new NibbleList(path)) as Leaf
+      val node = root.getNode(trie, new NibbleList(path.toByteArray)) as Leaf
       val tree = reverseRLP(node.value)
             
       this.nonce = new EVMWord(tree.children.get(0).data.map[byteValue])
       this.balance = new EVMWord(tree.children.get(1).data.map[byteValue])
-      this.storageRoot = new EVMWord(tree.children.get(2).data.map[byteValue])
-      this.codeHash = new EVMWord(tree.children.get(3).data.map[byteValue])
+      this.storageRoot = new Hash256(tree.children.get(2).data.map[byteValue])
+      this.codeHash = new Hash256(tree.children.get(3).data.map[byteValue])
     } catch (Exception e) {
       this.nonce = EVMWord.ZERO
       this.balance = EVMWord.ZERO
-      this.storageRoot = EVMWord.ZERO
-      this.codeHash = EVMWord.ZERO
+      this.storageRoot = Hash256.ZERO
+      this.codeHash = Hash256.ZERO
     }
   }
   
-  def void insertIntoTrie(MerklePatriciaTrie trie, EVMWord address) {
+  def void insertIntoTrie(MerklePatriciaTrie trie, Address address) {
     val List<UnsignedByte[]> account = newArrayList
 
     //TODO: EVMWord#truncatedByteArray
@@ -87,11 +88,10 @@ class Account {
     val value = rlp(account)
     val path = keccak256(address.toUnsignedByteArray.map[byteValue].take(20))
 
-    trie.putElement(new NibbleList(path), value)
+    trie.putElement(new NibbleList(path.toByteArray), value)
   }
   
-  def removeFromTrie(MerklePatriciaTrie trie, EVMWord word) {
-    throw new UnsupportedOperationException("TODO: auto-generated method stub")
+  def void removeFromTrie(MerklePatriciaTrie trie, Address address) {
+    //TODO
   }
-  
 }

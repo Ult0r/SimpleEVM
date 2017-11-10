@@ -11,12 +11,13 @@
 package org.itemis.utils
 
 import org.itemis.types.UnsignedByte
-import org.itemis.types.EVMWord
 import org.bouncycastle.jcajce.provider.digest.Keccak
 import java.io.File
 import java.nio.file.Files
 import org.itemis.types.Nibble
 import java.math.BigInteger
+import org.itemis.types.Hash256
+import org.itemis.types.Hash512
 
 abstract class StaticUtils {
   // if n = 0, results in bits 0-7
@@ -96,6 +97,10 @@ abstract class StaticUtils {
   }
 
   def static byte[] fromHex(String s) {
+    fromHex(s, false)
+  }
+  
+  def static byte[] fromHex(String s, boolean appendFront) {
     var data = s
     if(s.startsWith("0x")) {
       data = s.substring(2)
@@ -103,15 +108,29 @@ abstract class StaticUtils {
 
     var result = newArrayList
     var i = 0
-
-    if(data.length % 2 == 1) {
-      result.add(new UnsignedByte(new Nibble(0), new Nibble(data.charAt(0).fromHex)))
-      i++
+    
+    if (appendFront) {
+      if (data.length % 2 == 1) {
+        result.add(new UnsignedByte(new Nibble(0), new Nibble(data.charAt(0).fromHex)))
+        i++
+      }
+      
+      for (; i < data.length; i += 2) {
+        result.add(new UnsignedByte(new Nibble(data.charAt(i).fromHex), new Nibble(data.charAt(i + 1).fromHex)))
+      }
+    } else {
+      if (data.length % 2 == 1) {
+        for (; i < data.length - 1; i += 2) {
+          result.add(new UnsignedByte(new Nibble(data.charAt(i).fromHex), new Nibble(data.charAt(i + 1).fromHex)))
+        }
+        result.add(new UnsignedByte(new Nibble(0), new Nibble(data.charAt(data.length - 1).fromHex)))
+      } else {
+        for (; i < data.length; i += 2) {
+          result.add(new UnsignedByte(new Nibble(data.charAt(i).fromHex), new Nibble(data.charAt(i + 1).fromHex)))
+        }
+      }  
     }
-    for (; i < data.length; i += 2) {
-      result.add(new UnsignedByte(new Nibble(data.charAt(i).fromHex), new Nibble(data.charAt(i + 1).fromHex)))
-    }
-
+    
     result.map[byteValue]
   }
 
@@ -140,22 +159,20 @@ abstract class StaticUtils {
     result
   }
 
-  def static EVMWord keccak256(String input) {
+  def static Hash256 keccak256(String input) {
     keccak256(input.bytes)
   }
 
-  //TODO: change to byte[]
-  def static EVMWord keccak256(byte[] input) {
-    val byte[] digest = new Keccak.Digest256().digest(input)
-    new EVMWord(digest)
+  def static Hash256 keccak256(byte[] input) {
+    new Hash256(new Keccak.Digest256().digest(input))
   }
 
-  def static byte[] keccak512(String input) {
+  def static Hash512 keccak512(String input) {
     keccak512(input.bytes)
   }
 
-  def static byte[] keccak512(byte[] input) {
-    new Keccak.Digest512().digest(input)
+  def static Hash512 keccak512(byte[] input) {
+    new Hash512(new Keccak.Digest512().digest(input))
   }
 
   def static String rightPad(String input, int length) {

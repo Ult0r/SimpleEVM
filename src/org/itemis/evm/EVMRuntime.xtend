@@ -91,11 +91,11 @@ final class EVMRuntime {
   }
   
   def void fillEnvironmentInfo(
-    EVMWord codeAddress,
-    EVMWord originAddress,
+    Address codeAddress,
+    Address originAddress,
     EVMWord gasPrice,
     UnsignedByte[] inputData,
-    EVMWord callerAddress,
+    Address callerAddress,
     EVMWord value,
     Pair<Optional<OpCode>, UnsignedByte>[] code,
     Block currentBlock,

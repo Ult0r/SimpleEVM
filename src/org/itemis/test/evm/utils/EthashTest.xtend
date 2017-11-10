@@ -79,8 +79,8 @@ class EthashTest {
   def public void testNewHashimoto() {
     val block1 = BlockchainData.getBlockByNumber(EVMWord.ONE)
     val result = Ethash.proofOfWork(block1)
-    Assert.assertEquals(new EVMWord(result.key), block1.mixHash)
-    Assert.assertTrue(new BigInteger(result.value).compareTo(TWO.pow(256).divide(block1.difficulty.toBigInteger)) == -1)
+    Assert.assertEquals(result.key, block1.mixHash)
+    Assert.assertTrue(result.value.toEVMWord.toBigInteger.compareTo(TWO.pow(256).divide(block1.difficulty.toBigInteger)) == -1)
     BlockchainData.flush
     DataBaseWrapper.closeAllConnections
   }

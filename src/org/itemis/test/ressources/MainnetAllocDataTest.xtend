@@ -15,6 +15,7 @@ import java.nio.charset.Charset
 import org.junit.Assert
 import org.itemis.types.EVMWord
 import org.itemis.utils.db.DataBaseWrapper
+import org.itemis.types.Address
 
 class MainnetAllocDataTest {
 
@@ -33,7 +34,7 @@ class MainnetAllocDataTest {
     
     Assert.assertEquals(MainnetAllocData.getMainnetAllocDataSize, 8893)
 
-    val k = EVMWord.fromString("0x39C773367C8825D3596C686F42BF0D14319E3F84")
+    val k = Address.fromString("0x39C773367C8825D3596C686F42BF0D14319E3F84")
     val v = EVMWord.fromString("0x0000BA85A0D1753F07")
     Assert.assertEquals(MainnetAllocData.getBalanceForAddress(k), v)
     

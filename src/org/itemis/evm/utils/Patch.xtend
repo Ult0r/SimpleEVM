@@ -57,7 +57,7 @@ final class Patch {
     result
   }
   
-  def void setBalance(EVMWord address, EVMWord balance) {
+  def void setBalance(Address address, EVMWord balance) {
     if (changes.containsKey(address)) {
       val currentValue = changes.get(address)
       changes.put(address, Triple.of(balance, currentValue.middle, currentValue.right))
@@ -66,15 +66,15 @@ final class Patch {
     }
   }
   
-  def void addBalance(WorldState ws, EVMWord address, EVMWord balance) {
+  def void addBalance(WorldState ws, Address address, EVMWord balance) {
     setBalance(address, getBalance(ws, address).add(balance))
   }
   
-  def void subtractBalance(WorldState ws, EVMWord address, EVMWord balance) {
+  def void subtractBalance(WorldState ws, Address address, EVMWord balance) {
     setBalance(address, getBalance(ws, address).sub(balance))
   }
   
-  def void setNonce(EVMWord address, EVMWord nonce) {
+  def void setNonce(Address address, EVMWord nonce) {
     if (changes.containsKey(address)) {
       val currentValue = changes.get(address)
       changes.put(address, Triple.of(currentValue.left, nonce, currentValue.right))
@@ -83,7 +83,7 @@ final class Patch {
     }
   }
   
-  def void setStorageValue(EVMWord address, EVMWord offset, EVMWord value) {
+  def void setStorageValue(Address address, EVMWord offset, EVMWord value) {
     if (changes.containsKey(address)) {
       val currentValue = changes.get(address)
       currentValue.right.put(offset, value)
@@ -94,11 +94,11 @@ final class Patch {
     }
   }
   
-  def boolean hasChanged(EVMWord address) {
+  def boolean hasChanged(Address address) {
     return changes.containsKey(address)
   }
   
-  def EVMWord getBalance(WorldState ws, EVMWord address) {
+  def EVMWord getBalance(WorldState ws, Address address) {
     val changesVal = changes.get(address)
     if (changesVal !== null && changesVal.left !== null) {
       changesVal.left
@@ -107,7 +107,7 @@ final class Patch {
     }
   }
   
-  def EVMWord getNonce(WorldState ws, EVMWord address) {
+  def EVMWord getNonce(WorldState ws, Address address) {
     val changesVal = changes.get(address)
     if (changesVal !== null && changesVal.middle !== null) {
       changesVal.middle
@@ -116,7 +116,7 @@ final class Patch {
     }
   }
   
-  def EVMWord getStorageAt(WorldState ws, EVMWord address, EVMWord offset) {
+  def EVMWord getStorageAt(WorldState ws, Address address, EVMWord offset) {
     val changesVal = changes.get(address)
     if (changesVal !== null) {
       val storageValue = changesVal.right.get(offset)

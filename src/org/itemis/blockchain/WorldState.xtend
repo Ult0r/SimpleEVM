@@ -32,6 +32,7 @@ import org.itemis.evm.utils.EVMUtils
 import org.eclipse.xtend.lib.annotations.Accessors
 import com.google.common.cache.Cache
 import org.itemis.types.Address
+import org.itemis.types.Hash256
 
 class WorldState {
   extension Utils u = new Utils
@@ -104,7 +105,7 @@ class WorldState {
   
   //ACCOUNT
   
-  private static def PreparedStatement fillAccountInsertStatement(Triple<EVMWord, Long, PreparedStatement> triple) {
+  private static def PreparedStatement fillAccountInsertStatement(Triple<Address, Long, PreparedStatement> triple) {
     val address = triple.left
     val creationBlock = triple.middle
     val stmt = triple.right
@@ -115,7 +116,7 @@ class WorldState {
     stmt
   }
   
-  private static def PreparedStatement fillAccountSelectStatement(Pair<EVMWord, PreparedStatement> pair) {
+  private static def PreparedStatement fillAccountSelectStatement(Pair<Address, PreparedStatement> pair) {
     val address = pair.key
     val stmt = pair.value
     
@@ -124,7 +125,7 @@ class WorldState {
     stmt
   }
   
-  private static def PreparedStatement fillAccountDeleteStatement(Pair<EVMWord, PreparedStatement> pair) {
+  private static def PreparedStatement fillAccountDeleteStatement(Pair<Address, PreparedStatement> pair) {
     val address = pair.key
     val stmt = pair.value
     
@@ -133,7 +134,7 @@ class WorldState {
     stmt
   }
   
-  private static def Long readAccountFromResultSet(Pair<ResultSet, EVMWord> pair) {
+  private static def Long readAccountFromResultSet(Pair<ResultSet, Address> pair) {
     val resultSet = pair.key
     val address = pair.value
     
@@ -153,7 +154,7 @@ class WorldState {
   
   //CODE
   
-  private static def PreparedStatement fillCodeInsertStatement(Triple<EVMWord, UnsignedByteList, PreparedStatement> triple) {
+  private static def PreparedStatement fillCodeInsertStatement(Triple<Address, UnsignedByteList, PreparedStatement> triple) {
     val address = triple.left
     val code = triple.middle
     val stmt = triple.right
@@ -164,7 +165,7 @@ class WorldState {
     stmt
   }
   
-  private static def PreparedStatement fillCodeSelectStatement(Pair<EVMWord, PreparedStatement> pair) {
+  private static def PreparedStatement fillCodeSelectStatement(Pair<Address, PreparedStatement> pair) {
     val address = pair.key
     val stmt = pair.value
     
@@ -173,7 +174,7 @@ class WorldState {
     stmt
   }
   
-  private static def PreparedStatement fillCodeDeleteStatement(Pair<EVMWord, PreparedStatement> pair) {
+  private static def PreparedStatement fillCodeDeleteStatement(Pair<Address, PreparedStatement> pair) {
     val address = pair.key
     val stmt = pair.value
     
@@ -182,7 +183,7 @@ class WorldState {
     stmt
   }
   
-  private static def UnsignedByteList readCodeFromResultSet(Pair<ResultSet, EVMWord> pair) {
+  private static def UnsignedByteList readCodeFromResultSet(Pair<ResultSet, Address> pair) {
     val resultSet = pair.key
     val address = pair.value
     
@@ -206,7 +207,6 @@ class WorldState {
   }
   
   def loadGenesisState() {
-    var i = 0
     val iter = MainnetAllocData.mainnetAllocDataQueryIterator
     while(iter.hasNext) {
       val e = iter.next
@@ -216,34 +216,33 @@ class WorldState {
       val account = new Account(balance)
       
       putAccount(EVMWord.ZERO, address, account)
-      println(i++)
     }
   }
   
   //for new accounts
-  def void putAccount(EVMWord blockNumber, EVMWord address, Account account) {
+  def void putAccount(EVMWord blockNumber, Address address, Account account) {
     accountCache.put(address, account)
     accountDB.put(address, blockNumber.longValue)
     account.insertIntoTrie(accountTrie, address)
   }
   
   //for overwriting accounts
-  def void setAccount(EVMWord address, Account account) {
+  def void setAccount(Address address, Account account) {
     account.insertIntoTrie(accountTrie, address)
   }
   
-  def void deleteAccount(EVMWord address) {
+  def void deleteAccount(Address address) {
     getAccount(address).removeFromTrie(accountTrie, address)
     accountCache.invalidate(address)
     accountCache.cleanUp
     accountDB.remove(address)
   }
   
-  def boolean accountExists(EVMWord address) {
+  def boolean accountExists(Address address) {
     accountDB.lookUp(address) !== null 
   }
   
-  def boolean accountExists(EVMWord blockNumber, EVMWord address) {
+  def boolean accountExists(EVMWord blockNumber, Address address) {
     accountDB.lookUp(address) <= blockNumber.longValue
   }
   
@@ -269,25 +268,25 @@ class WorldState {
     }
   }
   
-  def Account getAccount(EVMWord address) {
+  def Account getAccount(Address address) {
     accountCache.getIfPresent(address) ?: getAccount(accountTrie.trieRoot, address)
   }
   
-  def Account getAccount(Long blockNumber, EVMWord address) {
+  def Account getAccount(Long blockNumber, Address address) {
     getAccount(eth_getBlockByNumber(new EVMWord(blockNumber), null).stateRoot, address)
   }
   
-  def Account getAccount(EVMWord rootHash, EVMWord address) {
+  def Account getAccount(Hash256 rootHash, Address address) {
     val account = new Account(accountTrie, rootHash, address)
     accountCache.put(address, account)
     account
   }
   
-  def EVMWord getStateRoot() {
+  def Hash256 getStateRoot() {
     accountTrie.trieRoot
   }
   
-  private def getStorageTrie(EVMWord address) {
+  private def getStorageTrie(Address address) {
     var trie = storageTries.get(address)
     if (trie === null) {
       trie = new MerklePatriciaTrie(name + "_storageTrie_" + address.toHexString)
@@ -296,24 +295,23 @@ class WorldState {
     trie
   }
   
-  def UnsignedByteList getCodeAt(EVMWord address) {
+  def UnsignedByteList getCodeAt(Address address) {
     codeDB.lookUp(address)
   }
   
-  def void setCodeAt(EVMWord address, String code) {
+  def void setCodeAt(Address address, String code) {
     setCodeAt(address, new UnsignedByteList(code.fromHex.map[new UnsignedByte(it)]))
   }
   
-  def void setCodeAt(EVMWord address, UnsignedByteList code) {
+  def void setCodeAt(Address address, UnsignedByteList code) {
     codeDB.put(address, code)
     
     val acc = getAccount(address)
-    println(keccak256(code.elements.map[byteValue]))
     acc.codeHash = keccak256(code.elements.map[byteValue])
     acc.insertIntoTrie(accountTrie, address)
   }
   
-  def Map<EVMWord, EVMWord> getStorage(EVMWord address) {
+  def Map<EVMWord, EVMWord> getStorage(Address address) {
     val trie = address.storageTrie
     
     try {
@@ -330,11 +328,11 @@ class WorldState {
     }
   }
   
-  def EVMWord getStorageAt(EVMWord address, EVMWord offset) {
+  def EVMWord getStorageAt(Address address, EVMWord offset) {
     storageCache.getIfPresent(Pair.of(address, offset)) ?: getStorageAt(address.storageTrie.trieRoot, address, offset)
   }
   
-  def EVMWord getStorageAt(EVMWord rootHash, EVMWord address, EVMWord offset) {
+  def EVMWord getStorageAt(Hash256 rootHash, Address address, EVMWord offset) {
     val trie = address.storageTrie
     
     try {
@@ -348,9 +346,9 @@ class WorldState {
     }
   }
   
-  def void setStorageAt(EVMWord address, EVMWord offset, EVMWord value) {
+  def void setStorageAt(Address address, EVMWord offset, EVMWord value) {
     var trie = address.storageTrie
-    trie.putElement(new NibbleList(offset.toByteArray.keccak256), value.toUnsignedByteArray.reverseView.dropWhile[it.byteValue == 0].toList.rlp)
+    trie.putElement(new NibbleList(offset.toByteArray.keccak256.toByteArray), value.toUnsignedByteArray.reverseView.dropWhile[it.byteValue == 0].toList.rlp)
     
     val acc = getAccount(address)
     acc.storageRoot = trie.trieRoot

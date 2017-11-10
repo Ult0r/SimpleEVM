@@ -87,9 +87,9 @@ class JsonRPCWrapper {
     wrapDataFetch("web3_clientVersion").asJsonObject.get("result").asString
   }
 
-  def EVMWord web3_sha3(String data) {
+  def Hash256 web3_sha3(String data) {
     val params = String.format('["%s"]', data)
-    EVMWord.fromString(wrapDataFetch("web3_sha3", params).asJsonObject.get("result").asString)
+    Hash256.fromString(wrapDataFetch("web3_sha3", params).asJsonObject.get("result").asString)
   }
 
   def String net_version() {
@@ -159,7 +159,7 @@ class JsonRPCWrapper {
   }
 
   def List<Address> eth_accounts() {
-    wrapDataFetch("eth_accounts").asJsonObject.get("result").asJsonArray.toList.map[EVMWord.fromString(it.asString)]
+    wrapDataFetch("eth_accounts").asJsonObject.get("result").asJsonArray.toList.map[Address.fromString(it.asString)]
   }
 
   def EVMWord eth_blockNumber() {
@@ -167,18 +167,18 @@ class JsonRPCWrapper {
   }
 
   def EVMWord eth_getBalance(Address address, EVMWord blockNumber, String tag) {
-    val params = String.format('["%s","%s"]', address.toAddressString, identifyBlock(blockNumber, tag))
-    new EVMWord(wrapDataFetch("eth_getBalance", params).asJsonObject.get("result").asString.fromHex.reverseView)
+    val params = String.format('["%s","%s"]', address, identifyBlock(blockNumber, tag))
+    new EVMWord(wrapDataFetch("eth_getBalance", params).asJsonObject.get("result").asString.fromHex(true).reverseView)
   }
 
   def EVMWord eth_getStorageAt(Address address, EVMWord offset, EVMWord blockNumber, String tag) {
-    val params = String.format('["%s","%s","%s"]', address.toAddressString, offset.displayEVMWordAsNumber,
+    val params = String.format('["%s","%s","%s"]', address, offset.displayEVMWordAsNumber,
       identifyBlock(blockNumber, tag))
     EVMWord.fromString(wrapDataFetch("eth_getStorageAt", params).asJsonObject.get("result").asString)
   }
 
   def EVMWord eth_getTransactionCount(Address address, EVMWord blockNumber, String tag) {
-    val params = String.format('["%s","%s"]', address.toAddressString, identifyBlock(blockNumber, tag))
+    val params = String.format('["%s","%s"]', address, identifyBlock(blockNumber, tag))
     new EVMWord(wrapDataFetch("eth_getTransactionCount", params).asJsonObject.get("result").asString.fromHex.reverseView)
   }
 
@@ -204,7 +204,7 @@ class JsonRPCWrapper {
   }
 
   def UnsignedByte[] eth_getCode(Address address, EVMWord blockNumber, String tag) {
-    val params = String.format('["%s","%s"]', address.toAddressString, identifyBlock(blockNumber, tag))
+    val params = String.format('["%s","%s"]', address, identifyBlock(blockNumber, tag))
     wrapDataFetch("eth_getCode", params).asJsonObject.get("result").asString.fromHex.map[new UnsignedByte(it)]
   }
 
@@ -225,8 +225,8 @@ class JsonRPCWrapper {
     UnsignedByte[] data, EVMWord blockNumber, String tag) {
     val params = String.format(
       '[{"from":"%s","to":"%s","gas":"%s","gasPrice":"%s","value":"%s","data":"%s"},"%s"]',
-      from.toAddressString,
-      to.toAddressString,
+      from,
+      to,
       gas.displayEVMWordAsNumber,
       gasPrice.displayEVMWordAsNumber,
       value.displayEVMWordAsNumber,
@@ -240,8 +240,8 @@ class JsonRPCWrapper {
     UnsignedByte[] data) {
     val params = String.format(
       '[{"from":"%s","to":"%s","gas":"%s","gasPrice":"%s","value":"%s","data":"%s"}]',
-      from.toAddressString,
-      to.toAddressString,
+      from,
+      to,
       gas.displayEVMWordAsNumber,
       gasPrice.displayEVMWordAsNumber,
       value.displayEVMWordAsNumber,
@@ -282,10 +282,10 @@ class JsonRPCWrapper {
     new Block(fetchResult)
   }
 
-  def EVMWord eth_getBlockByNumber_hash(EVMWord blockNumber, String tag) {
+  def Hash256 eth_getBlockByNumber_hash(EVMWord blockNumber, String tag) {
     val params = String.format('["%s", false]', identifyBlock(blockNumber, tag).toString)
     val fetchResult = wrapDataFetch("eth_getBlockByNumber", params).asJsonObject.get("result").asJsonObject
-    EVMWord.fromString(fetchResult.get("hash").asString)
+    Hash256.fromString(fetchResult.get("hash").asString)
   }
 
   def EVMWord eth_getBlockByNumber_totalDifficulty(EVMWord blockNumber, String tag) {

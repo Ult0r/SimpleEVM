@@ -11,6 +11,9 @@ import org.itemis.utils.db.DataBaseWrapper.DataBaseID
 import org.itemis.types.UnsignedByte
 import org.itemis.ressources.JsonRPCWrapper
 import org.itemis.types.Hash256
+import org.itemis.types.Bloom2048
+import org.itemis.types.Address
+import org.itemis.types.EthashNonce
 
 abstract class BlockchainData {
   static extension JsonRPCWrapper j = new JsonRPCWrapper
@@ -84,7 +87,7 @@ abstract class BlockchainData {
     DELETE_BLOCK_STMT_STR,
     [BlockchainData::fillBlockDeleteStatement(it)]
   )
-  private final static TwoLevelDBCache<Pair<EVMWord, Integer>, Hash256> ommerLookUp = new TwoLevelDBCache<Pair<EVMWord, Integer>, Hash256>(
+  private final static TwoLevelDBCache<Pair<Hash256, Integer>, Hash256> ommerLookUp = new TwoLevelDBCache<Pair<Hash256, Integer>, Hash256>(
     MAX_OMMER_LOOKUP_CACHE_SIZE,
     DataBaseID.CHAINDATA,
     "chain",
@@ -110,7 +113,7 @@ abstract class BlockchainData {
     DELETE_OMMER_STMT_STR,
     [BlockchainData::fillBlockDeleteStatement(it)]
   )
-  private final static TwoLevelDBCache<Pair<EVMWord, Integer>, Hash256> transactionLookUp = new TwoLevelDBCache<Pair<EVMWord, Integer>, Hash256>(
+  private final static TwoLevelDBCache<Pair<Hash256, Integer>, Hash256> transactionLookUp = new TwoLevelDBCache<Pair<Hash256, Integer>, Hash256>(
     MAX_TRANSACTION_LOOKUP_CACHE_SIZE,
     DataBaseID.CHAINDATA,
     "chain",
@@ -174,7 +177,7 @@ abstract class BlockchainData {
     try {
       resultSet.next
       
-      new EVMWord(resultSet.getBytes("blockHash"))
+      new Hash256(resultSet.getBytes("blockHash"))
     } catch (Exception e) {
       LOGGER.debug(e.message)
       null
@@ -217,7 +220,7 @@ abstract class BlockchainData {
     stmt
   }
   
-  def private static PreparedStatement fillBlockDeleteStatement(Pair<EVMWord, PreparedStatement> pair) {
+  def private static PreparedStatement fillBlockDeleteStatement(Pair<Hash256, PreparedStatement> pair) {
     val blockHash = pair.key
     val stmt = pair.value
     
@@ -226,7 +229,7 @@ abstract class BlockchainData {
     stmt
   }
   
-  def private static Block readBlockFromResultSet(Pair<ResultSet, EVMWord> pair) {
+  def private static Block readBlockFromResultSet(Pair<ResultSet, Hash256> pair) {
     val resultSet = pair.key
     
     try {
@@ -234,21 +237,21 @@ abstract class BlockchainData {
       
       val resultBlock = new Block()
       
-      resultBlock.parentHash = new EVMWord(resultSet.getBytes("parentHash"))
-      resultBlock.ommersHash = new EVMWord(resultSet.getBytes("ommersHash"))
-      resultBlock.beneficiary = new EVMWord(resultSet.getBytes("beneficiary"))
-      resultBlock.stateRoot = new EVMWord(resultSet.getBytes("stateRoot"))
-      resultBlock.transactionsRoot = new EVMWord(resultSet.getBytes("transactionsRoot"))
-      resultBlock.receiptsRoot = new EVMWord(resultSet.getBytes("receiptsRoot"))
-      resultBlock.logsBloom = new Int2048(resultSet.getBytes("logsBloom"))
+      resultBlock.parentHash = new Hash256(resultSet.getBytes("parentHash"))
+      resultBlock.ommersHash = new Hash256(resultSet.getBytes("ommersHash"))
+      resultBlock.beneficiary = new Address(resultSet.getBytes("beneficiary"))
+      resultBlock.stateRoot = new Hash256(resultSet.getBytes("stateRoot"))
+      resultBlock.transactionsRoot = new Hash256(resultSet.getBytes("transactionsRoot"))
+      resultBlock.receiptsRoot = new Hash256(resultSet.getBytes("receiptsRoot"))
+      resultBlock.logsBloom = new Bloom2048(resultSet.getBytes("logsBloom"))
       resultBlock.difficulty = new EVMWord(resultSet.getBytes("difficulty"))
       resultBlock.number = new EVMWord(resultSet.getBytes("number"))
       resultBlock.gasUsed = new EVMWord(resultSet.getBytes("gasUsed"))
       resultBlock.gasLimit = new EVMWord(resultSet.getBytes("gasLimit"))
       resultBlock.timestamp = new EVMWord(resultSet.getBytes("timestamp"))
       resultBlock.extraData = resultSet.getBytes("extraData")
-      resultBlock.mixHash = new EVMWord(resultSet.getBytes("mixHash"))
-      resultBlock.nonce = new EVMWord(resultSet.getBytes("nonce"))
+      resultBlock.mixHash = new Hash256(resultSet.getBytes("mixHash"))
+      resultBlock.nonce = new EthashNonce(resultSet.getBytes("nonce"))
       
       resultBlock
     } catch (Exception e) {
@@ -259,7 +262,7 @@ abstract class BlockchainData {
   
   //Ommer
 
-  def private static PreparedStatement fillOmmerLookUpInsertStatement(Triple<Pair<EVMWord, Integer>, EVMWord, PreparedStatement> triple) {
+  def private static PreparedStatement fillOmmerLookUpInsertStatement(Triple<Pair<Hash256, Integer>, Hash256, PreparedStatement> triple) {
     val blockHash = triple.left.key
     val index = triple.left.value
     val ommerHash = triple.middle
@@ -272,7 +275,7 @@ abstract class BlockchainData {
     stmt
   }
   
-  def private static PreparedStatement fillOmmerLookUpSelectStatement(Pair<Pair<EVMWord, Integer>, PreparedStatement> pair) {
+  def private static PreparedStatement fillOmmerLookUpSelectStatement(Pair<Pair<Hash256, Integer>, PreparedStatement> pair) {
     val blockHash = pair.key.key
     val index = pair.key.value
     val stmt = pair.value
@@ -283,7 +286,7 @@ abstract class BlockchainData {
     stmt
   }
   
-  def private static PreparedStatement fillOmmerLookUpDeleteStatement(Pair<Pair<EVMWord, Integer>, PreparedStatement> pair) {
+  def private static PreparedStatement fillOmmerLookUpDeleteStatement(Pair<Pair<Hash256, Integer>, PreparedStatement> pair) {
     val blockHash = pair.key.key
     val index = pair.key.value
     val stmt = pair.value
@@ -294,13 +297,13 @@ abstract class BlockchainData {
     stmt
   }
   
-  def private static Hash256 readOmmerLookUpHashFromResultSet(Pair<ResultSet, Pair<EVMWord, Integer>> pair) {
+  def private static Hash256 readOmmerLookUpHashFromResultSet(Pair<ResultSet, Pair<Hash256, Integer>> pair) {
     val resultSet = pair.key
     
     try {
       resultSet.next
       
-      new EVMWord(resultSet.getBytes("ommerHash"))
+      new Hash256(resultSet.getBytes("ommerHash"))
     } catch (Exception e) {
       LOGGER.debug(e.message)
       null
@@ -309,7 +312,7 @@ abstract class BlockchainData {
   
   //TransactionLookUp
 
-  def private static PreparedStatement fillTransactionLookUpInsertStatement(Triple<Pair<EVMWord, Integer>, EVMWord, PreparedStatement> triple) {
+  def private static PreparedStatement fillTransactionLookUpInsertStatement(Triple<Pair<Hash256, Integer>, Hash256, PreparedStatement> triple) {
     val blockHash = triple.left.key
     val index = triple.left.value
     val transactionHash = triple.middle
@@ -322,7 +325,7 @@ abstract class BlockchainData {
     stmt
   }
   
-  def private static PreparedStatement fillTransactionLookUpSelectStatement(Pair<Pair<EVMWord, Integer>, PreparedStatement> pair) {
+  def private static PreparedStatement fillTransactionLookUpSelectStatement(Pair<Pair<Hash256, Integer>, PreparedStatement> pair) {
     val blockHash = pair.key.key
     val index = pair.key.value
     val stmt = pair.value
@@ -333,7 +336,7 @@ abstract class BlockchainData {
     stmt
   }
   
-  def private static PreparedStatement fillTransactionLookUpDeleteStatement(Pair<Pair<EVMWord, Integer>, PreparedStatement> pair) {
+  def private static PreparedStatement fillTransactionLookUpDeleteStatement(Pair<Pair<Hash256, Integer>, PreparedStatement> pair) {
     val blockHash = pair.key.key
     val index = pair.key.value
     val stmt = pair.value
@@ -344,13 +347,13 @@ abstract class BlockchainData {
     stmt
   }
   
-  def private static Hash256 readTransactionHashFromResultSet(Pair<ResultSet, Pair<EVMWord, Integer>> pair) {
+  def private static Hash256 readTransactionHashFromResultSet(Pair<ResultSet, Pair<Hash256, Integer>> pair) {
     val resultSet = pair.key
     
     try {
       resultSet.next
       
-      new EVMWord(resultSet.getBytes("transactionHash"))
+      new Hash256(resultSet.getBytes("transactionHash"))
     } catch (Exception e) {
       LOGGER.debug(e.message)
       null
@@ -359,7 +362,7 @@ abstract class BlockchainData {
   
   //Transaction
 
-  def private static PreparedStatement fillTransactionInsertStatement(Triple<EVMWord, Transaction, PreparedStatement> triple) {
+  def private static PreparedStatement fillTransactionInsertStatement(Triple<Hash256, Transaction, PreparedStatement> triple) {
     val transactionHash = triple.left
     val transaction = triple.middle
     val stmt = triple.right
@@ -378,7 +381,7 @@ abstract class BlockchainData {
     stmt
   }
   
-  def private static PreparedStatement fillTransactionSelectStatement(Pair<EVMWord, PreparedStatement> pair) {
+  def private static PreparedStatement fillTransactionSelectStatement(Pair<Hash256, PreparedStatement> pair) {
     val transactionHash = pair.key
     val stmt = pair.value
     
@@ -387,7 +390,7 @@ abstract class BlockchainData {
     stmt
   }
   
-  def private static PreparedStatement fillTransactionDeleteStatement(Pair<EVMWord, PreparedStatement> pair) {
+  def private static PreparedStatement fillTransactionDeleteStatement(Pair<Hash256, PreparedStatement> pair) {
     val transactionHash = pair.key
     val stmt = pair.value
     
@@ -396,7 +399,7 @@ abstract class BlockchainData {
     stmt
   }
   
-  def private static Transaction readTransactionFromResultSet(Pair<ResultSet, EVMWord> pair) {
+  def private static Transaction readTransactionFromResultSet(Pair<ResultSet, Hash256> pair) {
     val resultSet = pair.key
     
     try {
@@ -408,7 +411,7 @@ abstract class BlockchainData {
       resultTransaction.gasPrice = new EVMWord(resultSet.getBytes("gasPrice"))
       resultTransaction.gasLimit = new EVMWord(resultSet.getBytes("gasLimit"))
       val _to = resultSet.getBytes("to")
-      resultTransaction.to = if (_to !== null) new EVMWord(_to) 
+      resultTransaction.to = if (_to !== null) new Address(_to) 
       resultTransaction.value = new EVMWord(resultSet.getBytes("value"))
       resultTransaction.v = new UnsignedByte(resultSet.getInt("v"))
       resultTransaction.r = new EVMWord(resultSet.getBytes("r"))
@@ -422,19 +425,19 @@ abstract class BlockchainData {
     }
   }
   
-  def private static void persistOmmer(EVMWord blockHash, Integer index) {
+  def private static void persistOmmer(Hash256 blockHash, Integer index) {
     val ommerBlock = eth_getUncleByBlockHashAndIndex(blockHash, new EVMWord(index))
     persistOmmer(ommerBlock, ommerBlock.hash, blockHash, index)
   }
   
-  def private static void persistOmmer(Block b, EVMWord ommerHash, EVMWord blockHash, Integer index) {
+  def private static void persistOmmer(Block b, Hash256 ommerHash, Hash256 blockHash, Integer index) {
     ommerLookUp.put(Pair.of(blockHash, index), ommerHash)
     if (ommer.lookUp(ommerHash) === null) {
       ommer.put(ommerHash, b)
     }
   }
   
-  def private static void persistBlock(Block b, EVMWord blockHash) {
+  def private static void persistBlock(Block b, Hash256 blockHash) {
     block.put(blockHash, b)
     blockLookUp.put(b.number, blockHash)
     for (var i = 0; i < b.ommers.size; i++) {
@@ -449,14 +452,14 @@ abstract class BlockchainData {
     }
   }
   
-  def private static void persistTransaction(Transaction t, EVMWord transactionHash, EVMWord blockHash, Integer index) {
+  def private static void persistTransaction(Transaction t, Hash256 transactionHash, Hash256 blockHash, Integer index) {
     transactionLookUp.put(Pair.of(blockHash, index), transactionHash)
     if (transaction.lookUp(transactionHash) === null) {
       transaction.put(transactionHash, t)
     }
   }
   
-  def static Block getBlockByHash(EVMWord blockHash) {
+  def static Block getBlockByHash(Hash256 blockHash) {
     var resultBlock = block.lookUp(blockHash)
     if (resultBlock === null) {
       resultBlock = eth_getBlockByHash(blockHash)
@@ -466,7 +469,7 @@ abstract class BlockchainData {
     resultBlock
   }
   
-  def static EVMWord getBlockHashByNumber(EVMWord blockNumber) {
+  def static Hash256 getBlockHashByNumber(EVMWord blockNumber) {
     blockLookUp.lookUp(blockNumber) ?: eth_getBlockByNumber_hash(blockNumber, null)
   }
   
@@ -474,17 +477,17 @@ abstract class BlockchainData {
     getBlockByHash(getBlockHashByNumber(blockNumber))
   }
   
-  def static Block getOmmerByBlockNumberAndIndex(EVMWord blockNumber, Integer index) {
-    var resultBlock = ommer.lookUp(ommerLookUp.lookUp(Pair.of(blockNumber, index)))
+  def static Block getOmmerByBlockHashAndIndex(Hash256 blockHash, Integer index) {
+    var resultBlock = ommer.lookUp(ommerLookUp.lookUp(Pair.of(blockHash, index)))
     if (resultBlock === null) {
-      resultBlock = eth_getUncleByBlockHashAndIndex(blockNumber, new EVMWord(index))
-      persistOmmer(resultBlock, resultBlock.hash, blockNumber, index)
+      resultBlock = eth_getUncleByBlockHashAndIndex(blockHash, new EVMWord(index))
+      persistOmmer(resultBlock, resultBlock.hash, blockHash, index)
     }
     
     resultBlock
   }
   
-  def static Transaction getTransactionByHash(EVMWord transactionHash) {
+  def static Transaction getTransactionByHash(Hash256 transactionHash) {
     var resultTransaction = transaction.lookUp(transactionHash)
     if (resultTransaction === null) {
       resultTransaction = eth_getTransactionByHash(transactionHash)
@@ -496,11 +499,11 @@ abstract class BlockchainData {
     resultTransaction
   }
   
-  def static Transaction getTransactionByBlockNumberAndIndex(EVMWord blockHash, Integer index) {
+  def static Transaction getTransactionByBlockHashAndIndex(Hash256 blockHash, Integer index) {
     var transactionHash = transactionLookUp.lookUp(Pair.of(blockHash, index))
     var resultTransaction = transaction.lookUp(transactionHash)
     if (transactionHash === null) {
-      resultTransaction = eth_getTransactionByBlockNumberAndIndex(blockHash, null, new EVMWord(index))
+      resultTransaction = eth_getTransactionByBlockHashAndIndex(blockHash, new EVMWord(index))
       persistTransaction(resultTransaction, transactionHash, blockHash, index)
     }
     

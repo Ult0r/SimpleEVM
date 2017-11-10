@@ -82,7 +82,6 @@ class StaticEVMUtils {
   }
 
   def private static List<TreeNode<UnsignedByte[]>> _reverseRLP(UnsignedByte[] data) {
-//    println("_reverseRLP: " + data.size)
     var List<TreeNode<UnsignedByte[]>> result = newArrayList
     var usedLength = 0
 
@@ -140,7 +139,6 @@ class StaticEVMUtils {
   }
 
   def static TreeNode<UnsignedByte[]> reverseRLP(UnsignedByte[] data) {
-//    println("reverseRLP")
     if(data.length == 0) {
       throw new IllegalArgumentException("invalid rlp data")
     }

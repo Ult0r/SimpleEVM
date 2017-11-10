@@ -17,6 +17,7 @@ import org.eclipse.xtend.lib.annotations.Accessors
 import java.util.List
 import org.itemis.evm.utils.EVMUtils
 import org.itemis.types.Address
+import org.itemis.types.Hash256
 
 class Transaction {
   extension Utils u = new Utils
@@ -50,17 +51,17 @@ class Transaction {
 
     val isData = !obj.get("to").jsonNull
     if(isData) {
-      to = EVMWord.fromString(obj.get("to").asString)
+      to = Address.fromString(obj.get("to").asString)
     }
 
     data = obj.get("input").asString.fromHex.map[new UnsignedByte(it)]
     
     //TODO: remove this when implementing Cipolla
-    sender = EVMWord.fromString(obj.get("from").asString)
+    sender = Address.fromString(obj.get("from").asString)
   }
   
   //TODO: Test
-  def EVMWord hash() {
+  def Hash256 hash() {
     val fields = fields
     val _fields = fields.take(5).toList
     _fields.add(fields.last)
@@ -90,7 +91,7 @@ class Transaction {
     fields
   }
   
-  def EVMWord getSender() {
+  def Address getSender() {
     //TODO: use Cipolla to generate sender from v, r, s
     sender
   }

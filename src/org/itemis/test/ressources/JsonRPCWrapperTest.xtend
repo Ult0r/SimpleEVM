@@ -15,6 +15,8 @@ import org.itemis.ressources.JsonRPCWrapper
 import org.junit.Assert
 import org.itemis.utils.Utils
 import org.itemis.blockchain.Block
+import org.itemis.types.Address
+import org.itemis.types.Hash256
 
 class JsonRPCWrapperTest {
   extension JsonRPCWrapper j = new JsonRPCWrapper
@@ -130,25 +132,25 @@ class JsonRPCWrapperTest {
   @Test
   def void testEth_getBalance() {
     Assert.assertTrue(eth_getBalance(
-      EVMWord.fromString("0xb19264f813465b8e6147ed011c7761c71054e91f"),
+      Address.fromString("0xb19264f813465b8e6147ed011c7761c71054e91f"),
       new EVMWord(4079009),
       null
     ).isZero)
 
     Assert.assertFalse(eth_getBalance(
-      EVMWord.fromString("0xb19264f813465b8e6147ed011c7761c71054e91f"),
+      Address.fromString("0xb19264f813465b8e6147ed011c7761c71054e91f"),
       new EVMWord(4079011),
       null
     ).isZero)
     
     Assert.assertEquals(eth_getBalance(
-      EVMWord.fromString("0xb19264f813465b8e6147ed011c7761c71054e91f"),
+      Address.fromString("0xb19264f813465b8e6147ed011c7761c71054e91f"),
       new EVMWord(4079011),
       null
     ).toIntString, "187036535988387584")
 
     Assert.assertEquals(eth_getBalance(
-      EVMWord.fromString("0xb19264f813465b8e6147ed011c7761c71054e91f"),
+      Address.fromString("0xb19264f813465b8e6147ed011c7761c71054e91f"),
       new EVMWord(4149495),
       null
     ).toIntString, "237420299500067120")
@@ -156,7 +158,7 @@ class JsonRPCWrapperTest {
 
   @Test
   def void testEth_getStorageAt() {
-    val EVMWord address = EVMWord.fromString("0xe9e7684b674679599b66c3b1c65826ecc9b4d302")
+    val Address address = Address.fromString("0xe9e7684b674679599b66c3b1c65826ecc9b4d302")
     val EVMWord offset = EVMWord.ZERO
     val EVMWord block = new EVMWord(4000000)
 
@@ -167,7 +169,7 @@ class JsonRPCWrapperTest {
 
   @Test
   def void testEth_getTransactionCount() {
-    val EVMWord address = EVMWord.fromString("0x52bc44d5378309EE2abF1539BF71dE1b7d7bE3b5")
+    val Address address = Address.fromString("0x52bc44d5378309EE2abF1539BF71dE1b7d7bE3b5")
     val EVMWord block = new EVMWord(4000000)
 
     val EVMWord result = new EVMWord(2333167)
@@ -177,7 +179,7 @@ class JsonRPCWrapperTest {
 
   @Test
   def void testEth_getBlockTransactionCountByHash() {
-    val EVMWord blockhash = EVMWord.fromString("0xb8a3f7f5cfc1748f91a684f20fe89031202cbadcd15078c49b85ec2a57f43853")
+    val Hash256 blockhash = Hash256.fromString("0xb8a3f7f5cfc1748f91a684f20fe89031202cbadcd15078c49b85ec2a57f43853")
 
     Assert.assertEquals(eth_getBlockTransactionCountByHash(blockhash).unsignedIntValue, 69)
   }
@@ -191,7 +193,7 @@ class JsonRPCWrapperTest {
 
   @Test
   def void testEth_getUncleCountByBlockHash() {
-    val EVMWord blockhash = EVMWord.fromString("0x7a0736de3a3cdcaec721ebb7735af79dd9dc0c8b99ddb0ffd4fa793d770499e3")
+    val Hash256 blockhash = Hash256.fromString("0x7a0736de3a3cdcaec721ebb7735af79dd9dc0c8b99ddb0ffd4fa793d770499e3")
 
     Assert.assertEquals(eth_getUncleCountByBlockHash(blockhash).unsignedIntValue, 1)
   }
@@ -205,19 +207,19 @@ class JsonRPCWrapperTest {
 
   @Test
   def void testEth_getCode() {
-    val EVMWord address = EVMWord.fromString("0xa68722974c163a0D26983c50891112e7A4e96c99")
+    val Address address = Address.fromString("0xa68722974c163a0D26983c50891112e7A4e96c99")
 
     Assert.assertEquals(eth_getCode(address, null, "latest").length, 553)
   }
 
   @Test(expected=UnsupportedOperationException)
   def void testEth_sign() {
-    eth_sign(EVMWord.ZERO, newArrayOfSize(0))
+    eth_sign(Address.ZERO, newArrayOfSize(0))
   }
 
   @Test(expected=UnsupportedOperationException)
   def void testEth_sendTransaction() {
-    eth_sendTransaction(EVMWord.ZERO, EVMWord.ZERO, EVMWord.ZERO, EVMWord.ZERO, EVMWord.ZERO,
+    eth_sendTransaction(Address.ZERO, Address.ZERO, EVMWord.ZERO, EVMWord.ZERO, EVMWord.ZERO,
       newArrayOfSize(0))
   }
 
@@ -229,8 +231,8 @@ class JsonRPCWrapperTest {
   @Test
   def void testEth_call() {
     Assert.assertEquals(eth_call(
-      EVMWord.fromString("0xb794f5ea0ba39494ce839613fffba74279579268"),
-      EVMWord.fromString("0xe853c56864a2ebe4576a807d26fdc4a0ada51919"),
+      Address.fromString("0xb794f5ea0ba39494ce839613fffba74279579268"),
+      Address.fromString("0xe853c56864a2ebe4576a807d26fdc4a0ada51919"),
       EVMWord.fromString("0xffffff"),
       EVMWord.fromString("0xffffff"),
       EVMWord.fromString("0xffffffffffffffffffff"),
@@ -243,8 +245,8 @@ class JsonRPCWrapperTest {
   @Test
   def void testEth_estimateGas() {
     Assert.assertFalse(eth_estimateGas(
-      EVMWord.fromString("0xb794f5ea0ba39494ce839613fffba74279579268"),
-      EVMWord.fromString("0xe853c56864a2ebe4576a807d26fdc4a0ada51919"),
+      Address.fromString("0xb794f5ea0ba39494ce839613fffba74279579268"),
+      Address.fromString("0xe853c56864a2ebe4576a807d26fdc4a0ada51919"),
       EVMWord.fromString("0xffffff"),
       EVMWord.fromString("0xffffff"),
       EVMWord.fromString("0xffffffffffffffffffff"),
@@ -254,16 +256,16 @@ class JsonRPCWrapperTest {
 
   @Test
   def void testEth_getBlockByHash() {
-    val EVMWord blockHash = EVMWord.fromString("0xb8a3f7f5cfc1748f91a684f20fe89031202cbadcd15078c49b85ec2a57f43853")
+    val Hash256 blockHash = Hash256.fromString("0xb8a3f7f5cfc1748f91a684f20fe89031202cbadcd15078c49b85ec2a57f43853")
     val Block result = eth_getBlockByHash(blockHash)
-    val EVMWord parentHash = EVMWord.fromString("0x9b3c1d182975fdaa5797879cbc45d6b00a84fb3b13980a107645b2491bcca899")
+    val Hash256 parentHash = Hash256.fromString("0x9b3c1d182975fdaa5797879cbc45d6b00a84fb3b13980a107645b2491bcca899")
 
     Assert.assertEquals(result.parentHash, parentHash)
   }
 
   @Test
   def void testEth_getBlockByHash_totalDifficulty() {
-    val EVMWord blockHash = EVMWord.fromString("0xb8a3f7f5cfc1748f91a684f20fe89031202cbadcd15078c49b85ec2a57f43853")
+    val Hash256 blockHash = Hash256.fromString("0xb8a3f7f5cfc1748f91a684f20fe89031202cbadcd15078c49b85ec2a57f43853")
     val EVMWord totalDifficulty = EVMWord.fromString("0x196d077461e5dbab12")
 
     Assert.assertEquals(eth_getBlockByHash_totalDifficulty(blockHash), totalDifficulty)
@@ -271,7 +273,7 @@ class JsonRPCWrapperTest {
 
   @Test
   def void testEth_getBlockByHash_size() {
-    val EVMWord blockHash = EVMWord.fromString("0xb8a3f7f5cfc1748f91a684f20fe89031202cbadcd15078c49b85ec2a57f43853")
+    val Hash256 blockHash = Hash256.fromString("0xb8a3f7f5cfc1748f91a684f20fe89031202cbadcd15078c49b85ec2a57f43853")
     val EVMWord size = new EVMWord(16263)
 
     Assert.assertEquals(eth_getBlockByHash_size(blockHash), size)
@@ -279,7 +281,7 @@ class JsonRPCWrapperTest {
 
   @Test
   def void testEth_getBlockByHash_transactionHashes() {
-    val EVMWord blockHash = EVMWord.fromString("0xb8a3f7f5cfc1748f91a684f20fe89031202cbadcd15078c49b85ec2a57f43853")
+    val Hash256 blockHash = Hash256.fromString("0xb8a3f7f5cfc1748f91a684f20fe89031202cbadcd15078c49b85ec2a57f43853")
 
     Assert.assertEquals(eth_getBlockByHash_transactionHashes(blockHash).length, 69)
   }
@@ -287,7 +289,7 @@ class JsonRPCWrapperTest {
   @Test
   def void testEth_getBlockByNumber() {
     val EVMWord blockNumber = new EVMWord(4000000)
-    val EVMWord parentHash = EVMWord.fromString("0x9b3c1d182975fdaa5797879cbc45d6b00a84fb3b13980a107645b2491bcca899")
+    val Hash256 parentHash = Hash256.fromString("0x9b3c1d182975fdaa5797879cbc45d6b00a84fb3b13980a107645b2491bcca899")
 
     Assert.assertEquals(eth_getBlockByNumber(blockNumber, null).parentHash, parentHash)
   }
@@ -295,7 +297,7 @@ class JsonRPCWrapperTest {
   @Test
   def void testEth_getBlockByNumber_hash() {
     val EVMWord blockNumber = new EVMWord(4000000)
-    val EVMWord blockHash = EVMWord.fromString("0xb8a3f7f5cfc1748f91a684f20fe89031202cbadcd15078c49b85ec2a57f43853")
+    val Hash256 blockHash = Hash256.fromString("0xb8a3f7f5cfc1748f91a684f20fe89031202cbadcd15078c49b85ec2a57f43853")
 
     Assert.assertEquals(eth_getBlockByNumber_hash(blockNumber, null), blockHash)
   }
@@ -325,7 +327,7 @@ class JsonRPCWrapperTest {
 
   @Test
   def void testEth_getTransactionByHash() {
-    val EVMWord transactionHash = EVMWord.fromString(
+    val Hash256 transactionHash = Hash256.fromString(
       "0x98afba7bfde015e36a84eb5a9540c79952ddf4176df0a87bea2591a2063cf398")
 
     Assert.assertEquals(eth_getTransactionByHash(transactionHash).nonce, new EVMWord(2537750))
@@ -333,7 +335,7 @@ class JsonRPCWrapperTest {
 
   @Test
   def void testEth_getTransactionByBlockHashAndIndex() {
-    val EVMWord blockHash = EVMWord.fromString("0xb8a3f7f5cfc1748f91a684f20fe89031202cbadcd15078c49b85ec2a57f43853")
+    val Hash256 blockHash = Hash256.fromString("0xb8a3f7f5cfc1748f91a684f20fe89031202cbadcd15078c49b85ec2a57f43853")
     val EVMWord index = EVMWord.ZERO
 
     Assert.assertEquals(eth_getTransactionByBlockHashAndIndex(blockHash, index).nonce, new EVMWord(5))
@@ -349,7 +351,7 @@ class JsonRPCWrapperTest {
 
   @Test
   def void testEth_getTransactionReceipt() {
-    val EVMWord transactionHash = EVMWord.fromString(
+    val Hash256 transactionHash = Hash256.fromString(
       "0x98afba7bfde015e36a84eb5a9540c79952ddf4176df0a87bea2591a2063cf398")
 
     Assert.assertEquals(eth_getTransactionReceipt(transactionHash).blockNumber, new EVMWord(4079010))
@@ -358,9 +360,9 @@ class JsonRPCWrapperTest {
 
   @Test
   def void testEth_getUncleByBlockHashAndIndex() {
-    val EVMWord blockHash = EVMWord.fromString("0x7a0736de3a3cdcaec721ebb7735af79dd9dc0c8b99ddb0ffd4fa793d770499e3")
+    val Hash256 blockHash = Hash256.fromString("0x7a0736de3a3cdcaec721ebb7735af79dd9dc0c8b99ddb0ffd4fa793d770499e3")
     val EVMWord index = EVMWord.ZERO
-    val EVMWord parentHash = EVMWord.fromString("0x5dbeb17d3c0d0b21167254259274022d8ead55a43453c8492f7568ec9e1b7c16")
+    val Hash256 parentHash = Hash256.fromString("0x5dbeb17d3c0d0b21167254259274022d8ead55a43453c8492f7568ec9e1b7c16")
 
     Assert.assertEquals(eth_getUncleByBlockHashAndIndex(blockHash, index).parentHash, parentHash)
   }
@@ -369,7 +371,7 @@ class JsonRPCWrapperTest {
   def void testEth_getUncleByBlockNumberAndIndex() {
     val EVMWord blockNumber = new EVMWord(4000014)
     val EVMWord index = EVMWord.ZERO
-    val EVMWord parentHash = EVMWord.fromString("0x5dbeb17d3c0d0b21167254259274022d8ead55a43453c8492f7568ec9e1b7c16")
+    val Hash256 parentHash = Hash256.fromString("0x5dbeb17d3c0d0b21167254259274022d8ead55a43453c8492f7568ec9e1b7c16")
 
     Assert.assertEquals(eth_getUncleByBlockNumberAndIndex(blockNumber, null, index).parentHash, parentHash)
   }

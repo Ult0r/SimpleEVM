@@ -13,7 +13,7 @@ abstract class BlockInformation {
 
     runtime.pushStackItem(
       if(diff.unsignedIntValue <= 256) {
-        BlockchainData.getBlockHashByNumber(s0)
+        BlockchainData.getBlockHashByNumber(s0).toEVMWord
       } else {
         EVMWord.ZERO
       }
@@ -23,7 +23,7 @@ abstract class BlockInformation {
   }
 
   def static COINBASE(EVMRuntime runtime) {
-    runtime.pushStackItem(runtime.currentBlock.beneficiary)
+    runtime.pushStackItem(runtime.currentBlock.beneficiary.toEVMWord)
     runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.BALANCE))
   }
 

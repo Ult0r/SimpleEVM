@@ -7,6 +7,7 @@ import java.util.Arrays
 import org.itemis.blockchain.Block
 import java.util.List
 import org.itemis.types.EthashNonce
+import org.itemis.types.Hash256
 
 abstract class Ethash {
   private static final BigInteger TWO = BigInteger.valueOf(2)
@@ -92,15 +93,15 @@ abstract class Ethash {
     getPrime(CACHE_BYTES_INIT.add(CACHE_BYTES_GROWTH.multiply(getEpoch(blockNumber))).subtract(HASH_BYTES), HASH_BYTES)
   }
   
-  def public static EVMWord getSeedHash(BigInteger epoch) {
+  def public static Hash256 getSeedHash(BigInteger epoch) {
     if (epoch.equals(BigInteger.ZERO)) {
-      EVMWord.ZERO //XXX: NOT KEC(0^^32) like described in the paper
+      Hash256.ZERO //XXX: NOT KEC(0^^32) like described in the paper
     } else {
       StaticUtils.keccak256(getSeedHash(epoch.subtract(BigInteger.ONE)).toByteArray)
     }
   }
   
-  def public static EVMWord getSeedHash(EVMWord blockNumber) {
+  def public static Hash256 getSeedHash(EVMWord blockNumber) {
     getSeedHash(getEpoch(blockNumber))
   }
   
@@ -158,9 +159,9 @@ abstract class Ethash {
     val n = csize.divide(HASH_BYTES).intValue
     val result = newByteArrayOfSize(csize.intValue)
     
-    result.setHashBytesSizedElement(0, StaticUtils.keccak512(getSeedHash(blockNumber).toByteArray))
+    result.setHashBytesSizedElement(0, StaticUtils.keccak512(getSeedHash(blockNumber).toByteArray).toByteArray)
     for (var i = 1; i < n; i++) {
-      result.setHashBytesSizedElement(i, StaticUtils.keccak512(result.getHashBytesSizedElement(i - 1)))
+      result.setHashBytesSizedElement(i, StaticUtils.keccak512(result.getHashBytesSizedElement(i - 1)).toByteArray)
     }
     
     result
@@ -175,7 +176,7 @@ abstract class Ethash {
       val xorOff = (cache.getHashBytesSizedElement(i).getIntElement(0) % n) as int //XXX: accessing as 32 bit uint
       
       val xor = byteWiseXOR(cache.getHashBytesSizedElement(srcOff), cache.getHashBytesSizedElement(xorOff))
-      val hash = StaticUtils.keccak512(xor)
+      val hash = StaticUtils.keccak512(xor).toByteArray
       
       cache.setHashBytesSizedElement(i, hash)
     }
@@ -218,7 +219,7 @@ abstract class Ethash {
       val cIndex = (i % csize.divide(HASH_BYTES).longValue) as int
       val cElement = c.getHashBytesSizedElement(cIndex)
       val xor = byteWiseXOR(cElement, i.longToHashBytes)
-      hash = StaticUtils.keccak512(xor)
+      hash = StaticUtils.keccak512(xor).toByteArray
     }
     
     //XXX: this part is also done for p == 0 (paper says the opposite)
@@ -243,7 +244,7 @@ abstract class Ethash {
   //HASH_BYTES sized chunk
   //int-index would be too small soon, long required
   def public static byte[] calcDataSetItem(byte[] cache, long index, EVMWord blockNumber) {
-    StaticUtils.keccak512(parents(cache, index, -1, null, getCacheSize(blockNumber))) //XXX: KEC512 not mentioned in the paper
+    StaticUtils.keccak512(parents(cache, index, -1, null, getCacheSize(blockNumber))).toByteArray //XXX: KEC512 not mentioned in the paper
   }
   
   //MIX_BYTES long
@@ -314,7 +315,7 @@ abstract class Ethash {
     System.arraycopy(h, 0, concat, 0, h.length)
     System.arraycopy(nReversed, 0, concat, h.length, n.length)
     
-    StaticUtils.keccak512(concat)
+    StaticUtils.keccak512(concat).toByteArray
   }
   
   //MIX_BYTES/WORD_BYTES long
@@ -342,27 +343,26 @@ abstract class Ethash {
   //nonce is 8 bytes long
   //XXX: the paper states the first parameter to be the hash of the rlp-encoded header without nonce -> needs to be the header itself
   //XXX: does NOT apply for block #0 aka. genesis block!
-  def public static Pair<byte[], byte[]> proofOfWork(Block block) {
-    proofOfWork(block.headerRLPHash.toByteArray, block.nonce.toByteArray.take(8).toList, block.number)
+  def public static Pair<Hash256, Hash256> proofOfWork(Block block) {
+    proofOfWork(block.headerRLPHash.toByteArray, block.nonce, block.number)
   }
   
-  def public static Pair<byte[], byte[]> proofOfWork(Block block, EthashNonce nonce, EVMWord blockNumber) {
+  def public static Pair<Hash256, Hash256> proofOfWork(Block block, EthashNonce nonce, EVMWord blockNumber) {
     proofOfWork(block.headerRLPHash.toByteArray, nonce, blockNumber)
   }
    
-  def public static Pair<byte[], byte[]> proofOfWork(byte[] header, EthashNonce nonce, EVMWord blockNumber) {
+  def public static Pair<Hash256, Hash256> proofOfWork(byte[] header, EthashNonce nonce, EVMWord blockNumber) {
     val cache = getCache(blockNumber)
-    val mix = mc(header, nonce, blockNumber, cache)
-    val seedHash = sh(header, nonce)
+    val mix = mc(header, nonce.toByteArray, blockNumber, cache)
+    val seedHash = sh(header, nonce.toByteArray)
     
     val concat = newByteArrayOfSize(HASH_BYTES.add(MIX_BYTES.divide(WORD_BYTES)).intValue)
     System.arraycopy(seedHash, 0, concat, 0, seedHash.length)
     System.arraycopy(mix, 0, concat, seedHash.length, mix.length)
-    println(StaticUtils.toHex(concat))
     
     Pair.of(
-      mix,
-      StaticUtils.keccak256(concat).toByteArray
+      new Hash256(mix),
+      StaticUtils.keccak256(concat)
     )
   }
 }

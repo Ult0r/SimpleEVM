@@ -11,10 +11,11 @@
 package org.itemis.utils
 
 import org.itemis.types.UnsignedByte
-import org.itemis.types.EVMWord
 import java.io.Serializable
 import org.itemis.types.Nibble
 import java.math.BigInteger
+import org.itemis.types.Hash256
+import org.itemis.types.Hash512
 
 //uses implementations in static utils
 class Utils implements Serializable {
@@ -48,6 +49,10 @@ class Utils implements Serializable {
   def byte[] fromHex(String s) {
     StaticUtils.fromHex(s)
   }
+  
+  def byte[] fromHex(String s, boolean appendFront) {
+    StaticUtils.fromHex(s, appendFront)
+  }
 
   def Nibble[] toNibbles(UnsignedByte[] b) {
     StaticUtils.toNibbles(b)
@@ -57,19 +62,19 @@ class Utils implements Serializable {
     StaticUtils.toUnsignedBytes(n)
   }
 
-  def EVMWord keccak256(String input) {
+  def Hash256 keccak256(String input) {
     StaticUtils.keccak256(input)
   }
 
-  def EVMWord keccak256(byte[] input) {
+  def Hash256 keccak256(byte[] input) {
     StaticUtils.keccak256(input)
   }
 
-  def static byte[] keccak512(String input) {
+  def Hash512 keccak512(String input) {
     StaticUtils.keccak512(input)
   }
 
-  def static byte[] keccak512(byte[] input) {
+  def Hash512 keccak512(byte[] input) {
     StaticUtils.keccak512(input)
   }
 
