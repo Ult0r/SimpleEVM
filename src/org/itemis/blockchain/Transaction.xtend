@@ -16,6 +16,7 @@ import org.itemis.utils.Utils
 import org.eclipse.xtend.lib.annotations.Accessors
 import java.util.List
 import org.itemis.evm.utils.EVMUtils
+import org.itemis.types.Address
 
 class Transaction {
   extension Utils u = new Utils
@@ -24,14 +25,14 @@ class Transaction {
   @Accessors private EVMWord nonce
   @Accessors private EVMWord gasPrice
   @Accessors private EVMWord gasLimit
-  @Accessors private EVMWord to // 160-bit address
+  @Accessors private Address to // 160-bit address
   @Accessors private EVMWord value
   @Accessors private UnsignedByte v
   @Accessors private EVMWord r
   @Accessors private EVMWord s
   @Accessors private UnsignedByte[] data
   //TODO: remove this when implementing Cipolla
-  private EVMWord sender //160-bit address
+  private Address sender //160-bit address
 
   new() {
   }

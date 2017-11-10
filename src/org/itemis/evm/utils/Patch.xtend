@@ -5,11 +5,12 @@ import org.itemis.types.EVMWord
 import org.apache.commons.lang3.tuple.Triple
 import org.itemis.blockchain.WorldState
 import java.util.Set
+import org.itemis.types.Address
 
 final class Patch {
   //address -> (balance, nonce, (offset -> value))
-  private final Map<EVMWord, Triple<EVMWord, EVMWord, Map<EVMWord, EVMWord>>> changes = newHashMap
-  private final Set<EVMWord> selfDestructSet = newHashSet
+  private final Map<Address, Triple<EVMWord, EVMWord, Map<EVMWord, EVMWord>>> changes = newHashMap
+  private final Set<Address> selfDestructSet = newHashSet
   
   def void clear() {
     changes.clear

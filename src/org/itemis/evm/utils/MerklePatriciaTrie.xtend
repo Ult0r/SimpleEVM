@@ -22,9 +22,10 @@ import org.itemis.evm.utils.MerklePatriciaTrie.Node
 import org.itemis.types.EVMWord
 import org.itemis.utils.StaticUtils
 import org.itemis.types.UnsignedByteList
+import org.itemis.types.Hash256
 
 class MerklePatriciaTrie {
-  public static final EVMWord EMPTY_TRIE_HASH = EVMWord.fromString("0x56E81F171BCC55A6FF8345E692C0F86E5B48E01B996CADC001622FB5E363B421")
+  public static final Hash256 EMPTY_TRIE_HASH = EVMWord.fromString("0x56E81F171BCC55A6FF8345E692C0F86E5B48E01B996CADC001622FB5E363B421")
   
   private final String name
   @Accessors private Node root = new Null
@@ -40,7 +41,7 @@ class MerklePatriciaTrie {
     this.cache = new MerklePatriciaTrieCache(name, maxPrefixLength, maxDataLength)
   }
   
-  def EVMWord getTrieRoot() {
+  def Hash256 getTrieRoot() {
     val _root = root.hash
     if(_root.size < 32) {
       StaticUtils.keccak256(_root.elements.map[byteValue])

@@ -13,6 +13,7 @@ import java.util.Optional
 import org.itemis.types.UnsignedByteList
 import org.itemis.blockchain.BlockchainData
 import java.util.Set
+import org.itemis.types.Address
 
 final class EVMRuntime {
   @Accessors private final WorldState worldState
@@ -22,18 +23,18 @@ final class EVMRuntime {
   @Accessors private EVMWord memorySize = EVMWord.ZERO
   private EVMStack stack = new EVMStack()
   
-  @Accessors private EVMWord codeAddress                         //Ia
-  @Accessors private EVMWord originAddress                       //Io
+  @Accessors private Address codeAddress                         //Ia
+  @Accessors private Address originAddress                       //Io
   @Accessors private EVMWord gasPrice                            //Ip
   @Accessors private UnsignedByte[] inputData                    //Id
-  @Accessors private EVMWord callerAddress                       //Is
+  @Accessors private Address callerAddress                       //Is
   @Accessors private EVMWord value                               //Iv
   @Accessors private Pair<Optional<OpCode>, UnsignedByte>[] code //Ib
   @Accessors private Block currentBlock                          //IH
   @Accessors private EVMWord depth                               //Ie
   
   @Accessors private Patch patch = new Patch()
-  @Accessors private Set<EVMWord> selfDestructSet = newHashSet
+  @Accessors private Set<Address> selfDestructSet = newHashSet
   @Accessors private List<EVMLog> logs = newArrayList
   @Accessors private EVMWord refundBalance = EVMWord.ZERO
   private EVMWord gasUsed = EVMWord.ZERO

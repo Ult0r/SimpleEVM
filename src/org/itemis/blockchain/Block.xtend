@@ -11,7 +11,6 @@
 package org.itemis.blockchain
 
 import org.itemis.types.EVMWord
-import org.itemis.types.Int2048
 import org.itemis.utils.StaticUtils
 import java.util.List
 import com.google.gson.JsonObject
@@ -22,27 +21,31 @@ import org.itemis.evm.utils.EVMUtils
 import org.itemis.types.UnsignedByte
 import org.itemis.evm.utils.MerklePatriciaTrie
 import java.math.BigInteger
+import org.itemis.types.Hash256
+import org.itemis.types.Address
+import org.itemis.types.Bloom2048
+import org.itemis.types.EthashNonce
 
 class Block {
   extension Utils u = new Utils
   extension EVMUtils e = new EVMUtils
   
-  @Accessors private EVMWord parentHash
-  @Accessors private EVMWord ommersHash
-  @Accessors private EVMWord beneficiary // only 160 bits used
-  @Accessors private EVMWord stateRoot
-  @Accessors private EVMWord transactionsRoot
-  @Accessors private EVMWord receiptsRoot
-  @Accessors private Int2048 logsBloom
+  @Accessors private Hash256 parentHash
+  @Accessors private Hash256 ommersHash
+  @Accessors private Address beneficiary // only 160 bits used
+  @Accessors private Hash256 stateRoot
+  @Accessors private Hash256 transactionsRoot
+  @Accessors private Hash256 receiptsRoot
+  @Accessors private Bloom2048 logsBloom
   @Accessors private EVMWord difficulty
   @Accessors private EVMWord number
   @Accessors private EVMWord gasLimit
   @Accessors private EVMWord gasUsed
   @Accessors private EVMWord timestamp // seconds since The Epoch
   @Accessors private byte[] extraData
-  @Accessors private EVMWord mixHash
-  @Accessors private EVMWord nonce // 64-bit hash
-  @Accessors private List<EVMWord> ommers
+  @Accessors private Hash256 mixHash
+  @Accessors private EthashNonce nonce // 64-bit hash
+  @Accessors private List<Hash256> ommers
   @Accessors private List<Transaction> transactions
 
   def static Block getGenesisBlock() { //XXX: varies from the paper a lot

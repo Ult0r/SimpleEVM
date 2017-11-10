@@ -20,6 +20,7 @@ import org.itemis.utils.Utils
 import org.itemis.evm.utils.EVMUtils
 import org.itemis.types.UnsignedByteList
 import org.itemis.evm.utils.MerklePatriciaTrie.Leaf
+import org.itemis.types.Hash256
 
 class Account {
   extension Utils u = new Utils
@@ -27,8 +28,8 @@ class Account {
   
   @Accessors private EVMWord nonce
   @Accessors private EVMWord balance
-  @Accessors private EVMWord storageRoot
-  @Accessors private EVMWord codeHash
+  @Accessors private Hash256 storageRoot
+  @Accessors private Hash256 codeHash
   
   new() {
     this(EVMWord.ZERO)
@@ -77,6 +78,7 @@ class Account {
   def void insertIntoTrie(MerklePatriciaTrie trie, EVMWord address) {
     val List<UnsignedByte[]> account = newArrayList
 
+    //TODO: EVMWord#truncatedByteArray
     account.add(nonce.toUnsignedByteArray.reverseView.dropWhile[it.byteValue == 0].toList)
     account.add(balance.toUnsignedByteArray.reverseView.dropWhile[it.byteValue == 0].toList)
     account.add(storageRoot.toUnsignedByteArray)

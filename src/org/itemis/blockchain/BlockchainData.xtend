@@ -8,9 +8,9 @@ import java.sql.PreparedStatement
 import org.apache.commons.lang3.tuple.Triple
 import java.sql.ResultSet
 import org.itemis.utils.db.DataBaseWrapper.DataBaseID
-import org.itemis.types.Int2048
 import org.itemis.types.UnsignedByte
 import org.itemis.ressources.JsonRPCWrapper
+import org.itemis.types.Hash256
 
 abstract class BlockchainData {
   static extension JsonRPCWrapper j = new JsonRPCWrapper
@@ -58,7 +58,7 @@ abstract class BlockchainData {
   private final static String SELECT_TRANSACTION_STMT_STR = "SELECT * FROM transaction WHERE transactionHash=?"
   private final static String DELETE_TRANSACTION_STMT_STR = "DELETE FROM transaction WHERE transactionHash=?"
   
-  private final static TwoLevelDBCache<EVMWord, EVMWord> blockLookUp = new TwoLevelDBCache<EVMWord, EVMWord>(
+  private final static TwoLevelDBCache<EVMWord, Hash256> blockLookUp = new TwoLevelDBCache<EVMWord, Hash256>(
     MAX_BLOCK_LOOKUP_CACHE_SIZE,
     DataBaseID.CHAINDATA,
     "chain",
@@ -71,7 +71,7 @@ abstract class BlockchainData {
     DELETE_BLOCK_LOOKUP_STMT_STR,
     [BlockchainData::fillBlockLookUpDeleteStatement(it)]
   )
-  private final static TwoLevelDBCache<EVMWord, Block> block = new TwoLevelDBCache<EVMWord, Block>(
+  private final static TwoLevelDBCache<Hash256, Block> block = new TwoLevelDBCache<Hash256, Block>(
     MAX_BLOCK_CACHE_SIZE,
     DataBaseID.CHAINDATA,
     "chain",
@@ -84,7 +84,7 @@ abstract class BlockchainData {
     DELETE_BLOCK_STMT_STR,
     [BlockchainData::fillBlockDeleteStatement(it)]
   )
-  private final static TwoLevelDBCache<Pair<EVMWord, Integer>, EVMWord> ommerLookUp = new TwoLevelDBCache<Pair<EVMWord, Integer>, EVMWord>(
+  private final static TwoLevelDBCache<Pair<EVMWord, Integer>, Hash256> ommerLookUp = new TwoLevelDBCache<Pair<EVMWord, Integer>, Hash256>(
     MAX_OMMER_LOOKUP_CACHE_SIZE,
     DataBaseID.CHAINDATA,
     "chain",
@@ -97,7 +97,7 @@ abstract class BlockchainData {
     DELETE_OMMER_LOOKUP_STMT_STR,
     [BlockchainData::fillOmmerLookUpDeleteStatement(it)]
   )
-  private final static TwoLevelDBCache<EVMWord, Block> ommer = new TwoLevelDBCache<EVMWord, Block>(
+  private final static TwoLevelDBCache<Hash256, Block> ommer = new TwoLevelDBCache<Hash256, Block>(
     MAX_OMMER_CACHE_SIZE,
     DataBaseID.CHAINDATA,
     "chain",
@@ -110,7 +110,7 @@ abstract class BlockchainData {
     DELETE_OMMER_STMT_STR,
     [BlockchainData::fillBlockDeleteStatement(it)]
   )
-  private final static TwoLevelDBCache<Pair<EVMWord, Integer>, EVMWord> transactionLookUp = new TwoLevelDBCache<Pair<EVMWord, Integer>, EVMWord>(
+  private final static TwoLevelDBCache<Pair<EVMWord, Integer>, Hash256> transactionLookUp = new TwoLevelDBCache<Pair<EVMWord, Integer>, Hash256>(
     MAX_TRANSACTION_LOOKUP_CACHE_SIZE,
     DataBaseID.CHAINDATA,
     "chain",
@@ -123,7 +123,7 @@ abstract class BlockchainData {
     DELETE_TRANSACTION_LOOKUP_STMT_STR,
     [BlockchainData::fillTransactionLookUpDeleteStatement(it)]
   )
-  private final static TwoLevelDBCache<EVMWord, Transaction> transaction = new TwoLevelDBCache<EVMWord, Transaction>(
+  private final static TwoLevelDBCache<Hash256, Transaction> transaction = new TwoLevelDBCache<Hash256, Transaction>(
     MAX_TRANSACTION_CACHE_SIZE,
     DataBaseID.CHAINDATA,
     "chain",
@@ -139,7 +139,7 @@ abstract class BlockchainData {
   
   //BlockLookUp
 
-  def private static PreparedStatement fillBlockLookUpInsertStatement(Triple<EVMWord, EVMWord, PreparedStatement> triple) {
+  def private static PreparedStatement fillBlockLookUpInsertStatement(Triple<EVMWord, Hash256, PreparedStatement> triple) {
     val blockNumber = triple.left
     val blockHash = triple.middle
     val stmt = triple.right
@@ -168,7 +168,7 @@ abstract class BlockchainData {
     stmt
   }
   
-  def private static EVMWord readBlockHashFromResultSet(Pair<ResultSet, EVMWord> pair) {
+  def private static Hash256 readBlockHashFromResultSet(Pair<ResultSet, EVMWord> pair) {
     val resultSet = pair.key
     
     try {
@@ -183,7 +183,7 @@ abstract class BlockchainData {
   
   //Block
 
-  def private static PreparedStatement fillBlockInsertStatement(Triple<EVMWord, Block, PreparedStatement> triple) {
+  def private static PreparedStatement fillBlockInsertStatement(Triple<Hash256, Block, PreparedStatement> triple) {
     val blockHash = triple.left
     val block = triple.middle
     val stmt = triple.right
@@ -208,7 +208,7 @@ abstract class BlockchainData {
     stmt
   }
   
-  def private static PreparedStatement fillBlockSelectStatement(Pair<EVMWord, PreparedStatement> pair) {
+  def private static PreparedStatement fillBlockSelectStatement(Pair<Hash256, PreparedStatement> pair) {
     val blockHash = pair.key
     val stmt = pair.value
     
@@ -294,7 +294,7 @@ abstract class BlockchainData {
     stmt
   }
   
-  def private static EVMWord readOmmerLookUpHashFromResultSet(Pair<ResultSet, Pair<EVMWord, Integer>> pair) {
+  def private static Hash256 readOmmerLookUpHashFromResultSet(Pair<ResultSet, Pair<EVMWord, Integer>> pair) {
     val resultSet = pair.key
     
     try {
@@ -344,7 +344,7 @@ abstract class BlockchainData {
     stmt
   }
   
-  def private static EVMWord readTransactionHashFromResultSet(Pair<ResultSet, Pair<EVMWord, Integer>> pair) {
+  def private static Hash256 readTransactionHashFromResultSet(Pair<ResultSet, Pair<EVMWord, Integer>> pair) {
     val resultSet = pair.key
     
     try {

@@ -6,6 +6,7 @@ import org.itemis.utils.StaticUtils
 import java.util.Arrays
 import org.itemis.blockchain.Block
 import java.util.List
+import org.itemis.types.EthashNonce
 
 abstract class Ethash {
   private static final BigInteger TWO = BigInteger.valueOf(2)
@@ -345,11 +346,11 @@ abstract class Ethash {
     proofOfWork(block.headerRLPHash.toByteArray, block.nonce.toByteArray.take(8).toList, block.number)
   }
   
-  def public static Pair<byte[], byte[]> proofOfWork(Block block, byte[] nonce, EVMWord blockNumber) {
+  def public static Pair<byte[], byte[]> proofOfWork(Block block, EthashNonce nonce, EVMWord blockNumber) {
     proofOfWork(block.headerRLPHash.toByteArray, nonce, blockNumber)
   }
    
-  def public static Pair<byte[], byte[]> proofOfWork(byte[] header, byte[] nonce, EVMWord blockNumber) {
+  def public static Pair<byte[], byte[]> proofOfWork(byte[] header, EthashNonce nonce, EVMWord blockNumber) {
     val cache = getCache(blockNumber)
     val mix = mc(header, nonce, blockNumber, cache)
     val seedHash = sh(header, nonce)

@@ -31,6 +31,7 @@ import org.itemis.utils.Utils
 import org.itemis.evm.utils.EVMUtils
 import org.eclipse.xtend.lib.annotations.Accessors
 import com.google.common.cache.Cache
+import org.itemis.types.Address
 
 class WorldState {
   extension Utils u = new Utils
@@ -58,11 +59,11 @@ class WorldState {
   
   private final String name
   private final MerklePatriciaTrie accountTrie
-  private final Cache<EVMWord, Account> accountCache = CacheBuilder.newBuilder().maximumSize(MAX_ACCOUNT_CACHE_SIZE).build()
-  private final TwoLevelDBCache<EVMWord, Long> accountDB
-  private final TwoLevelDBCache<EVMWord, UnsignedByteList> codeDB
-  private final Map<EVMWord, MerklePatriciaTrie> storageTries = newHashMap
-  private final Cache<Pair<EVMWord, EVMWord>, EVMWord> storageCache = CacheBuilder.newBuilder().maximumSize(MAX_STORAGE_CACHE_SIZE).build()
+  private final Cache<Address, Account> accountCache = CacheBuilder.newBuilder().maximumSize(MAX_ACCOUNT_CACHE_SIZE).build()
+  private final TwoLevelDBCache<Address, Long> accountDB
+  private final TwoLevelDBCache<Address, UnsignedByteList> codeDB
+  private final Map<Address, MerklePatriciaTrie> storageTries = newHashMap
+  private final Cache<Pair<Address, EVMWord>, EVMWord> storageCache = CacheBuilder.newBuilder().maximumSize(MAX_STORAGE_CACHE_SIZE).build()
       
   @Accessors private EVMWord currentBlockNumber = EVMWord.ZERO
   @Accessors private EVMWord executedTransactions = EVMWord.ZERO //in this block
@@ -72,7 +73,7 @@ class WorldState {
     
     this.accountTrie = new MerklePatriciaTrie(name + "_accountTrie")
     
-    this.accountDB = new TwoLevelDBCache<EVMWord, Long>(
+    this.accountDB = new TwoLevelDBCache<Address, Long>(
       MAX_ACCOUNT_DB_CACHE_SIZE,
       DataBaseID.STATE,
       name,
@@ -86,7 +87,7 @@ class WorldState {
       [WorldState::fillAccountDeleteStatement(it)]
     )
     
-    this.codeDB = new TwoLevelDBCache<EVMWord, UnsignedByteList>(
+    this.codeDB = new TwoLevelDBCache<Address, UnsignedByteList>(
       org.itemis.blockchain.WorldState.MAX_CODE_DB_CACHE_SIZE,
       DataBaseID.STATE,
       name,

@@ -14,19 +14,21 @@ import org.itemis.types.EVMWord
 import java.util.List
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.itemis.utils.Utils
+import org.itemis.types.Hash256
+import org.itemis.types.Address
 
 class TransactionReceipt {
   extension Utils u = new Utils
   
-  @Accessors EVMWord transactionHash
+  @Accessors Hash256 transactionHash
   @Accessors EVMWord transactionIndex
-  @Accessors EVMWord blockHash
+  @Accessors Hash256 blockHash
   @Accessors EVMWord blockNumber
   @Accessors EVMWord cumulativeGasUsed
   @Accessors EVMWord gasUsed
 
   @Accessors boolean isContractCreation
-  @Accessors EVMWord contractAddress
+  @Accessors Address contractAddress
   @Accessors List<JsonObject> logs
 
   new(JsonObject obj) {

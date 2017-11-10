@@ -25,6 +25,7 @@ import java.io.FileOutputStream
 import java.io.FileInputStream
 import org.itemis.utils.db.DataBaseWrapper
 import org.itemis.utils.db.DataBaseWrapper.DataBaseID
+import org.itemis.types.Address
 
 abstract class MainnetAllocData {
   static extension DataBaseWrapper db = new DataBaseWrapper
@@ -220,7 +221,7 @@ abstract class MainnetAllocData {
     }
   }
 
-  def static EVMWord getBalanceForAddress(EVMWord address) {
+  def static EVMWord getBalanceForAddress(Address address) {
     ensureDataIsWritten
 
     val query = String.format(
