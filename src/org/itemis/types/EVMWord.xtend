@@ -23,7 +23,7 @@ class EVMWord {
   public static final EVMWord ZERO = new EVMWord(0)
   public static final EVMWord ONE  = new EVMWord(1)
   
-  private UnsignedByteArray array = new UnsignedByteArray(32)
+  private final UnsignedByteArray array = new UnsignedByteArray(32)
 
   new() {
     array.setToZero
@@ -62,7 +62,7 @@ class EVMWord {
     new EVMWord(UnsignedByteArray.fromString(s))
   }
 
-  def UnsignedByte getNthField(Integer n) {
+  def UnsignedByte get(Integer n) {
     array.get(n)
   }
 
@@ -74,7 +74,7 @@ class EVMWord {
     array.toByteArray
   }
 
-  def EVMWord setNthField(Integer n, int newValue) {
+  def EVMWord set(Integer n, int newValue) {
     val newArray = new UnsignedByteArray(array)
     newArray.set(n, newValue)
     new EVMWord(newArray)
@@ -138,7 +138,7 @@ class EVMWord {
       other.negate.greaterThan(this.negate)
     } else {
       for (var i = 31; i >= 0; i--) {
-        if (this.getNthField(i) > other.getNthField(i)) {
+        if (this.get(i) > other.get(i)) {
           return true
         }
       }
@@ -169,7 +169,7 @@ class EVMWord {
   
   def boolean isZero() {
     for (i : 0 .. 31) {
-      if(!this.getNthField(i).isZero) {
+      if(!this.get(i).isZero) {
         return false
       }
     }

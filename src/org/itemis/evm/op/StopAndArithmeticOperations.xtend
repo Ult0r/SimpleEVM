@@ -125,7 +125,7 @@ abstract class StopAndArithmeticOperations {
     val s0 = runtime.popStackItem
     val s1 = runtime.popStackItem
 
-    val t = new EVMWord(256).sub(s0.inc.mul(8)).getNthField(0)
+    val t = new EVMWord(256).sub(s0.inc.mul(8)).get(0)
     var result = s1.toBigInteger
     val bit_t = result.testBit(t.intValue)
 

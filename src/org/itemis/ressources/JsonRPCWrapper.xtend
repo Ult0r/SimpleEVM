@@ -48,12 +48,12 @@ class JsonRPCWrapper {
   private def String displayEVMWordAsNumber(EVMWord word, boolean fullyTrimmed) {
     var result = ""
     var j = 31
-    while(word.getNthField(j).isZero && j > 0) {
+    while(word.get(j).isZero && j > 0) {
       j--
     }
 
     for (i : j .. 0) {
-      result += word.getNthField(i).toHexString().substring(2)
+      result += word.get(i).toHexString().substring(2)
     }
 
     if (fullyTrimmed) {

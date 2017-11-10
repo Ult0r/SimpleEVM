@@ -91,7 +91,7 @@ abstract class ComparisonAndBitwiseLogicOperations {
     val s1 = runtime.popStackItem
 
     if(s0.lessThan(new EVMWord(32))) {
-      runtime.pushStackItem(new EVMWord(s1.getNthField(31 - s0.getNthField(0).intValue).intValue))
+      runtime.pushStackItem(new EVMWord(s1.get(31 - s0.get(0).intValue).intValue))
     } else {
       runtime.pushStackItem(EVMWord.ZERO)
     }
