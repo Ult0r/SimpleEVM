@@ -32,7 +32,7 @@ class MerklePatriciaTrieTest {
   def void testEmptyTrie() {
     Assert.assertEquals(new MerklePatriciaTrie("testEmptyTrie").root.hash.elements.toHex,
       "0x56E81F171BCC55A6FF8345E692C0F86E5B48E01B996CADC001622FB5E363B421")
-      
+
     Assert.assertEquals(MerklePatriciaTrie.EMPTY_TRIE_HASH.toHexString,
       "0x56E81F171BCC55A6FF8345E692C0F86E5B48E01B996CADC001622FB5E363B421")
   }
@@ -52,7 +52,7 @@ class MerklePatriciaTrieTest {
     ])
 
     Assert.assertEquals(trie.trieRoot.toHexString, "0x8AAD789DFF2F538BCA5D8EA56E8ABE10F4C7BA3A5DEA95FEA4CD6E7C3A1168D3")
-    
+
     DataBaseWrapper.closeAllConnections
   }
 
@@ -67,15 +67,15 @@ class MerklePatriciaTrieTest {
       account.insertIntoTrie(trie, e.key)
     }
     trie.flush
-    
+
     val conn = DataBaseWrapper.getConnection(DataBaseID.TRIE, "testWithAllocData")
     val res = conn.query("SELECT COUNT(*) FROM nodes")
     res.next
     val size = res.getLong(1)
-    
+
     Assert.assertEquals(size, 44410)
     Assert.assertEquals(trie.trieRoot, eth_getBlockByNumber(EVMWord.ZERO, null).stateRoot)
-    
+
     DataBaseWrapper.closeAllConnections
   }
 }

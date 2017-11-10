@@ -17,11 +17,11 @@ import java.math.BigInteger
 
 abstract class StopAndArithmeticOperations {
   private final static BigInteger MAX_VALUE = BigInteger.valueOf(2).pow(256)
-  
+
   def static STOP(EVMRuntime runtime) {
     runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.ZERO))
   }
-  
+
   def static ADD(EVMRuntime runtime) {
     val s0 = runtime.popStackItem
     val s1 = runtime.popStackItem

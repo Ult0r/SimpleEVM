@@ -59,7 +59,7 @@ class UnsignedByte extends Number implements Comparable<UnsignedByte> {
   override hashCode() {
     value.hashCode
   }
-  
+
   def isZero() {
     return value == 0
   }
@@ -141,7 +141,7 @@ class UnsignedByte extends Number implements Comparable<UnsignedByte> {
 
   def UnsignedByte add(UnsignedByte other) {
     val newValue = value + other.getValue
-    if (newValue > 255) {
+    if(newValue > 255) {
       throw new OverflowException()
     }
     new UnsignedByte(newValue.bitwiseAnd(0x00FF))

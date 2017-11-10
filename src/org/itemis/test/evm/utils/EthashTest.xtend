@@ -21,7 +21,7 @@ import org.itemis.evm.utils.Ethash
 
 class EthashTest {
   private static final BigInteger TWO = BigInteger.valueOf(2)
-  
+
   @Test
   def public void validateGenesis() {
     Assert.assertEquals(
@@ -29,9 +29,9 @@ class EthashTest {
       "0xD4E56740F876AEF8C010B86A40D5F56745A118D0906A34E69AEC8C0DB1CB8FA3"
     )
   }
-  
+
   @Test
-  def public void testSeedHash() { //works
+  def public void testSeedHash() {
     Assert.assertEquals(
       StaticUtils.toHex(Ethash.getSeedHash(EVMWord.ZERO).toByteArray),
       "0x0000000000000000000000000000000000000000000000000000000000000000"
@@ -41,9 +41,9 @@ class EthashTest {
       "0x290DECD9548B62A8D60345A988386FC84BA6BC95484008F6362F93160EF3E563"
     )
   }
-  
+
   @Test
-  def public void testCache() { //works
+  def public void testCache() {
     Assert.assertEquals(
       StaticUtils.toHex(Ethash.initCache(EVMWord.ZERO).take(36).toList),
       "0x0F6F7226432C21D4DFA2A1538A1FDC72EE1FAF405A60E5F408B344A2F5AAB2DDFF0F9C17"
@@ -61,9 +61,9 @@ class EthashTest {
       "0x9E41457D823FF2C9D8B8D64349B7A7544EF5F5A3D1DD0BF7AFCCE9131AEE12ABAE176E59"
     )
   }
-  
+
   @Test
-  def public void testDataset() { //works
+  def public void testDataset() {
     var cache = Ethash.getCache(EVMWord.ZERO)
     Assert.assertEquals(
       StaticUtils.toHex(Ethash.calcDataSetItem(cache, 0L, EVMWord.ZERO).take(32).toList),
@@ -83,13 +83,14 @@ class EthashTest {
       "0xCC8397C114C7780C491951397E41A1A1509EE0BD33949263452C786D1EEF7ACD"
     )
   }
-  
+
   @Test
   def public void testNewHashimoto() {
     val block1 = BlockchainData.getBlockByNumber(EVMWord.ONE)
     val result = Ethash.proofOfWork(block1)
     Assert.assertEquals(result.key, block1.mixHash)
-    Assert.assertTrue(result.value.toEVMWord.toBigInteger.compareTo(TWO.pow(256).divide(block1.difficulty.toBigInteger)) == -1)
+    Assert.assertTrue(
+      result.value.toEVMWord.toBigInteger.compareTo(TWO.pow(256).divide(block1.difficulty.toBigInteger)) == -1)
     BlockchainData.flush
     DataBaseWrapper.closeAllConnections
   }

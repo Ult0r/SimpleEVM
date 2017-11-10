@@ -18,15 +18,16 @@ abstract class LoggingOperations {
   def static LOGN(int n, EVMRuntime runtime) {
     val s0 = runtime.popStackItem
     val s1 = runtime.popStackItem
-    
+
     val data = newByteArrayOfSize(s1.unsignedIntValue.intValue)
     for (var i = 0; i < s1.unsignedIntValue.intValue; i++) {
       data.set(i, runtime.memory.get(s0.add(i)))
     }
-    
+
     runtime.logs.add(
       switch n {
-        case 0: new EVMLog(runtime.codeAddress, data)
+        case 0:
+          new EVMLog(runtime.codeAddress, data)
         case 1: {
           val s2 = runtime.popStackItem
           new EVMLog(runtime.codeAddress, s2, data)
@@ -51,7 +52,7 @@ abstract class LoggingOperations {
         }
       }
     )
-    
+
     runtime.memorySize = EVMRuntime.calcMemorySize(runtime.memorySize, s0, s1)
     var cost = EVMOperation.FEE_SCHEDULE.get(FeeClass.LOG)
     cost = cost.add(EVMOperation.FEE_SCHEDULE.get(FeeClass.LOGDATA).mul(s1))

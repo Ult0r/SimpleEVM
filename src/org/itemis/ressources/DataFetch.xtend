@@ -20,7 +20,7 @@ import org.slf4j.Logger
 
 class DataFetch {
   private final static Logger LOGGER = LoggerFactory.getLogger("Network")
-  
+
   private static URL API_URL = new URL("https://mainnet.infura.io")
   private static int MAX_TRIES = 3
 

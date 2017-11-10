@@ -24,13 +24,14 @@ import org.itemis.types.UnsignedByteList
 import org.itemis.types.Hash256
 
 class MerklePatriciaTrie {
-  public static final Hash256 EMPTY_TRIE_HASH = Hash256.fromString("0x56E81F171BCC55A6FF8345E692C0F86E5B48E01B996CADC001622FB5E363B421")
-  
+  public static final Hash256 EMPTY_TRIE_HASH = Hash256.fromString(
+    "0x56E81F171BCC55A6FF8345E692C0F86E5B48E01B996CADC001622FB5E363B421")
+
   private final String name
   @Accessors private Node root = new Null
   private MerklePatriciaTrieCache cache
   @Accessors private boolean keepIntermediates = true
-  
+
   new(String name) {
     this(name, 32, 140)
   }
@@ -39,7 +40,7 @@ class MerklePatriciaTrie {
     this.name = name
     this.cache = new MerklePatriciaTrieCache(name, maxPrefixLength, maxDataLength)
   }
-  
+
   def Hash256 getTrieRoot() {
     val _root = root.hash
     if(_root.size < 32) {
@@ -52,15 +53,15 @@ class MerklePatriciaTrie {
   def void putElement(NibbleList key, UnsignedByte[] value) {
     root = root.putElement(this, key, value)
   }
-  
+
   def Node getNode(UnsignedByteList hash) {
     cache.lookUp(hash)
   }
-  
+
   def String toGraphViz() {
     String.format("digraph G {\n%s}", root.toGraphViz(this, "  ROOT"))
   }
-  
+
   def void flush() {
     cache.flush
   }
@@ -81,15 +82,15 @@ class MerklePatriciaTrie {
 
     // overrides existent value
     def abstract Node putElement(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value)
-    
+
     def abstract Node removeElement(MerklePatriciaTrie trie, NibbleList key)
-    
+
     def abstract Node getNode(MerklePatriciaTrie trie, NibbleList keyFromHere)
-    
+
     def abstract Map<NibbleList, UnsignedByte[]> getNodes(MerklePatriciaTrie trie)
 
     def abstract String toGraphViz(MerklePatriciaTrie trie, String prefix)
-    
+
     def static Node fromTwoKeyValuePairs(MerklePatriciaTrie trie, NibbleList firstKey, UnsignedByte[] firstValue,
       NibbleList secondKey, UnsignedByte[] secondValue) {
       if(firstKey.length == 0 && secondKey.length == 0) {
@@ -140,15 +141,15 @@ class MerklePatriciaTrie {
     override putElement(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value) {
       new Leaf(trie, key, value)
     }
-    
+
     override removeElement(MerklePatriciaTrie trie, NibbleList key) {
-      new Null() 
+      new Null()
     }
-    
+
     override getNode(MerklePatriciaTrie trie, NibbleList keyFromHere) {
       throw new UnsupportedOperationException("This is a Null-Node")
     }
-    
+
     override Map<NibbleList, UnsignedByte[]> getNodes(MerklePatriciaTrie trie) {
       return newHashMap
     }
@@ -165,9 +166,8 @@ class MerklePatriciaTrie {
     private NibbleList encodedPath = new NibbleList
     @Accessors
     private UnsignedByte[] value
-  
+
     new() {
-      
     }
 
     new(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value) {
@@ -191,7 +191,7 @@ class MerklePatriciaTrie {
 
       super.hashFromRLP(rlp)
     }
-    
+
     def private NibbleList getThisKey() {
       var int offset = 1
       if(encodedPath.get(0).byteValue != 3) {
@@ -200,35 +200,36 @@ class MerklePatriciaTrie {
 
       encodedPath.subList(offset)
     }
-      
+
     override putElement(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value) {
       if(thisKey.equals(key)) {
         this.value = value
         this
       } else {
-        if (!trie.keepIntermediates) {
+        if(!trie.keepIntermediates) {
           trie.cache.removeNode(this)
         }
         Node.fromTwoKeyValuePairs(trie, thisKey, this.value, key, value)
       }
     }
-    
+
     override removeElement(MerklePatriciaTrie trie, NibbleList key) {
-      if (key.equals(thisKey)) {
+      if(key.equals(thisKey)) {
         new Null()
       } else {
         this
       }
     }
-    
+
     override getNode(MerklePatriciaTrie trie, NibbleList keyFromHere) {
-      if (keyFromHere.length == 0 || keyFromHere.equals(thisKey) || (keyFromHere.length == 1 && keyFromHere.get(0).equals(new Nibble(0)))) {
+      if(keyFromHere.length == 0 || keyFromHere.equals(thisKey) ||
+        (keyFromHere.length == 1 && keyFromHere.get(0).equals(new Nibble(0)))) {
         this
       } else {
         throw new IllegalArgumentException("already at a leaf")
       }
     }
-    
+
     override Map<NibbleList, UnsignedByte[]> getNodes(MerklePatriciaTrie trie) {
       val map = newHashMap
       map.put(thisKey, value)
@@ -254,9 +255,8 @@ class MerklePatriciaTrie {
     private NibbleList encodedPath = new NibbleList
     @Accessors
     private UnsignedByteList nextKey
-  
+
     new() {
-      
     }
 
     new(MerklePatriciaTrie trie, NibbleList path, UnsignedByteList key) {
@@ -291,10 +291,10 @@ class MerklePatriciaTrie {
     }
 
     override putElement(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value) {
-      if (!trie.keepIntermediates) {
+      if(!trie.keepIntermediates) {
         trie.cache.removeNode(this)
       }
-      
+
       if(key.startsWith(thisKey)) { // extension -> branch
         var Node child = trie.cache.lookUp(this.nextKey)
         child = child.putElement(trie, key.unsharedSuffix(thisKey), value)
@@ -344,37 +344,37 @@ class MerklePatriciaTrie {
         }
       }
     }
-    
+
     override removeElement(MerklePatriciaTrie trie, NibbleList key) {
-      if (key.length == 0) {
+      if(key.length == 0) {
         this
-      } else if (thisKey.startsWith(key)) {
+      } else if(thisKey.startsWith(key)) {
         trie.getNode(nextKey).removeElement(trie, key.unsharedSuffix(thisKey))
       } else {
         this
       }
     }
-    
+
     override getNode(MerklePatriciaTrie trie, NibbleList keyFromHere) {
-      if (keyFromHere.length == 0) {
+      if(keyFromHere.length == 0) {
         this
-      } else if (keyFromHere.startsWith(thisKey)) {
+      } else if(keyFromHere.startsWith(thisKey)) {
         trie.cache.lookUp(nextKey).getNode(trie, keyFromHere.subList(thisKey.length))
       } else {
         throw new IllegalArgumentException("Node doesn't exist")
       }
     }
-    
+
     override Map<NibbleList, UnsignedByte[]> getNodes(MerklePatriciaTrie trie) {
       val children = trie.cache.lookUp(nextKey).getNodes(trie)
       val result = newHashMap
-      
-      for (c: children.entrySet) {
+
+      for (c : children.entrySet) {
         val concatedKey = thisKey
         concatedKey.addAll(c.key)
         result.put(concatedKey, c.value)
       }
-      
+
       result
     }
 
@@ -395,9 +395,8 @@ class MerklePatriciaTrie {
     private List<UnsignedByteList> paths = newArrayList
     @Accessors
     private UnsignedByte[] value
-  
+
     new() {
-      
     }
 
     new(MerklePatriciaTrie trie, Map<Nibble, UnsignedByteList> entries, UnsignedByte[] value) {
@@ -434,10 +433,10 @@ class MerklePatriciaTrie {
     }
 
     override putElement(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value) {
-      if (!trie.keepIntermediates) {
+      if(!trie.keepIntermediates) {
         trie.cache.removeNode(this)
       }
-      
+
       if(key.length == 0) {
         this.value = value
       } else {
@@ -453,48 +452,48 @@ class MerklePatriciaTrie {
       trie.cache.putNode(this)
       this
     }
-    
+
     override removeElement(MerklePatriciaTrie trie, NibbleList key) {
-      if (key.length == 0) {
+      if(key.length == 0) {
         value = null
         trie.cache.putNode(this)
         this
       } else {
         val head = key.head.intValue
-        if (paths.get(head) !== null) {
+        if(paths.get(head) !== null) {
           trie.getNode(paths.get(head)).removeElement(trie, key.tail)
         } else {
           this
         }
       }
     }
-    
+
     override getNode(MerklePatriciaTrie trie, NibbleList keyFromHere) {
       val child = trie.cache.lookUp(this.paths.get(keyFromHere.head.intValue))
-      if (child !== null) {
+      if(child !== null) {
         child.getNode(trie, keyFromHere.tail)
       } else {
         throw new IllegalArgumentException("Node doesn't exist")
       }
     }
-    
+
     override Map<NibbleList, UnsignedByte[]> getNodes(MerklePatriciaTrie trie) {
       val result = newHashMap
-      
+
       for (var i = 0; i < 16; i++) {
         val nibble = new Nibble(i)
-        val children = if (paths.get(i) === null) newHashMap else trie.cache.lookUp(paths.get(i)).getNodes(trie)
-        for (c: children.entrySet) {
+        val children = if(paths.get(i) === null) newHashMap else trie.cache.lookUp(paths.get(i)).getNodes(trie)
+        for (c : children.entrySet) {
           val concatedKey = new NibbleList(newArrayList(nibble))
           concatedKey.addAll(c.key)
           result.put(concatedKey, c.value)
         }
       }
-      
-      if (value !== null) {
+
+      if(value !== null) {
         result.put(new NibbleList(newArrayList), value)
       }
-      
+
       result
     }
 

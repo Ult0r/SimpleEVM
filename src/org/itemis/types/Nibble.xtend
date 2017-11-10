@@ -125,7 +125,7 @@ class Nibble extends Number implements Comparable<Nibble> {
 
   def Nibble inc() {
     val newValue = value + 1
-    if (newValue > 15) {
+    if(newValue > 15) {
       throw new OverflowException()
     }
     new Nibble(newValue.bitwiseAnd(0x00FF))
@@ -133,7 +133,7 @@ class Nibble extends Number implements Comparable<Nibble> {
 
   def Nibble add(Nibble other) {
     val newValue = value + other.getValue
-    if (newValue > 15) {
+    if(newValue > 15) {
       throw new OverflowException()
     }
     new Nibble(newValue.bitwiseAnd(0x00FF))

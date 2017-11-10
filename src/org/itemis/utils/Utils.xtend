@@ -49,7 +49,7 @@ class Utils implements Serializable {
   def byte[] fromHex(String s) {
     StaticUtils.fromHex(s)
   }
-  
+
   def byte[] fromHex(String s, boolean appendFront) {
     StaticUtils.fromHex(s, appendFront)
   }
@@ -85,7 +85,7 @@ class Utils implements Serializable {
   def void ensureDirExists(String path) {
     StaticUtils.ensureDirExists(path)
   }
-  
+
   def boolean isPrime(BigInteger number) {
     StaticUtils.isPrime(number)
   }

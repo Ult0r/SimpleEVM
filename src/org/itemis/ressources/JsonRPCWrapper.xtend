@@ -42,11 +42,11 @@ class JsonRPCWrapper {
       id)
     fetchData(postData)
   }
-  
+
   private def String displayEVMWordAsNumber(EVMWord word) {
     displayEVMWordAsNumber(word, true)
   }
-  
+
   private def String displayEVMWordAsNumber(EVMWord word, boolean fullyTrimmed) {
     var result = ""
     var j = 31
@@ -58,14 +58,14 @@ class JsonRPCWrapper {
       result += word.get(i).toHexString().substring(2)
     }
 
-    if (fullyTrimmed) {
+    if(fullyTrimmed) {
       if(result.startsWith("0")) {
         result = result.substring(1)
       }
     }
-    
+
     "0x" + result
-  } 
+  }
 
   // HELPER
   def String identifyBlock(EVMWord blockNumber, String tag) {
@@ -179,7 +179,8 @@ class JsonRPCWrapper {
 
   def EVMWord eth_getTransactionCount(Address address, EVMWord blockNumber, String tag) {
     val params = String.format('["%s","%s"]', address, identifyBlock(blockNumber, tag))
-    new EVMWord(wrapDataFetch("eth_getTransactionCount", params).asJsonObject.get("result").asString.fromHex.reverseView)
+    new EVMWord(
+      wrapDataFetch("eth_getTransactionCount", params).asJsonObject.get("result").asString.fromHex.reverseView)
   }
 
   def EVMWord eth_getBlockTransactionCountByHash(Hash256 blockHash) {
@@ -195,12 +196,14 @@ class JsonRPCWrapper {
 
   def EVMWord eth_getUncleCountByBlockHash(Hash256 blockHash) {
     val params = String.format('["%s"]', blockHash.toString)
-    new EVMWord(wrapDataFetch("eth_getUncleCountByBlockHash", params).asJsonObject.get("result").asString.fromHex.reverseView)
+    new EVMWord(
+      wrapDataFetch("eth_getUncleCountByBlockHash", params).asJsonObject.get("result").asString.fromHex.reverseView)
   }
 
   def EVMWord eth_getUncleCountByBlockNumber(EVMWord blockNumber, String tag) {
     val params = String.format('["%s"]', identifyBlock(blockNumber, tag))
-    new EVMWord(wrapDataFetch("eth_getUncleCountByBlockNumber", params).asJsonObject.get("result").asString.fromHex.reverseView)
+    new EVMWord(
+      wrapDataFetch("eth_getUncleCountByBlockNumber", params).asJsonObject.get("result").asString.fromHex.reverseView)
   }
 
   def UnsignedByte[] eth_getCode(Address address, EVMWord blockNumber, String tag) {

@@ -29,9 +29,9 @@ import org.itemis.types.Address
 
 abstract class MainnetAllocData {
   static extension DataBaseWrapper db = new DataBaseWrapper
-  
+
   private final static Logger LOGGER = LoggerFactory.getLogger("General")
-  
+
   private final static String ALLOC_FILE = "src/org/itemis/ressources/mainnetAllocData"
   private final static String SHORTENED_ALLOC_FILE = "src/org/itemis/ressources/_mainnetAllocData"
   final static int ALLOC_SIZE = 8893
@@ -149,59 +149,59 @@ abstract class MainnetAllocData {
       0L
     }
   }
-  
+
   def static void ensureDataIsWritten() {
     if(mainnetAllocDataSize != ALLOC_SIZE) {
       LOGGER.debug("written entries: " + mainnetAllocDataSize)
       writeMainnetAllocData
     }
   }
-  
+
   private def static void writeMainnetAllocData() {
-    val shortened = new File(SHORTENED_ALLOC_FILE) //rlp already decoded
+    val shortened = new File(SHORTENED_ALLOC_FILE) // rlp already decoded
     val List<Pair<EVMWord, EVMWord>> entries = newArrayList
-    if (shortened.exists) {
+    if(shortened.exists) {
       LOGGER.debug("reading from shortened")
       val fis = new FileInputStream(shortened)
       var byte[] buffer = newByteArrayOfSize(32)
-      
+
       for (var i = 0; i < ALLOC_SIZE; i++) {
-        if (fis.read(buffer) != 32) {
+        if(fis.read(buffer) != 32) {
           throw new IllegalArgumentException("shortened file in wrong format")
         }
         val address = new EVMWord(buffer)
-        if (fis.read(buffer) != 32) {
+        if(fis.read(buffer) != 32) {
           throw new IllegalArgumentException("shortened file in wrong format")
         }
         val balance = new EVMWord(buffer)
         entries.add(Pair.of(address, balance))
       }
-      
+
     } else {
       val data = mainnetAllocData
       LOGGER.debug("alloc data has length " + data.length)
       val tree = StaticEVMUtils.reverseRLP(data)
-      
-      for (c: tree.children) {
+
+      for (c : tree.children) {
         val left = new ArrayList(c.children.get(0).data)
-        while (left.length < 20) {
+        while(left.length < 20) {
           left.add(0, new UnsignedByte(0))
         }
         val address = new EVMWord(left)
-        
-        val right = if (c.children.length == 2) c.children.get(1).data
-        val balance = if (right === null) {
-          EVMWord.ZERO
-        } else {
-          new EVMWord(right.reverseView)
-        }
-        
+
+        val right = if(c.children.length == 2) c.children.get(1).data
+        val balance = if(right === null) {
+            EVMWord.ZERO
+          } else {
+            new EVMWord(right.reverseView)
+          }
+
         entries.add(Pair.of(address, balance))
       }
-      
-      //write data to shortened
+
+      // write data to shortened
       val fos = new FileOutputStream(shortened)
-      for (e: entries) {
+      for (e : entries) {
         fos.write(e.key.toUnsignedByteArray.map[byteValue])
         fos.write(e.value.toUnsignedByteArray.map[byteValue])
       }
@@ -209,7 +209,7 @@ abstract class MainnetAllocData {
     }
 
     val conn = DataBaseWrapper.getConnection(DataBaseID.ALLOC, "alloc")
-    
+
     conn.createTable("alloc", "(address BINARY(32) PRIMARY KEY, balance BINARY(32) NOT NULL)")
     for (e : entries) {
       val query = String.format(

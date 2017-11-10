@@ -21,13 +21,13 @@ abstract class ExchangeOperations {
       stackElements.add(runtime.popStackItem)
     }
     val tail = runtime.popStackItem
-    
+
     runtime.pushStackItem(head)
-    for (e: stackElements.reverseView) {
+    for (e : stackElements.reverseView) {
       runtime.pushStackItem(e)
     }
     runtime.pushStackItem(tail)
-    
+
     runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
   }
 }

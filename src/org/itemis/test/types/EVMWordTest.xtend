@@ -164,7 +164,8 @@ class EVMWordTest {
     init()
     var word = EVMWord.ZERO
     Assert.assertEquals(word.invert.toHexString, "0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
-    Assert.assertEquals(various.invert.toHexString, "0xEFCDAB8967452301FFEEDDCCBBAA998877665544332211001041522141450135")
+    Assert.assertEquals(various.invert.toHexString,
+      "0xEFCDAB8967452301FFEEDDCCBBAA998877665544332211001041522141450135")
   }
 
   @Test

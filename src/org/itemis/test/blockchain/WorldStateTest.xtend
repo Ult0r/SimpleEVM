@@ -18,17 +18,17 @@ import org.itemis.ressources.JsonRPCWrapper
 
 class WorldStateTest {
   extension JsonRPCWrapper j = new JsonRPCWrapper
-    
+
   @Test
   def void testInitWorldState() {
     val ws = new WorldState("testInitWorldState")
     ws.loadGenesisState
-    
+
     val size = ws.accountCount
     val root = ws.stateRoot
-    
+
     DataBaseWrapper.closeAllConnections
-    
+
     Assert.assertEquals(size, 8893)
     Assert.assertEquals(root, eth_getBlockByNumber(EVMWord.ZERO, null).stateRoot)
   }

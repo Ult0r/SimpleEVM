@@ -20,7 +20,7 @@ class NibbleList {
 
   new() {
   }
-  
+
   new(byte[] array) {
     this(array.map[new UnsignedByte(it)] as UnsignedByte[])
   }
@@ -28,7 +28,7 @@ class NibbleList {
   new(EVMWord word) {
     this(word.toUnsignedByteArray)
   }
-  
+
   new(UnsignedByte[] array) {
     for (b : array) {
       this.elements.add(b.higherNibble)

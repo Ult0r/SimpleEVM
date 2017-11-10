@@ -32,8 +32,8 @@ class Transaction {
   @Accessors private EVMWord r
   @Accessors private EVMWord s
   @Accessors private UnsignedByte[] data
-  //TODO: remove this when implementing Cipolla
-  private Address sender //160-bit address
+  // TODO: remove this when implementing Cipolla
+  private Address sender // 160-bit address
 
   new() {
   }
@@ -55,27 +55,27 @@ class Transaction {
     }
 
     data = obj.get("input").asString.fromHex.map[new UnsignedByte(it)]
-    
-    //TODO: remove this when implementing Cipolla
+
+    // TODO: remove this when implementing Cipolla
     sender = Address.fromString(obj.get("from").asString)
   }
-  
-  //TODO: Test
+
+  // TODO: Test
   def Hash256 hash() {
     val fields = fields
     val _fields = fields.take(5).toList
     _fields.add(fields.last)
-    
+
     keccak256(rlp(_fields).map[byteValue])
   }
-  
-  //TODO: Test
+
+  // TODO: Test
   def List<UnsignedByte[]> getFields() {
     val List<UnsignedByte[]> fields = newArrayList
     fields.add(nonce.toUnsignedByteArray.reverseView.dropWhile[it == 0].toList)
     fields.add(gasPrice.toUnsignedByteArray.reverseView.dropWhile[it == 0].toList)
     fields.add(gasLimit.toUnsignedByteArray.reverseView.dropWhile[it == 0].toList)
-    if (to !== null) {
+    if(to !== null) {
       fields.add(to.toUnsignedByteArray.take(20))
     } else {
       fields.add(newArrayOfSize(0))
@@ -87,12 +87,12 @@ class Transaction {
     fields.add(r.toUnsignedByteArray.reverseView.dropWhile[it == 0].toList)
     fields.add(s.toUnsignedByteArray.reverseView.dropWhile[it == 0].toList)
     fields.add(data)
-    
+
     fields
   }
-  
+
   def Address getSender() {
-    //TODO: use Cipolla to generate sender from v, r, s
+    // TODO: use Cipolla to generate sender from v, r, s
     sender
   }
 }

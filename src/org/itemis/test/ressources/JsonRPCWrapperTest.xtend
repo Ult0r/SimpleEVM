@@ -142,7 +142,7 @@ class JsonRPCWrapperTest {
       new EVMWord(4079011),
       null
     ).isZero)
-    
+
     Assert.assertEquals(eth_getBalance(
       Address.fromString("0xb19264f813465b8e6147ed011c7761c71054e91f"),
       new EVMWord(4079011),
@@ -219,8 +219,7 @@ class JsonRPCWrapperTest {
 
   @Test(expected=UnsupportedOperationException)
   def void testEth_sendTransaction() {
-    eth_sendTransaction(Address.ZERO, Address.ZERO, EVMWord.ZERO, EVMWord.ZERO, EVMWord.ZERO,
-      newArrayOfSize(0))
+    eth_sendTransaction(Address.ZERO, Address.ZERO, EVMWord.ZERO, EVMWord.ZERO, EVMWord.ZERO, newArrayOfSize(0))
   }
 
   @Test(expected=UnsupportedOperationException)

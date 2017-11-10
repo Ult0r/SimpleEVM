@@ -14,11 +14,10 @@ import java.util.List
 
 class UnsignedByteList {
   @Accessors private List<UnsignedByte> elements = newArrayList
-  
-  new() {
 
+  new() {
   }
-  
+
   new(byte[] array) {
     this(array.map[new UnsignedByte(it)])
   }

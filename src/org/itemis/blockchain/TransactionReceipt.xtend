@@ -19,7 +19,7 @@ import org.itemis.types.Address
 
 class TransactionReceipt {
   extension Utils u = new Utils
-  
+
   @Accessors Hash256 transactionHash
   @Accessors EVMWord transactionIndex
   @Accessors Hash256 blockHash

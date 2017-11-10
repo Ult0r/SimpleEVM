@@ -52,7 +52,7 @@ abstract class StaticUtils {
       default: b.toHexString
     }
   }
-  
+
   def static String toHex(byte[] array) {
     toHex(array.map[new UnsignedByte(it)])
   }
@@ -99,7 +99,7 @@ abstract class StaticUtils {
   def static byte[] fromHex(String s) {
     fromHex(s, false)
   }
-  
+
   def static byte[] fromHex(String s, boolean appendFront) {
     var data = s
     if(s.startsWith("0x")) {
@@ -108,18 +108,18 @@ abstract class StaticUtils {
 
     var result = newArrayList
     var i = 0
-    
-    if (appendFront) {
-      if (data.length % 2 == 1) {
+
+    if(appendFront) {
+      if(data.length % 2 == 1) {
         result.add(new UnsignedByte(new Nibble(0), new Nibble(data.charAt(0).fromHex)))
         i++
       }
-      
+
       for (; i < data.length; i += 2) {
         result.add(new UnsignedByte(new Nibble(data.charAt(i).fromHex), new Nibble(data.charAt(i + 1).fromHex)))
       }
     } else {
-      if (data.length % 2 == 1) {
+      if(data.length % 2 == 1) {
         for (; i < data.length - 1; i += 2) {
           result.add(new UnsignedByte(new Nibble(data.charAt(i).fromHex), new Nibble(data.charAt(i + 1).fromHex)))
         }
@@ -128,9 +128,9 @@ abstract class StaticUtils {
         for (; i < data.length; i += 2) {
           result.add(new UnsignedByte(new Nibble(data.charAt(i).fromHex), new Nibble(data.charAt(i + 1).fromHex)))
         }
-      }  
+      }
     }
-    
+
     result.map[byteValue]
   }
 
@@ -197,19 +197,19 @@ abstract class StaticUtils {
       Files.createDirectories(dir.toPath)
     }
   }
-  
+
   def static boolean isPrime(BigInteger number) {
-    if (!number.isProbablePrime(4)) {
+    if(!number.isProbablePrime(4)) {
       return false
     }
-    
+
     val BigInteger two = new BigInteger("2")
-    if (!two.equals(number) && BigInteger.ZERO.equals(number.mod(two))) {
+    if(!two.equals(number) && BigInteger.ZERO.equals(number.mod(two))) {
       return false
     }
 
     for (var BigInteger i = new BigInteger("3"); i.multiply(i).compareTo(number) < 1; i = i.add(two)) {
-      if (BigInteger.ZERO.equals(number.mod(i))) {
+      if(BigInteger.ZERO.equals(number.mod(i))) {
         return false
       }
     }

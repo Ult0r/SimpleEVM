@@ -28,7 +28,7 @@ class EVMStorage {
     elements.put(index, value)
     this
   }
-  
+
   def EVMStorage remove(EVMWord index) {
     size = size.dec
     elements.remove(index)

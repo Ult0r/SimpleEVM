@@ -18,7 +18,7 @@ import java.util.Map
 class EVMMemory {
   private final Map<EVMWord, Byte> elements = newHashMap
   private EVMWord size = EVMWord.ZERO
-  
+
   def Byte get(EVMWord index) {
     elements.get(index)
   }
@@ -28,7 +28,7 @@ class EVMMemory {
     elements.put(index, value)
     this
   }
-  
+
   def EVMMemory remove(EVMWord index) {
     size = size.dec
     elements.remove(index)
@@ -38,7 +38,7 @@ class EVMMemory {
   def EVMWord size() {
     size
   }
-  
+
   def void clear() {
     size = EVMWord.ZERO
     elements.clear
