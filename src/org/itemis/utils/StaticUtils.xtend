@@ -56,7 +56,6 @@ abstract class StaticUtils {
     toHex(array.map[new UnsignedByte(it)])
   }
 
-  //TODO remove usage of this for byte[]
   def static String toHex(UnsignedByte[] array) {
     var result = new StringBuilder("0x")
 
