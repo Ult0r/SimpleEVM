@@ -133,7 +133,7 @@ final class EVMRuntime {
   
   def private void cleanup() {
     val unusedGas = currentBlock.gasLimit.sub(gasUsed)
-    val refund = EVMWord.min(gasUsed.div(new EVMWord(2)), refundBalance)
+    val refund = EVMWord.min(gasUsed.div(2), refundBalance)
     
     patch.addBalance(worldState, callerAddress, unusedGas.add(refund))
     patch.applyChanges(worldState)
@@ -203,7 +203,7 @@ final class EVMRuntime {
   }
   
   def void jump(EVMWord targetPC) {
-    jump(targetPC.toUnsignedInt.intValue)
+    jump(targetPC.unsignedIntValue.intValue)
   }
   
   def void jump(int targetPC) {
@@ -219,8 +219,8 @@ final class EVMRuntime {
       s
     } else {
       val sumRes = f.add(l)
-      val divRes = sumRes.div(new EVMWord(32))
-      val roundedUp = if (divRes.mul(new EVMWord(32)).equals(sumRes)) {
+      val divRes = sumRes.div(32)
+      val roundedUp = if (divRes.mul(32).equals(sumRes)) {
         divRes
       } else {
         divRes.inc

@@ -14,14 +14,14 @@ abstract class SystemOperations {
     val balance = runtime.patch.getBalance(runtime.worldState, runtime.callerAddress)
     val nonce   = runtime.patch.getNonce(runtime.worldState, runtime.callerAddress)
     
-    val i = newByteArrayOfSize(s2.toUnsignedInt.intValue)
-    for (var j = 0; j < s2.toUnsignedInt.intValue; j++) {
-      i.set(j, runtime.memory.get(s1.add(new EVMWord(j))))
+    val i = newByteArrayOfSize(s2.unsignedIntValue.intValue)
+    for (var j = 0; j < s2.unsignedIntValue.intValue; j++) {
+      i.set(j, runtime.memory.get(s1.add(j)))
     }
     
     if (
       s0.lessThanEquals(balance)
-   && runtime.depth.toUnsignedInt.intValue < 1024
+   && runtime.depth.unsignedIntValue.intValue < 1024
     ) {
       runtime.patch.setNonce(runtime.callerAddress, nonce.inc)
       val contractRuntime = runtime.createNestedRuntime(s0, i)

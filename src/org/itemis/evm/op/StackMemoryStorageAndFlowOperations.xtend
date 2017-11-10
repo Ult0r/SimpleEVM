@@ -16,7 +16,7 @@ abstract class StackMemoryStorageAndFlowOperations {
 
     val bytes = newByteArrayOfSize(32)
     for (var i = 0; i < 32; i++) {
-      bytes.set(i, runtime.memory.get(s0.add(new EVMWord(i))))
+      bytes.set(i, runtime.memory.get(s0.add(i)))
     }
     runtime.pushStackItem(new EVMWord(bytes))
 
@@ -31,7 +31,7 @@ abstract class StackMemoryStorageAndFlowOperations {
 
     val bytes = s1.toByteArray
     for (var i = 0; i < 32; i++) {
-      runtime.memory.put(s0.add(new EVMWord(i)), bytes.get(i))
+      runtime.memory.put(s0.add(i), bytes.get(i))
     }
 
     runtime.memorySize = EVMRuntime.calcMemorySize(runtime.memorySize, s0, new EVMWord(32))
@@ -99,7 +99,7 @@ abstract class StackMemoryStorageAndFlowOperations {
   }
 
   def static MSIZE(EVMRuntime runtime) {
-    runtime.pushStackItem(runtime.memorySize.mul(new EVMWord(32)))
+    runtime.pushStackItem(runtime.memorySize.mul(32))
     runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.BASE))
   }
 

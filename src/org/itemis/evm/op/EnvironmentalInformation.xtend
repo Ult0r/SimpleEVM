@@ -41,7 +41,7 @@ abstract class EnvironmentalInformation {
     if(s0.toByteArray.reverseView.dropWhile[it == 0].toList.size > 4) {
       throw new RuntimeException("stack element is larger than 4 byte")
     }
-    val _s0 = s0.toUnsignedInt.intValue
+    val _s0 = s0.unsignedIntValue.intValue
 
     val List<UnsignedByte> bytes = newArrayList
     for (var i = 0; i < 32; i++) {
@@ -69,15 +69,15 @@ abstract class EnvironmentalInformation {
     if(s1.toByteArray.reverseView.dropWhile[it == 0].toList.size > 4) {
       throw new RuntimeException("stack element is larger than 4 byte")
     }
-    val _s1 = s1.toUnsignedInt.intValue
+    val _s1 = s1.unsignedIntValue.intValue
 
     if(s2.toByteArray.reverseView.dropWhile[it == 0].toList.size > 4) {
       throw new RuntimeException("stack element is larger than 4 byte")
     }
-    val _s2 = s2.toUnsignedInt.intValue
+    val _s2 = s2.unsignedIntValue.intValue
 
     for (var i = 0; i < _s2; i++) {
-      runtime.memory.put(s0.add(new EVMWord(i)), (try {
+      runtime.memory.put(s0.add(i), (try {
         runtime.inputData.get(_s1 + i)
       } catch(Exception e) {
         new UnsignedByte(0x00)
@@ -86,7 +86,7 @@ abstract class EnvironmentalInformation {
 
     EVMRuntime.calcMemorySize(runtime.memorySize, s0, s2)
 
-    val var_cost = EVMOperation.FEE_SCHEDULE.get(FeeClass.COPY).mul(s2.divRoundUp(new EVMWord(32)))
+    val var_cost = EVMOperation.FEE_SCHEDULE.get(FeeClass.COPY).mul(s2.divRoundUp(32))
     runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW).add(var_cost))
   }
 
@@ -103,15 +103,15 @@ abstract class EnvironmentalInformation {
     if(s1.toByteArray.reverseView.dropWhile[it == 0].toList.size > 4) {
       throw new RuntimeException("stack element is larger than 4 byte")
     }
-    val _s1 = s1.toUnsignedInt.intValue
+    val _s1 = s1.unsignedIntValue.intValue
 
     if(s2.toByteArray.reverseView.dropWhile[it == 0].toList.size > 4) {
       throw new RuntimeException("stack element is larger than 4 byte")
     }
-    val _s2 = s2.toUnsignedInt.intValue
+    val _s2 = s2.unsignedIntValue.intValue
 
     for (var i = 0; i < _s2; i++) {
-      runtime.memory.put(s0.add(new EVMWord(i)), EVMOperation.OP_INFO.get(try {
+      runtime.memory.put(s0.add(i), EVMOperation.OP_INFO.get(try {
         runtime.code.get(_s1 + i)
       } catch(Exception e) {
         OpCode.STOP
@@ -120,7 +120,7 @@ abstract class EnvironmentalInformation {
 
     EVMRuntime.calcMemorySize(runtime.memorySize, s0, s2)
 
-    val var_cost = EVMOperation.FEE_SCHEDULE.get(FeeClass.COPY).mul(s2.divRoundUp(new EVMWord(32)))
+    val var_cost = EVMOperation.FEE_SCHEDULE.get(FeeClass.COPY).mul(s2.divRoundUp(32))
     runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW).add(var_cost))
   }
 
@@ -144,15 +144,15 @@ abstract class EnvironmentalInformation {
     if(s2.toByteArray.reverseView.dropWhile[it == 0].toList.size > 4) {
       throw new RuntimeException("stack element is larger than 4 byte")
     }
-    val _s2 = s3.toUnsignedInt.intValue
+    val _s2 = s3.unsignedIntValue.intValue
 
     if(s3.toByteArray.reverseView.dropWhile[it == 0].toList.size > 4) {
       throw new RuntimeException("stack element is larger than 4 byte")
     }
-    val _s3 = s3.toUnsignedInt.intValue
+    val _s3 = s3.unsignedIntValue.intValue
 
     for (var i = 0; i < _s3; i++) {
-      runtime.memory.put(s1.add(new EVMWord(i)), EVMOperation.OP_INFO.get(try {
+      runtime.memory.put(s1.add(i), EVMOperation.OP_INFO.get(try {
         runtime.worldState.getCodeAt(s0).get(_s2 + i)
       } catch(Exception e) {
         OpCode.STOP
@@ -161,7 +161,7 @@ abstract class EnvironmentalInformation {
 
     EVMRuntime.calcMemorySize(runtime.memorySize, s1, s3)
 
-    val var_cost = EVMOperation.FEE_SCHEDULE.get(FeeClass.COPY).mul(s2.divRoundUp(new EVMWord(32)))
+    val var_cost = EVMOperation.FEE_SCHEDULE.get(FeeClass.COPY).mul(s2.divRoundUp(32))
     runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.EXTCODE).add(var_cost))
   }
 }

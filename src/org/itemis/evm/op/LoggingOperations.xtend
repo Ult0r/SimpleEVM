@@ -11,9 +11,9 @@ abstract class LoggingOperations {
     val s0 = runtime.popStackItem
     val s1 = runtime.popStackItem
     
-    val data = newByteArrayOfSize(s1.toUnsignedInt.intValue)
-    for (var i = 0; i < s1.toUnsignedInt.intValue; i++) {
-      data.set(i, runtime.memory.get(s0.add(new EVMWord(i))))
+    val data = newByteArrayOfSize(s1.unsignedIntValue.intValue)
+    for (var i = 0; i < s1.unsignedIntValue.intValue; i++) {
+      data.set(i, runtime.memory.get(s0.add(i)))
     }
     
     runtime.logs.add(
@@ -47,7 +47,7 @@ abstract class LoggingOperations {
     runtime.memorySize = EVMRuntime.calcMemorySize(runtime.memorySize, s0, s1)
     var cost = EVMOperation.FEE_SCHEDULE.get(FeeClass.LOG)
     cost = cost.add(EVMOperation.FEE_SCHEDULE.get(FeeClass.LOGDATA).mul(s1))
-    cost = cost.add(EVMOperation.FEE_SCHEDULE.get(FeeClass.LOGTOPIC).mul(new EVMWord(n)))
+    cost = cost.add(EVMOperation.FEE_SCHEDULE.get(FeeClass.LOGTOPIC).mul(n))
     runtime.addGasCost(cost)
   }
 }

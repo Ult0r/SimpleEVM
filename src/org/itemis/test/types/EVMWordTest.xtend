@@ -172,7 +172,7 @@ class EVMWordTest {
   def void testToUnsignedInt() {
     init()
     var word = new EVMWord(0xDEAD)
-    Assert.assertEquals(word.toUnsignedInt(), 0xDEAD)
+    Assert.assertEquals(word.unsignedIntValue(), 0xDEAD)
   }
 
   @Test
@@ -216,7 +216,7 @@ class EVMWordTest {
     init()
     Assert.assertEquals(zero.add(various), various)
     var word = new EVMWord(0x1234)
-    Assert.assertEquals(word.add(new EVMWord(0x4321)), new EVMWord(0x5555))
+    Assert.assertEquals(word.add(0x4321), new EVMWord(0x5555))
   }
 
   @Test
@@ -225,7 +225,7 @@ class EVMWordTest {
     var various_negate = various.negate
     Assert.assertEquals(zero.sub(various), various_negate)
     var word = new EVMWord(0x5555)
-    Assert.assertEquals(word.sub(new EVMWord(0x1234)), new EVMWord(0x4321))
+    Assert.assertEquals(word.sub(0x1234), new EVMWord(0x4321))
   }
 
   @Test(expected=OverflowException)
@@ -237,6 +237,6 @@ class EVMWordTest {
   @Test(expected=OverflowException)
   def void testSubOverflow() {
     init()
-    maxEVMWord.negate.sub(new EVMWord(2))
+    maxEVMWord.negate.sub(2)
   }
 }

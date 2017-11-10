@@ -222,7 +222,7 @@ class WorldState {
   //for new accounts
   def void putAccount(EVMWord blockNumber, EVMWord address, Account account) {
     accountCache.put(address, account)
-    accountDB.put(address, blockNumber.toUnsignedLong)
+    accountDB.put(address, blockNumber.longValue)
     account.insertIntoTrie(accountTrie, address)
   }
   
@@ -243,7 +243,7 @@ class WorldState {
   }
   
   def boolean accountExists(EVMWord blockNumber, EVMWord address) {
-    accountDB.lookUp(address) <= blockNumber.toUnsignedLong
+    accountDB.lookUp(address) <= blockNumber.longValue
   }
   
   def long getAccountCount() {

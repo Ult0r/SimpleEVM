@@ -179,28 +179,28 @@ class JsonRPCWrapperTest {
   def void testEth_getBlockTransactionCountByHash() {
     val EVMWord blockhash = EVMWord.fromString("0xb8a3f7f5cfc1748f91a684f20fe89031202cbadcd15078c49b85ec2a57f43853")
 
-    Assert.assertEquals(eth_getBlockTransactionCountByHash(blockhash).toUnsignedInt, 69)
+    Assert.assertEquals(eth_getBlockTransactionCountByHash(blockhash).unsignedIntValue, 69)
   }
 
   @Test
   def void testEth_getBlockTransactionCountByNumber() {
     val EVMWord blockNumber = new EVMWord(4000000)
 
-    Assert.assertEquals(eth_getBlockTransactionCountByNumber(blockNumber, null).toUnsignedInt, 69)
+    Assert.assertEquals(eth_getBlockTransactionCountByNumber(blockNumber, null).unsignedIntValue, 69)
   }
 
   @Test
   def void testEth_getUncleCountByBlockHash() {
     val EVMWord blockhash = EVMWord.fromString("0x7a0736de3a3cdcaec721ebb7735af79dd9dc0c8b99ddb0ffd4fa793d770499e3")
 
-    Assert.assertEquals(eth_getUncleCountByBlockHash(blockhash).toUnsignedInt, 1)
+    Assert.assertEquals(eth_getUncleCountByBlockHash(blockhash).unsignedIntValue, 1)
   }
 
   @Test
   def void testEth_getUncleCountByBlockNumber() {
     val EVMWord blockNumber = new EVMWord(4000014)
 
-    Assert.assertEquals(eth_getUncleCountByBlockNumber(blockNumber, null).toUnsignedInt, 1)
+    Assert.assertEquals(eth_getUncleCountByBlockNumber(blockNumber, null).unsignedIntValue, 1)
   }
 
   @Test

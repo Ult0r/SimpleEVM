@@ -12,7 +12,7 @@ abstract class BlockInformation {
     val diff = runtime.currentBlock.number.sub(s0)
 
     runtime.pushStackItem(
-      if(diff.toUnsignedInt <= 256) {
+      if(diff.unsignedIntValue <= 256) {
         BlockchainData.getBlockHashByNumber(s0)
       } else {
         EVMWord.ZERO

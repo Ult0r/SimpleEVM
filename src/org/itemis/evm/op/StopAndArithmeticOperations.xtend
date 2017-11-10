@@ -116,7 +116,7 @@ abstract class StopAndArithmeticOperations {
       runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.EXP))
     } else {
       runtime.pushStackItem(EVMWord.fromBigInteger(s0.toBigInteger.modPow(s1.toBigInteger, MAX_VALUE)))
-      val var_cost = EVMOperation.FEE_SCHEDULE.get(FeeClass.EXP).mul(new EVMWord(1 + s1.log(new EVMWord(256))))
+      val var_cost = EVMOperation.FEE_SCHEDULE.get(FeeClass.EXP).mul(1 + s1.log(256))
       runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.EXP).add(var_cost))
     }
   }
@@ -125,7 +125,7 @@ abstract class StopAndArithmeticOperations {
     val s0 = runtime.popStackItem
     val s1 = runtime.popStackItem
 
-    val t = new EVMWord(256).sub(s0.inc.mul(new EVMWord(8))).getNthField(0)
+    val t = new EVMWord(256).sub(s0.inc.mul(8)).getNthField(0)
     var result = s1.toBigInteger
     val bit_t = result.testBit(t.intValue)
 
