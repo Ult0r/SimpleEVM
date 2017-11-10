@@ -16,13 +16,6 @@ import org.itemis.utils.Utils
 import org.eclipse.xtend.lib.annotations.Accessors
 import java.util.List
 import org.itemis.evm.utils.EVMUtils
-import org.bouncycastle.jce.spec.ECNamedCurveParameterSpec
-import org.bouncycastle.jce.ECNamedCurveTable
-import java.security.KeyFactory
-import org.bouncycastle.jce.provider.BouncyCastleProvider
-import org.bouncycastle.jce.spec.ECNamedCurveSpec
-import org.bouncycastle.jce.ECPointUtil
-import org.bouncycastle.math.ec.ECPoint
 
 class Transaction {
   extension Utils u = new Utils
@@ -37,6 +30,8 @@ class Transaction {
   @Accessors private EVMWord r
   @Accessors private EVMWord s
   @Accessors private UnsignedByte[] data
+  //TODO: remove this when implementing Cipolla
+  private EVMWord sender //160-bit address
 
   new() {
   }
@@ -58,6 +53,9 @@ class Transaction {
     }
 
     data = obj.get("input").asString.fromHex.map[new UnsignedByte(it)]
+    
+    //TODO: remove this when implementing Cipolla
+    sender = EVMWord.fromString(obj.get("from").asString)
   }
   
   //TODO: Test
@@ -92,10 +90,7 @@ class Transaction {
   }
   
   def EVMWord getSender() {
-    //TODO
-    //Cipolla
-    //p = secp256k1n
-    //n = r
-    null
+    //TODO: use Cipolla to generate sender from v, r, s
+    sender
   }
 }
