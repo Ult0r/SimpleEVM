@@ -1,8 +1,6 @@
 package org.itemis.utils.db
 
-import com.google.common.cache.LoadingCache
 import com.google.common.cache.CacheBuilder
-import com.google.common.cache.CacheLoader
 import com.google.common.cache.RemovalListener
 import org.itemis.utils.db.DataBaseWrapper
 import java.util.List
@@ -16,6 +14,7 @@ import org.apache.commons.lang3.tuple.Triple
 import java.util.function.Function
 import java.sql.Connection
 import java.sql.ResultSet
+import com.google.common.cache.Cache
 
 final class TwoLevelDBCache<K, V> {
   extension DataBaseWrapper db = new DataBaseWrapper
@@ -25,7 +24,7 @@ final class TwoLevelDBCache<K, V> {
   private final String dbName
   private final DataBaseID dbType
   private final String dbTable
-  private final LoadingCache<K, V> firstLevelCache
+  private final Cache<K, V> firstLevelCache
   private final DBBufferCache<K, V> secondLevelCache
   
   private final PreparedStatement insertStatement
@@ -74,14 +73,7 @@ final class TwoLevelDBCache<K, V> {
     this.dbType = dbType
     this.dbTable = dbTable
     this.secondLevelCache = new DBBufferCache(this, writeCacheSize)
-    this.firstLevelCache = CacheBuilder.newBuilder().maximumSize(maxCacheSize).removalListener(secondLevelCache).build(
-      new CacheLoader<K, V>() {
-        override load(K key) throws Exception {
-          // TODO
-          throw new UnsupportedOperationException("I don't know what this does")
-        }
-      }
-    )
+    this.firstLevelCache = CacheBuilder.newBuilder().maximumSize(maxCacheSize).removalListener(secondLevelCache).build()
     
     createDatabase
     

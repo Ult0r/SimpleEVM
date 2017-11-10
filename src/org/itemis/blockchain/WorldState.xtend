@@ -21,9 +21,7 @@ import java.sql.ResultSet
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.itemis.evm.utils.MerklePatriciaTrie
-import com.google.common.cache.LoadingCache
 import com.google.common.cache.CacheBuilder
-import com.google.common.cache.CacheLoader
 import org.itemis.utils.db.DataBaseWrapper
 import org.itemis.ressources.JsonRPCWrapper
 import java.util.Map
@@ -32,6 +30,7 @@ import org.itemis.evm.utils.MerklePatriciaTrie.Leaf
 import org.itemis.utils.Utils
 import org.itemis.evm.utils.EVMUtils
 import org.eclipse.xtend.lib.annotations.Accessors
+import com.google.common.cache.Cache
 
 class WorldState {
   extension Utils u = new Utils
@@ -59,29 +58,11 @@ class WorldState {
   
   private final String name
   private final MerklePatriciaTrie accountTrie
-  private final LoadingCache<EVMWord, Account> accountCache = CacheBuilder.newBuilder()
-      .maximumSize(MAX_ACCOUNT_CACHE_SIZE)
-      .build(
-        new CacheLoader<EVMWord, Account>() {
-          override load(EVMWord key) throws Exception {
-            // TODO
-            throw new UnsupportedOperationException("I don't know what this does")
-          }
-        }
-      )
+  private final Cache<EVMWord, Account> accountCache = CacheBuilder.newBuilder().maximumSize(MAX_ACCOUNT_CACHE_SIZE).build()
   private final TwoLevelDBCache<EVMWord, Long> accountDB
   private final TwoLevelDBCache<EVMWord, UnsignedByteList> codeDB
   private final Map<EVMWord, MerklePatriciaTrie> storageTries = newHashMap
-  private final LoadingCache<Pair<EVMWord, EVMWord>, EVMWord> storageCache = CacheBuilder.newBuilder()
-      .maximumSize(MAX_STORAGE_CACHE_SIZE)
-      .build(
-        new CacheLoader<Pair<EVMWord, EVMWord>, EVMWord>() {
-          override load(Pair<EVMWord, EVMWord> key) throws Exception {
-            // TODO
-            throw new UnsupportedOperationException("I don't know what this does")
-          }
-        }
-      )
+  private final Cache<Pair<EVMWord, EVMWord>, EVMWord> storageCache = CacheBuilder.newBuilder().maximumSize(MAX_STORAGE_CACHE_SIZE).build()
       
   @Accessors private EVMWord currentBlockNumber = new EVMWord(0)
   @Accessors private EVMWord executedTransactions = new EVMWord(0) //in this block
