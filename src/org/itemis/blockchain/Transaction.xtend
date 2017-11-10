@@ -70,20 +70,20 @@ class Transaction {
   //TODO: Test
   def List<UnsignedByte[]> getFields() {
     val List<UnsignedByte[]> fields = newArrayList
-    fields.add(nonce.toByteArray.reverseView.dropWhile[it == 0].toList.map[new UnsignedByte(it)])
-    fields.add(gasPrice.toByteArray.reverseView.dropWhile[it == 0].toList.map[new UnsignedByte(it)])
-    fields.add(gasLimit.toByteArray.reverseView.dropWhile[it == 0].toList.map[new UnsignedByte(it)])
+    fields.add(nonce.toUnsignedByteArray.reverseView.dropWhile[it == 0].toList)
+    fields.add(gasPrice.toUnsignedByteArray.reverseView.dropWhile[it == 0].toList)
+    fields.add(gasLimit.toUnsignedByteArray.reverseView.dropWhile[it == 0].toList)
     if (to !== null) {
-      fields.add(to.toByteArray.take(20).map[new UnsignedByte(it)])
+      fields.add(to.toUnsignedByteArray.take(20))
     } else {
       fields.add(newArrayOfSize(0))
     }
-    fields.add(value.toByteArray.reverseView.dropWhile[it == 0].toList.map[new UnsignedByte(it)])
+    fields.add(value.toUnsignedByteArray.reverseView.dropWhile[it == 0].toList)
     val vArray = newArrayOfSize(1)
     vArray.set(0, v)
     fields.add(vArray)
-    fields.add(r.toByteArray.reverseView.dropWhile[it == 0].toList.map[new UnsignedByte(it)])
-    fields.add(s.toByteArray.reverseView.dropWhile[it == 0].toList.map[new UnsignedByte(it)])
+    fields.add(r.toUnsignedByteArray.reverseView.dropWhile[it == 0].toList)
+    fields.add(s.toUnsignedByteArray.reverseView.dropWhile[it == 0].toList)
     fields.add(data)
     
     fields

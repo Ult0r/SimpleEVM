@@ -101,21 +101,21 @@ class Block {
   
   def List<UnsignedByte[]> getFields() {
     val List<UnsignedByte[]> fields = newArrayList
-    fields.add(parentHash.toByteArray.map[new UnsignedByte(it)])
-    fields.add(ommersHash.toByteArray.map[new UnsignedByte(it)])
-    fields.add(beneficiary.toByteArray.take(20).map[new UnsignedByte(it)])
-    fields.add(stateRoot.toByteArray.map[new UnsignedByte(it)])
-    fields.add(transactionsRoot.toByteArray.map[new UnsignedByte(it)])
-    fields.add(receiptsRoot.toByteArray.map[new UnsignedByte(it)])
-    fields.add(logsBloom.toByteArray.map[new UnsignedByte(it)])
-    fields.add(difficulty.toByteArray.reverseView.dropWhile[it == 0].toList.map[new UnsignedByte(it)])
-    fields.add(number.toByteArray.reverseView.dropWhile[it == 0].toList.map[new UnsignedByte(it)])
-    fields.add(gasLimit.toByteArray.reverseView.dropWhile[it == 0].toList.map[new UnsignedByte(it)])
-    fields.add(gasUsed.toByteArray.reverseView.dropWhile[it == 0].toList.map[new UnsignedByte(it)])
-    fields.add(timestamp.toByteArray.reverseView.dropWhile[it == 0].toList.map[new UnsignedByte(it)])
+    fields.add(parentHash.toUnsignedByteArray)
+    fields.add(ommersHash.toUnsignedByteArray)
+    fields.add(beneficiary.toUnsignedByteArray.take(20))
+    fields.add(stateRoot.toUnsignedByteArray)
+    fields.add(transactionsRoot.toUnsignedByteArray)
+    fields.add(receiptsRoot.toUnsignedByteArray)
+    fields.add(logsBloom.toUnsignedByteArray)
+    fields.add(difficulty.toUnsignedByteArray.reverseView.dropWhile[it == 0].toList)
+    fields.add(number.toUnsignedByteArray.reverseView.dropWhile[it == 0].toList)
+    fields.add(gasLimit.toUnsignedByteArray.reverseView.dropWhile[it == 0].toList)
+    fields.add(gasUsed.toUnsignedByteArray.reverseView.dropWhile[it == 0].toList)
+    fields.add(timestamp.toUnsignedByteArray.reverseView.dropWhile[it == 0].toList)
     fields.add(extraData.map[new UnsignedByte(it)])
-    fields.add(mixHash.toByteArray.map[new UnsignedByte(it)])
-    fields.add(nonce.toByteArray.take(8).toList.map[new UnsignedByte(it)])
+    fields.add(mixHash.toUnsignedByteArray)
+    fields.add(nonce.toUnsignedByteArray.take(8).toList)
     
     fields
   }
