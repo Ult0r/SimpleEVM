@@ -101,7 +101,6 @@ class EVMWord {
     array.toIntString
   }
 
-  // TODO: exchange unsignedIntValue.intValue with intValue
   def int intValue() {
     array.intValue
   }

@@ -217,7 +217,7 @@ final class EVMRuntime {
   }
   
   def void jump(EVMWord targetPC) {
-    jump(targetPC.unsignedIntValue.intValue)
+    jump(targetPC.intValue)
   }
   
   def void jump(int targetPC) {

@@ -111,7 +111,7 @@ class StaticEVMUtils {
           }
           case head < 0xC0: {
             val sizeLength = head - 0xB7
-            val dataLength = new EVMWord(_data.subList(1, sizeLength + 1).reverseView).unsignedIntValue().intValue
+            val dataLength = new EVMWord(_data.subList(1, sizeLength + 1).reverseView).intValue
             result.add(new TreeNode(Arrays.copyOfRange(_data, 1 + sizeLength, 1 + sizeLength + dataLength)))
             usedLength = 1 + sizeLength + dataLength
           }
@@ -124,7 +124,7 @@ class StaticEVMUtils {
           }
           case head > 0xF7: {
             val sizeLength = head - 0xF7
-            val dataLength = new EVMWord(_data.subList(1, sizeLength + 1).reverseView).unsignedIntValue().intValue
+            val dataLength = new EVMWord(_data.subList(1, sizeLength + 1).reverseView).intValue
             var node = new TreeNode()
             node.children.addAll(_reverseRLP(_data.subList(1 + sizeLength, 1 + sizeLength + dataLength)))
             result.add(node)

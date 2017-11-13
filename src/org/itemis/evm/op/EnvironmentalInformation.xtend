@@ -51,7 +51,7 @@ abstract class EnvironmentalInformation {
     if(s0.trimTrailingZerosAndReverse.size > 4) {
       throw new RuntimeException("stack element is larger than 4 byte")
     }
-    val _s0 = s0.unsignedIntValue.intValue
+    val _s0 = s0.intValue
 
     val List<UnsignedByte> bytes = newArrayList
     for (var i = 0; i < 32; i++) {
@@ -79,12 +79,12 @@ abstract class EnvironmentalInformation {
     if(s1.trimTrailingZerosAndReverse.size > 4) {
       throw new RuntimeException("stack element is larger than 4 byte")
     }
-    val _s1 = s1.unsignedIntValue.intValue
+    val _s1 = s1.intValue
 
     if(s2.trimTrailingZerosAndReverse.size > 4) {
       throw new RuntimeException("stack element is larger than 4 byte")
     }
-    val _s2 = s2.unsignedIntValue.intValue
+    val _s2 = s2.intValue
 
     for (var i = 0; i < _s2; i++) {
       runtime.memory.put(s0.add(i), (try {
@@ -114,12 +114,12 @@ abstract class EnvironmentalInformation {
     if(s1.trimTrailingZerosAndReverse.size > 4) {
       throw new RuntimeException("stack element is larger than 4 byte")
     }
-    val _s1 = s1.unsignedIntValue.intValue
+    val _s1 = s1.intValue
 
     if(s2.trimTrailingZerosAndReverse.size > 4) {
       throw new RuntimeException("stack element is larger than 4 byte")
     }
-    val _s2 = s2.unsignedIntValue.intValue
+    val _s2 = s2.intValue
 
     for (var i = 0; i < _s2; i++) {
       runtime.memory.put(s0.add(i), EVMOperation.OP_INFO.get(try {
@@ -156,12 +156,12 @@ abstract class EnvironmentalInformation {
     if(s2.trimTrailingZerosAndReverse.size > 4) {
       throw new RuntimeException("stack element is larger than 4 byte")
     }
-    val _s2 = s3.unsignedIntValue.intValue
+    val _s2 = s3.intValue
 
     if(s3.trimTrailingZerosAndReverse.size > 4) {
       throw new RuntimeException("stack element is larger than 4 byte")
     }
-    val _s3 = s3.unsignedIntValue.intValue
+    val _s3 = s3.intValue
 
     for (var i = 0; i < _s3; i++) {
       runtime.memory.put(s1.add(i), EVMOperation.OP_INFO.get(try {

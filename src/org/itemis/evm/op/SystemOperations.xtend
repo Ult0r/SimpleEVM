@@ -22,12 +22,12 @@ abstract class SystemOperations {
     val balance = runtime.patch.getBalance(runtime.worldState, runtime.callerAddress)
     val nonce = runtime.patch.getNonce(runtime.worldState, runtime.callerAddress)
 
-    val i = newByteArrayOfSize(s2.unsignedIntValue.intValue)
-    for (var j = 0; j < s2.unsignedIntValue.intValue; j++) {
+    val i = newByteArrayOfSize(s2.intValue)
+    for (var j = 0; j < s2.intValue; j++) {
       i.set(j, runtime.memory.get(s1.add(j)))
     }
 
-    if(s0.lessThanEquals(balance) && runtime.depth.unsignedIntValue.intValue < 1024) {
+    if(s0.lessThanEquals(balance) && runtime.depth.intValue < 1024) {
       runtime.patch.setNonce(runtime.callerAddress, nonce.inc)
       val contractRuntime = runtime.createNestedRuntime(s0, i)
       contractRuntime.patch = runtime.patch
