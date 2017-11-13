@@ -48,7 +48,7 @@ abstract class EnvironmentalInformation {
 
   def static CALLDATALOAD(EVMRuntime runtime) {
     val s0 = runtime.popStackItem
-    if(s0.toByteArray.reverseView.dropWhile[it == 0].toList.size > 4) {
+    if(s0.trimTrailingZerosAndReverse.size > 4) {
       throw new RuntimeException("stack element is larger than 4 byte")
     }
     val _s0 = s0.unsignedIntValue.intValue
@@ -76,12 +76,12 @@ abstract class EnvironmentalInformation {
     val s1 = runtime.popStackItem
     val s2 = runtime.popStackItem
 
-    if(s1.toByteArray.reverseView.dropWhile[it == 0].toList.size > 4) {
+    if(s1.trimTrailingZerosAndReverse.size > 4) {
       throw new RuntimeException("stack element is larger than 4 byte")
     }
     val _s1 = s1.unsignedIntValue.intValue
 
-    if(s2.toByteArray.reverseView.dropWhile[it == 0].toList.size > 4) {
+    if(s2.trimTrailingZerosAndReverse.size > 4) {
       throw new RuntimeException("stack element is larger than 4 byte")
     }
     val _s2 = s2.unsignedIntValue.intValue
@@ -111,12 +111,12 @@ abstract class EnvironmentalInformation {
     val s1 = runtime.popStackItem
     val s2 = runtime.popStackItem
 
-    if(s1.toByteArray.reverseView.dropWhile[it == 0].toList.size > 4) {
+    if(s1.trimTrailingZerosAndReverse.size > 4) {
       throw new RuntimeException("stack element is larger than 4 byte")
     }
     val _s1 = s1.unsignedIntValue.intValue
 
-    if(s2.toByteArray.reverseView.dropWhile[it == 0].toList.size > 4) {
+    if(s2.trimTrailingZerosAndReverse.size > 4) {
       throw new RuntimeException("stack element is larger than 4 byte")
     }
     val _s2 = s2.unsignedIntValue.intValue
@@ -153,12 +153,12 @@ abstract class EnvironmentalInformation {
     val s2 = runtime.popStackItem
     val s3 = runtime.popStackItem
 
-    if(s2.toByteArray.reverseView.dropWhile[it == 0].toList.size > 4) {
+    if(s2.trimTrailingZerosAndReverse.size > 4) {
       throw new RuntimeException("stack element is larger than 4 byte")
     }
     val _s2 = s3.unsignedIntValue.intValue
 
-    if(s3.toByteArray.reverseView.dropWhile[it == 0].toList.size > 4) {
+    if(s3.trimTrailingZerosAndReverse.size > 4) {
       throw new RuntimeException("stack element is larger than 4 byte")
     }
     val _s3 = s3.unsignedIntValue.intValue

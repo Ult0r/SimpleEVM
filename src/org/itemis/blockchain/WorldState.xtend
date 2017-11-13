@@ -348,7 +348,7 @@ class WorldState {
   
   def void setStorageAt(Address address, EVMWord offset, EVMWord value) {
     var trie = address.storageTrie
-    trie.putElement(new NibbleList(offset.toByteArray.keccak256.toByteArray), value.toUnsignedByteArray.reverseView.dropWhile[it.byteValue == 0].toList.rlp)
+    trie.putElement(new NibbleList(offset.toByteArray.keccak256.toByteArray), value.trimTrailingZerosAndReverse.rlp)
     
     val acc = getAccount(address)
     acc.storageRoot = trie.trieRoot

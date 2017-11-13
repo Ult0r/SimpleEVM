@@ -79,9 +79,8 @@ class Account {
   def void insertIntoTrie(MerklePatriciaTrie trie, Address address) {
     val List<UnsignedByte[]> account = newArrayList
 
-    // TODO: EVMWord#truncatedByteArray
-    account.add(nonce.toUnsignedByteArray.reverseView.dropWhile[it.byteValue == 0].toList)
-    account.add(balance.toUnsignedByteArray.reverseView.dropWhile[it.byteValue == 0].toList)
+    account.add(nonce.trimTrailingZerosAndReverse)
+    account.add(balance.trimTrailingZerosAndReverse)
     account.add(storageRoot.toUnsignedByteArray)
     account.add(codeHash.toUnsignedByteArray)
 

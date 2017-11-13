@@ -113,6 +113,10 @@ class EVMWord {
   def long longValue() {
     array.longValue
   }
+  
+  def UnsignedByte[] trimTrailingZerosAndReverse() {
+    toUnsignedByteArray.reverseView.dropWhile[byteValue == 0]
+  }
 
   override boolean equals(Object other) {
     if(other instanceof EVMWord) {

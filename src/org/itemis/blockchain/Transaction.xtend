@@ -72,20 +72,20 @@ class Transaction {
   // TODO: Test
   def List<UnsignedByte[]> getFields() {
     val List<UnsignedByte[]> fields = newArrayList
-    fields.add(nonce.toUnsignedByteArray.reverseView.dropWhile[it == 0].toList)
-    fields.add(gasPrice.toUnsignedByteArray.reverseView.dropWhile[it == 0].toList)
-    fields.add(gasLimit.toUnsignedByteArray.reverseView.dropWhile[it == 0].toList)
+    fields.add(nonce.trimTrailingZerosAndReverse)
+    fields.add(gasPrice.trimTrailingZerosAndReverse)
+    fields.add(gasLimit.trimTrailingZerosAndReverse)
     if(to !== null) {
       fields.add(to.toUnsignedByteArray.take(20))
     } else {
       fields.add(newArrayOfSize(0))
     }
-    fields.add(value.toUnsignedByteArray.reverseView.dropWhile[it == 0].toList)
+    fields.add(value.trimTrailingZerosAndReverse)
     val vArray = newArrayOfSize(1)
     vArray.set(0, v)
     fields.add(vArray)
-    fields.add(r.toUnsignedByteArray.reverseView.dropWhile[it == 0].toList)
-    fields.add(s.toUnsignedByteArray.reverseView.dropWhile[it == 0].toList)
+    fields.add(r.trimTrailingZerosAndReverse)
+    fields.add(s.trimTrailingZerosAndReverse)
     fields.add(data)
 
     fields
