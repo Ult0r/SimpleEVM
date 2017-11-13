@@ -7,7 +7,10 @@
  * Contributors:
  * Lars Reimers for itemis AG
  *******************************************************************************/
-package org.itemis.types
+package org.itemis.types.impl
+
+import org.itemis.types.UnsignedByteArray
+import org.itemis.types.ArbitraryLengthType
 
 final class Address extends ArbitraryLengthType {
   public static final Address ZERO = new Address()

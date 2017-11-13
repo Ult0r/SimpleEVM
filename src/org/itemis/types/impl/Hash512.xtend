@@ -7,7 +7,10 @@
  * Contributors:
  * Lars Reimers for itemis AG
  *******************************************************************************/
-package org.itemis.types
+package org.itemis.types.impl
+
+import org.itemis.types.UnsignedByteArray
+import org.itemis.types.ArbitraryLengthType
 
 final class Hash512 extends ArbitraryLengthType {
   new() {

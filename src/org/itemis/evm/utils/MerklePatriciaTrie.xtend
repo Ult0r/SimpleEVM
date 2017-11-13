@@ -21,7 +21,7 @@ import org.itemis.evm.utils.MerklePatriciaTrie.Branch
 import org.itemis.evm.utils.MerklePatriciaTrie.Node
 import org.itemis.utils.StaticUtils
 import org.itemis.types.UnsignedByteList
-import org.itemis.types.Hash256
+import org.itemis.types.impl.Hash256
 
 class MerklePatriciaTrie {
   public static final Hash256 EMPTY_TRIE_HASH = Hash256.fromString(

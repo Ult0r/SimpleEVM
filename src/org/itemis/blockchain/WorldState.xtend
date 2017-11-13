@@ -9,7 +9,7 @@
  *******************************************************************************/
 package org.itemis.blockchain
 
-import org.itemis.types.EVMWord
+import org.itemis.types.impl.EVMWord
 import org.itemis.types.UnsignedByte
 import org.itemis.ressources.MainnetAllocData
 import org.itemis.utils.db.DataBaseWrapper.DataBaseID
@@ -31,8 +31,8 @@ import org.itemis.utils.Utils
 import org.itemis.evm.utils.EVMUtils
 import org.eclipse.xtend.lib.annotations.Accessors
 import com.google.common.cache.Cache
-import org.itemis.types.Address
-import org.itemis.types.Hash256
+import org.itemis.types.impl.Address
+import org.itemis.types.impl.Hash256
 
 class WorldState {
   extension Utils u = new Utils

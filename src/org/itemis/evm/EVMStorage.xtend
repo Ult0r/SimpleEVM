@@ -10,7 +10,7 @@
 
 package org.itemis.evm
 
-import org.itemis.types.EVMWord
+import org.itemis.types.impl.EVMWord
 import java.util.Map
 
 //256-bit-word-adressed byte array

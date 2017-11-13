@@ -13,9 +13,9 @@ import org.junit.Test
 import org.itemis.ressources.MainnetAllocData
 import java.nio.charset.Charset
 import org.junit.Assert
-import org.itemis.types.EVMWord
+import org.itemis.types.impl.EVMWord
 import org.itemis.utils.db.DataBaseWrapper
-import org.itemis.types.Address
+import org.itemis.types.impl.Address
 
 class MainnetAllocDataTest {
 

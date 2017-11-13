@@ -12,17 +12,17 @@ package org.itemis.blockchain
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.itemis.utils.db.TwoLevelDBCache
-import org.itemis.types.EVMWord
+import org.itemis.types.impl.EVMWord
 import java.sql.PreparedStatement
 import org.apache.commons.lang3.tuple.Triple
 import java.sql.ResultSet
 import org.itemis.utils.db.DataBaseWrapper.DataBaseID
 import org.itemis.types.UnsignedByte
 import org.itemis.ressources.JsonRPCWrapper
-import org.itemis.types.Hash256
-import org.itemis.types.Bloom2048
-import org.itemis.types.Address
-import org.itemis.types.EthashNonce
+import org.itemis.types.impl.Hash256
+import org.itemis.types.impl.Bloom2048
+import org.itemis.types.impl.Address
+import org.itemis.types.impl.EthashNonce
 
 abstract class BlockchainData {
   static extension JsonRPCWrapper j = new JsonRPCWrapper

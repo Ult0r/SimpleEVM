@@ -10,7 +10,7 @@
 
 package org.itemis.blockchain
 
-import org.itemis.types.EVMWord
+import org.itemis.types.impl.EVMWord
 import org.itemis.utils.StaticUtils
 import java.util.List
 import com.google.gson.JsonObject
@@ -21,10 +21,10 @@ import org.itemis.evm.utils.EVMUtils
 import org.itemis.types.UnsignedByte
 import org.itemis.evm.utils.MerklePatriciaTrie
 import java.math.BigInteger
-import org.itemis.types.Hash256
-import org.itemis.types.Address
-import org.itemis.types.Bloom2048
-import org.itemis.types.EthashNonce
+import org.itemis.types.impl.Hash256
+import org.itemis.types.impl.Address
+import org.itemis.types.impl.Bloom2048
+import org.itemis.types.impl.EthashNonce
 
 class Block {
   extension Utils u = new Utils

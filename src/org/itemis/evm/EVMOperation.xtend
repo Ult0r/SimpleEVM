@@ -12,7 +12,7 @@ package org.itemis.evm
 import org.itemis.types.UnsignedByte
 import java.util.EnumMap
 import org.apache.commons.lang3.tuple.Triple
-import org.itemis.types.EVMWord
+import org.itemis.types.impl.EVMWord
 import java.util.function.Consumer
 import org.itemis.evm.op.StopAndArithmeticOperations
 import org.itemis.evm.op.ComparisonAndBitwiseLogicOperations

@@ -7,7 +7,11 @@
  * Contributors:
  * Lars Reimers for itemis AG
  *******************************************************************************/
-package org.itemis.types
+package org.itemis.types.impl
+
+import org.itemis.types.UnsignedByteArray
+import org.itemis.types.ArbitraryLengthType
+import org.itemis.types.UnsignedByte
 
 final class Hash256 extends ArbitraryLengthType {
   public static final Hash256 ZERO = new Hash256()

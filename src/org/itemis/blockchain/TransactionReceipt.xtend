@@ -10,12 +10,12 @@
 package org.itemis.blockchain
 
 import com.google.gson.JsonObject
-import org.itemis.types.EVMWord
+import org.itemis.types.impl.EVMWord
 import java.util.List
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.itemis.utils.Utils
-import org.itemis.types.Hash256
-import org.itemis.types.Address
+import org.itemis.types.impl.Hash256
+import org.itemis.types.impl.Address
 
 class TransactionReceipt {
   extension Utils u = new Utils

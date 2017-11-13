@@ -10,13 +10,13 @@
 package org.itemis.test.ressources
 
 import org.junit.Test
-import org.itemis.types.EVMWord
+import org.itemis.types.impl.EVMWord
 import org.itemis.ressources.JsonRPCWrapper
 import org.junit.Assert
 import org.itemis.utils.Utils
 import org.itemis.blockchain.Block
-import org.itemis.types.Address
-import org.itemis.types.Hash256
+import org.itemis.types.impl.Address
+import org.itemis.types.impl.Hash256
 
 class JsonRPCWrapperTest {
   extension JsonRPCWrapper j = new JsonRPCWrapper

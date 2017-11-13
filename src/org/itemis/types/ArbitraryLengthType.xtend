@@ -9,6 +9,8 @@
  *******************************************************************************/
 package org.itemis.types
 
+import org.itemis.types.impl.EVMWord
+
 abstract class ArbitraryLengthType {
   private final UnsignedByteArray array
 

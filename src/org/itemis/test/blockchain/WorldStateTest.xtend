@@ -13,7 +13,7 @@ import org.junit.Test
 import org.itemis.blockchain.WorldState
 import org.itemis.utils.db.DataBaseWrapper
 import org.junit.Assert
-import org.itemis.types.EVMWord
+import org.itemis.types.impl.EVMWord
 import org.itemis.ressources.JsonRPCWrapper
 
 class WorldStateTest {

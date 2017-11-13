@@ -9,7 +9,7 @@
  *******************************************************************************/
 package org.itemis.evm
 
-import org.itemis.types.EVMWord
+import org.itemis.types.impl.EVMWord
 import org.itemis.blockchain.Transaction
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.itemis.blockchain.WorldState
@@ -22,7 +22,7 @@ import java.util.Optional
 import org.itemis.types.UnsignedByteList
 import org.itemis.blockchain.BlockchainData
 import java.util.Set
-import org.itemis.types.Address
+import org.itemis.types.impl.Address
 
 final class EVMRuntime {
   @Accessors private final WorldState worldState

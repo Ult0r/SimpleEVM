@@ -10,9 +10,9 @@
 package org.itemis.evm
 
 import org.eclipse.xtend.lib.annotations.Accessors
-import org.itemis.types.EVMWord
+import org.itemis.types.impl.EVMWord
 import java.util.List
-import org.itemis.types.Address
+import org.itemis.types.impl.Address
 
 final class EVMLog {
   @Accessors private final Address address

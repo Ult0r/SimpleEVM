@@ -13,7 +13,7 @@ package org.itemis.test.blockchain
 import org.junit.Test
 import org.itemis.blockchain.Block
 import org.junit.Assert
-import org.itemis.types.Hash256
+import org.itemis.types.impl.Hash256
 
 class BlockTest {
   @Test

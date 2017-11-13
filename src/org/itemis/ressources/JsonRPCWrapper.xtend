@@ -10,7 +10,7 @@
 package org.itemis.ressources
 
 import com.google.gson.JsonElement
-import org.itemis.types.EVMWord
+import org.itemis.types.impl.EVMWord
 import java.util.Optional
 import java.util.List
 import org.itemis.types.UnsignedByte
@@ -18,8 +18,8 @@ import org.itemis.utils.Utils
 import org.itemis.blockchain.Block
 import org.itemis.blockchain.Transaction
 import org.itemis.blockchain.TransactionReceipt
-import org.itemis.types.Address
-import org.itemis.types.Hash256
+import org.itemis.types.impl.Address
+import org.itemis.types.impl.Hash256
 
 //documented by: https://github.com/ethereum/wiki/wiki/JSON-RPC
 class JsonRPCWrapper {

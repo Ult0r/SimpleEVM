@@ -7,26 +7,22 @@
  * Contributors:
  * Lars Reimers for itemis AG
  *******************************************************************************/
-package org.itemis.types
+package org.itemis.types.impl
 
-final class Bloom2048 extends ArbitraryLengthType {
-  new() {
-    super(new UnsignedByteArray(256))
-  }
+import org.itemis.types.UnsignedByteArray
+import org.itemis.types.ArbitraryLengthType
 
-  new(int i) {
-    super(new UnsignedByteArray(256).setInt(i))
-  }
-
+final class EthashNonce extends ArbitraryLengthType {
   new(byte[] array) {
-    super(new UnsignedByteArray(256, array))
+    super(new UnsignedByteArray(8, array))
   }
 
   new(UnsignedByteArray array) {
-    super(new UnsignedByteArray(256, array))
+    super(new UnsignedByteArray(8, array))
   }
 
-  def static Bloom2048 fromString(String s) {
-    new Bloom2048(UnsignedByteArray.fromString(256, s))
+  def static EthashNonce fromString(String s) {
+    new EthashNonce(UnsignedByteArray.fromString(8, s))
   }
+
 }

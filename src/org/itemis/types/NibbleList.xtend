@@ -12,6 +12,7 @@ package org.itemis.types
 import org.eclipse.xtend.lib.annotations.Accessors
 import java.util.List
 import org.itemis.utils.Utils
+import org.itemis.types.impl.EVMWord
 
 class NibbleList {
   extension Utils u = new Utils

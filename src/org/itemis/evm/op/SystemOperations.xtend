@@ -10,7 +10,7 @@
 package org.itemis.evm.op
 
 import org.itemis.evm.EVMRuntime
-import org.itemis.types.EVMWord
+import org.itemis.types.impl.EVMWord
 import org.itemis.evm.EVMOperation
 import org.itemis.evm.EVMOperation.FeeClass
 

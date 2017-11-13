@@ -9,7 +9,7 @@
  *******************************************************************************/
 package org.itemis.blockchain
 
-import org.itemis.types.EVMWord
+import org.itemis.types.impl.EVMWord
 import org.eclipse.xtend.lib.annotations.Accessors
 import org.itemis.evm.utils.MerklePatriciaTrie
 import org.itemis.utils.StaticUtils
@@ -20,8 +20,8 @@ import org.itemis.utils.Utils
 import org.itemis.evm.utils.EVMUtils
 import org.itemis.types.UnsignedByteList
 import org.itemis.evm.utils.MerklePatriciaTrie.Leaf
-import org.itemis.types.Hash256
-import org.itemis.types.Address
+import org.itemis.types.impl.Hash256
+import org.itemis.types.impl.Address
 
 class Account {
   extension Utils u = new Utils

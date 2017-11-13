@@ -18,7 +18,7 @@ import org.apache.commons.lang3.tuple.Triple
 import java.sql.ResultSet
 import org.itemis.utils.StaticUtils
 import org.itemis.types.UnsignedByte
-import org.itemis.types.EVMWord
+import org.itemis.types.impl.EVMWord
 import org.itemis.evm.utils.MerklePatriciaTrie.Node
 import org.itemis.evm.utils.MerklePatriciaTrie.Null
 import org.itemis.evm.utils.MerklePatriciaTrie.Leaf

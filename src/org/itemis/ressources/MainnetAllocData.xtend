@@ -12,7 +12,7 @@ package org.itemis.ressources
 import java.io.FileReader
 import org.itemis.types.UnsignedByte
 import org.itemis.utils.StaticUtils
-import org.itemis.types.EVMWord
+import org.itemis.types.impl.EVMWord
 import org.itemis.evm.utils.StaticEVMUtils
 import java.util.ArrayList
 import java.sql.ResultSet
@@ -25,7 +25,7 @@ import java.io.FileOutputStream
 import java.io.FileInputStream
 import org.itemis.utils.db.DataBaseWrapper
 import org.itemis.utils.db.DataBaseWrapper.DataBaseID
-import org.itemis.types.Address
+import org.itemis.types.impl.Address
 
 abstract class MainnetAllocData {
   static extension DataBaseWrapper db = new DataBaseWrapper

@@ -14,8 +14,8 @@ import org.itemis.types.UnsignedByte
 import java.io.Serializable
 import org.itemis.types.Nibble
 import java.math.BigInteger
-import org.itemis.types.Hash256
-import org.itemis.types.Hash512
+import org.itemis.types.impl.Hash256
+import org.itemis.types.impl.Hash512
 
 //uses implementations in static utils
 class Utils implements Serializable {

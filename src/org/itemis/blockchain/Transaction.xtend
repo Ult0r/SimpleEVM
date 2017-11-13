@@ -9,15 +9,15 @@
  *******************************************************************************/
 package org.itemis.blockchain
 
-import org.itemis.types.EVMWord
+import org.itemis.types.impl.EVMWord
 import org.itemis.types.UnsignedByte
 import com.google.gson.JsonObject
 import org.itemis.utils.Utils
 import org.eclipse.xtend.lib.annotations.Accessors
 import java.util.List
 import org.itemis.evm.utils.EVMUtils
-import org.itemis.types.Address
-import org.itemis.types.Hash256
+import org.itemis.types.impl.Address
+import org.itemis.types.impl.Hash256
 
 class Transaction {
   extension Utils u = new Utils

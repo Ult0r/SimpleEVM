@@ -13,7 +13,7 @@ import org.itemis.types.UnsignedByte
 import java.util.List
 import java.util.Arrays
 import org.itemis.utils.StaticUtils
-import org.itemis.types.EVMWord
+import org.itemis.types.impl.EVMWord
 import java.util.function.Predicate
 import org.itemis.types.TreeNode
 

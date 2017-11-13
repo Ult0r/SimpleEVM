@@ -8,12 +8,14 @@
  * Lars Reimers for itemis AG
  *******************************************************************************/
 
-package org.itemis.types
+package org.itemis.types.impl
 
 import java.util.List
 import org.itemis.evm.OverflowException
 import java.math.BigInteger
 import java.util.ArrayList
+
+import org.itemis.types.UnsignedByteArray
 
 // TODO replace EVMWord with subclasses (address, hash, etc)
 //256-bit / 32-byte int
@@ -45,7 +47,7 @@ class EVMWord {
     array = new UnsignedByteArray(32, array)
   }
 
-  new(UnsignedByte[] array) {
+  new(org.itemis.types.UnsignedByte[] array) {
     array = new UnsignedByteArray(32, array)
   }
 
@@ -57,11 +59,11 @@ class EVMWord {
     new EVMWord(UnsignedByteArray.fromString(s))
   }
 
-  def UnsignedByte get(Integer n) {
+  def org.itemis.types.UnsignedByte get(Integer n) {
     array.get(n)
   }
 
-  def UnsignedByte[] toUnsignedByteArray() {
+  def org.itemis.types.UnsignedByte[] toUnsignedByteArray() {
     array.toUnsignedByteArray
   }
 
@@ -81,7 +83,7 @@ class EVMWord {
     new EVMWord(newArray)
   }
 
-  def EVMWord set(Integer n, UnsignedByte newValue) {
+  def EVMWord set(Integer n, org.itemis.types.UnsignedByte newValue) {
     var newArray = new UnsignedByteArray(array)
     newArray = newArray.set(n, newValue)
     new EVMWord(newArray)

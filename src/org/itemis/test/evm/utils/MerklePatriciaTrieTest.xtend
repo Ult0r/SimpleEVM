@@ -17,7 +17,7 @@ import org.itemis.utils.Utils
 import org.itemis.types.UnsignedByte
 import org.itemis.types.NibbleList
 import org.itemis.ressources.JsonRPCWrapper
-import org.itemis.types.EVMWord
+import org.itemis.types.impl.EVMWord
 import org.junit.Assert
 import org.itemis.utils.db.DataBaseWrapper.DataBaseID
 import org.itemis.utils.db.DataBaseWrapper

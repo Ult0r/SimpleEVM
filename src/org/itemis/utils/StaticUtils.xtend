@@ -16,8 +16,8 @@ import java.io.File
 import java.nio.file.Files
 import org.itemis.types.Nibble
 import java.math.BigInteger
-import org.itemis.types.Hash256
-import org.itemis.types.Hash512
+import org.itemis.types.impl.Hash256
+import org.itemis.types.impl.Hash512
 
 abstract class StaticUtils {
   // if n = 0, results in bits 0-7

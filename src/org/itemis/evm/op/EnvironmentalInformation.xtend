@@ -13,10 +13,10 @@ import org.itemis.evm.EVMOperation
 import org.itemis.evm.EVMRuntime
 import org.itemis.types.UnsignedByte
 import java.util.List
-import org.itemis.types.EVMWord
+import org.itemis.types.impl.EVMWord
 import org.itemis.evm.EVMOperation.FeeClass
 import org.itemis.evm.EVMOperation.OpCode
-import org.itemis.types.Address
+import org.itemis.types.impl.Address
 
 abstract class EnvironmentalInformation {
   def static ADDRESS(EVMRuntime runtime) {

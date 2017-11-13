@@ -10,11 +10,11 @@
 package org.itemis.evm.utils
 
 import java.util.Map
-import org.itemis.types.EVMWord
+import org.itemis.types.impl.EVMWord
 import org.apache.commons.lang3.tuple.Triple
 import org.itemis.blockchain.WorldState
 import java.util.Set
-import org.itemis.types.Address
+import org.itemis.types.impl.Address
 
 final class Patch {
   // address -> (balance, nonce, (offset -> value))

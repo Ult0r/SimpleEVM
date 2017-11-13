@@ -11,7 +11,7 @@
 package org.itemis.test.types
 
 import org.junit.Test
-import org.itemis.types.EVMWord
+import org.itemis.types.impl.EVMWord
 import org.junit.Assert
 import org.itemis.evm.OverflowException
 

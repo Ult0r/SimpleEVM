@@ -10,13 +10,13 @@
 package org.itemis.evm.utils
 
 import java.math.BigInteger
-import org.itemis.types.EVMWord
+import org.itemis.types.impl.EVMWord
 import org.itemis.utils.StaticUtils
 import java.util.Arrays
 import org.itemis.blockchain.Block
 import java.util.List
-import org.itemis.types.EthashNonce
-import org.itemis.types.Hash256
+import org.itemis.types.impl.EthashNonce
+import org.itemis.types.impl.Hash256
 
 abstract class Ethash {
   private static final BigInteger TWO = BigInteger.valueOf(2)
