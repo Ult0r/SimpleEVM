@@ -185,7 +185,7 @@ abstract class MainnetAllocData {
       for (c : tree.children) {
         val left = new ArrayList(c.children.get(0).data)
         while(left.length < 20) {
-          left.add(0, new UnsignedByte(0))
+          left.add(0, UnsignedByte.ZERO)
         }
         val address = new EVMWord(left)
 

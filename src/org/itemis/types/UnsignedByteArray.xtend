@@ -58,10 +58,9 @@ final class UnsignedByteArray {
     array.length
   }
 
-  // TODO: UnsignedByte(0) singleton
   def private void setToZero() {
     for (var i = 0; i < length; i++) {
-      array.set(i, new UnsignedByte(0))
+      array.set(i, UnsignedByte.ZERO)
     }
   }
 

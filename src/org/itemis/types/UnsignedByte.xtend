@@ -17,6 +17,8 @@ import org.itemis.evm.OverflowException
 //opposing to the signed java.lang.Byte
 class UnsignedByte extends Number implements Comparable<UnsignedByte> {
   extension Utils u = new Utils
+  
+  public static final UnsignedByte ZERO = new UnsignedByte(0)
 
   private short value = 0 as short
 

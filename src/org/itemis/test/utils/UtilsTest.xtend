@@ -23,12 +23,12 @@ class UtilsTest {
 
   @Test
   def void testGetNthByteOfInteger() {
-    Assert.assertEquals(zero.getNthByteOfInteger(0), new UnsignedByte(0))
-    Assert.assertEquals(zero.getNthByteOfInteger(1), new UnsignedByte(0))
-    Assert.assertEquals(zero.getNthByteOfInteger(2), new UnsignedByte(0))
-    Assert.assertEquals(zero.getNthByteOfInteger(3), new UnsignedByte(0))
+    Assert.assertEquals(zero.getNthByteOfInteger(0), UnsignedByte.ZERO)
+    Assert.assertEquals(zero.getNthByteOfInteger(1), UnsignedByte.ZERO)
+    Assert.assertEquals(zero.getNthByteOfInteger(2), UnsignedByte.ZERO)
+    Assert.assertEquals(zero.getNthByteOfInteger(3), UnsignedByte.ZERO)
 
-    Assert.assertEquals(_0x03020100.getNthByteOfInteger(0), new UnsignedByte(0))
+    Assert.assertEquals(_0x03020100.getNthByteOfInteger(0), UnsignedByte.ZERO)
     Assert.assertEquals(_0x03020100.getNthByteOfInteger(1), new UnsignedByte(1))
     Assert.assertEquals(_0x03020100.getNthByteOfInteger(2), new UnsignedByte(2))
     Assert.assertEquals(_0x03020100.getNthByteOfInteger(3), new UnsignedByte(3))
@@ -36,7 +36,7 @@ class UtilsTest {
 
   @Test
   def void testToHex() {
-    Assert.assertEquals(new UnsignedByte(0).toHex, "0")
+    Assert.assertEquals(UnsignedByte.ZERO.toHex, "0")
     Assert.assertEquals(new UnsignedByte(1).toHex, "1")
     Assert.assertEquals(new UnsignedByte(2).toHex, "2")
     Assert.assertEquals(new UnsignedByte(3).toHex, "3")

@@ -17,7 +17,7 @@ import org.itemis.evm.OverflowException
 import org.itemis.types.Nibble
 
 class UnsignedByteTest {
-  private val UnsignedByte zero = new UnsignedByte(0)
+  private val UnsignedByte zero = UnsignedByte.ZERO
   private val UnsignedByte _0xE5 = new UnsignedByte(0xE5)
 
   @Test
@@ -61,7 +61,7 @@ class UnsignedByteTest {
 
   @Test
   def void testInvert() {
-    var UnsignedByte invert = new UnsignedByte(0)
+    var UnsignedByte invert = UnsignedByte.ZERO
     Assert.assertEquals(zero, invert)
     invert = invert.invert
     Assert.assertEquals(new UnsignedByte(0xFF), invert)
@@ -75,7 +75,7 @@ class UnsignedByteTest {
 
   @Test(expected=OverflowException)
   def void testInc() {
-    var UnsignedByte inc = new UnsignedByte(0)
+    var UnsignedByte inc = UnsignedByte.ZERO
     Assert.assertEquals(zero, inc)
     inc = inc.inc
     Assert.assertEquals(1, inc.getValue)
@@ -89,7 +89,7 @@ class UnsignedByteTest {
 
   @Test(expected=OverflowException)
   def void testAdd() {
-    var UnsignedByte add = new UnsignedByte(0)
+    var UnsignedByte add = UnsignedByte.ZERO
     Assert.assertEquals(zero, add)
     add = add.add(zero)
     Assert.assertEquals(zero, add)
