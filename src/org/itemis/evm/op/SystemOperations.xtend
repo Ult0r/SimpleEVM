@@ -12,6 +12,7 @@ package org.itemis.evm.op
 import org.itemis.evm.EVMRuntime
 import org.itemis.types.impl.EVMWord
 import org.itemis.evm.EVMOperation.FeeClass
+import org.itemis.types.impl.Address
 
 abstract class SystemOperations {
   def static CREATE(EVMRuntime runtime) {
@@ -53,6 +54,43 @@ abstract class SystemOperations {
   }
 
   def static CALL(EVMRuntime runtime) {
+    val s0 = runtime.popStackItem
+    val s1 = runtime.popStackItem
+    val s2 = runtime.popStackItem
+    val s3 = runtime.popStackItem
+    val s4 = runtime.popStackItem
+    val s5 = runtime.popStackItem
+    val s6 = runtime.popStackItem
+    val s7 = runtime.popStackItem
+
+    val balance = runtime.patch.getBalance(runtime.worldState, runtime.callerAddress)
+    val nonce = runtime.patch.getNonce(runtime.worldState, runtime.callerAddress)
+    
+    val i = newByteArrayOfSize(s4.intValue)
+    for (var j = 0; j < s4.intValue; j++) {
+      i.set(j, runtime.memory.get(s3.add(j)))
+    }
+    
+    if (s2.lessThanEquals(balance) && runtime.depth.intValue < 1024) {
+      val addr = new Address(s1) 
+      val o = runtime.worldState.getCodeAt(addr) 
+      val n = EVMWord.min(s6, new EVMWord(o.size))
+      
+      for (var j = 0; j < n.intValue - 1; j++) {
+        runtime.memory.put(s5.add(j), o.get(j).byteValue)
+      }
+      
+      val contractRuntime = runtime.createNestedRuntime(s2, o.elements.map[byteValue])
+      contractRuntime.fillEnvironmentInfo(
+        s1, 
+      )
+      
+    } else {
+      runtime.pushStackItem(EVMWord.ZERO)
+    }
+    
+    
+    
     // TODO  
   }
 
