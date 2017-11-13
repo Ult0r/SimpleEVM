@@ -81,7 +81,6 @@ final class UnsignedByteArray {
     set(i, new UnsignedByte(value))
   }
 
-  // TODO: refactor *all* exceptions to behave like early returns
   def UnsignedByteArray set(int i, UnsignedByte b) {
     if(i < 0 || i >= length) {
       throw new IllegalArgumentException(String.format("%d is not between 0 and %d", i, length))
