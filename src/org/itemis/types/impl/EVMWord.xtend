@@ -18,7 +18,6 @@ import java.util.ArrayList
 import org.itemis.types.UnsignedByte
 import org.itemis.types.UnsignedByteArray
 
-// TODO replace EVMWord with subclasses (address, hash, etc)
 //256-bit / 32-byte int
 //[0] contains bits 0-7
 //[31] contains bits 248-255
