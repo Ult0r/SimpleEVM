@@ -33,6 +33,7 @@ abstract class SHA3 {
     runtime.memorySize = EVMRuntime.calcMemorySize(runtime.memorySize, s0, s1)
 
     val var_cost = EVMOperation.FEE_SCHEDULE.get(FeeClass.SHA3WORD).mul(s1.divRoundUp(32))
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.SHA3).add(var_cost))
+    runtime.addGasCost(FeeClass.SHA3)
+    runtime.addGasCost(var_cost)
   }
 }

@@ -17,7 +17,7 @@ import org.itemis.evm.EVMOperation.FeeClass
 abstract class StackMemoryStorageAndFlowOperations {
   def static POP(EVMRuntime runtime) {
     runtime.popStackItem
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.BASE))
+    runtime.addGasCost(FeeClass.BASE)
   }
 
   def static MLOAD(EVMRuntime runtime) {
@@ -31,7 +31,7 @@ abstract class StackMemoryStorageAndFlowOperations {
 
     runtime.memorySize = EVMRuntime.calcMemorySize(runtime.memorySize, s0, new EVMWord(32))
 
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
+    runtime.addGasCost(FeeClass.VERYLOW)
   }
 
   def static MSTORE(EVMRuntime runtime) {
@@ -45,7 +45,7 @@ abstract class StackMemoryStorageAndFlowOperations {
 
     runtime.memorySize = EVMRuntime.calcMemorySize(runtime.memorySize, s0, new EVMWord(32))
 
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
+    runtime.addGasCost(FeeClass.VERYLOW)
   }
 
   def static MSTORE8(EVMRuntime runtime) {
@@ -56,25 +56,25 @@ abstract class StackMemoryStorageAndFlowOperations {
 
     runtime.memorySize = EVMRuntime.calcMemorySize(runtime.memorySize, s0, EVMWord.ONE)
 
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
+    runtime.addGasCost(FeeClass.VERYLOW)
   }
 
   def static SLOAD(EVMRuntime runtime) {
     val s0 = runtime.popStackItem
     runtime.pushStackItem(runtime.patch.getStorageAt(runtime.worldState, runtime.codeAddress, s0))
 
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.SLOAD))
+    runtime.addGasCost(FeeClass.SLOAD)
   }
 
   def static SSTORE(EVMRuntime runtime) {
     val s0 = runtime.popStackItem
     val s1 = runtime.popStackItem
 
-    var EVMWord cost
+    var FeeClass cost
     if(!s1.zero && runtime.patch.getStorageAt(runtime.worldState, runtime.codeAddress, s0).zero) {
-      cost = EVMOperation.FEE_SCHEDULE.get(FeeClass.SSET)
+      cost = FeeClass.SSET
     } else {
-      cost = EVMOperation.FEE_SCHEDULE.get(FeeClass.SRESET)
+      cost = FeeClass.SRESET
     }
 
     runtime.patch.setStorageValue(runtime.codeAddress, s0, s1)
@@ -87,7 +87,7 @@ abstract class StackMemoryStorageAndFlowOperations {
 
     runtime.jump(s0)
 
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.MID))
+    runtime.addGasCost(FeeClass.MID)
   }
 
   def static JUMPI(EVMRuntime runtime) {
@@ -98,18 +98,18 @@ abstract class StackMemoryStorageAndFlowOperations {
       runtime.jump(s0)
     }
 
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.HIGH))
+    runtime.addGasCost(FeeClass.HIGH)
   }
 
   def static PC(EVMRuntime runtime) {
     runtime.pushStackItem(new EVMWord(runtime.pc))
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.BASE))
+    runtime.addGasCost(FeeClass.BASE)
 
   }
 
   def static MSIZE(EVMRuntime runtime) {
     runtime.pushStackItem(runtime.memorySize.mul(32))
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.BASE))
+    runtime.addGasCost(FeeClass.BASE)
   }
 
   def static GAS(EVMRuntime runtime) {
@@ -119,6 +119,6 @@ abstract class StackMemoryStorageAndFlowOperations {
   }
 
   def static JUMPDEST(EVMRuntime runtime) {
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.JUMPDEST))
+    runtime.addGasCost(FeeClass.JUMPDEST)
   }
 }

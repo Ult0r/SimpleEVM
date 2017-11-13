@@ -21,29 +21,29 @@ import org.itemis.types.impl.Address
 abstract class EnvironmentalInformation {
   def static ADDRESS(EVMRuntime runtime) {
     runtime.pushStackItem(runtime.codeAddress.toEVMWord)
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.BASE))
+    runtime.addGasCost(FeeClass.BASE)
   }
 
   def static BALANCE(EVMRuntime runtime) {
     val s0 = runtime.popStackItem
     val balance = runtime.patch.getBalance(runtime.worldState, new Address(s0))
     runtime.pushStackItem(balance)
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.BALANCE))
+    runtime.addGasCost(FeeClass.BALANCE)
   }
 
   def static ORIGIN(EVMRuntime runtime) {
     runtime.pushStackItem(runtime.originAddress.toEVMWord)
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.BASE))
+    runtime.addGasCost(FeeClass.BASE)
   }
 
   def static CALLER(EVMRuntime runtime) {
     runtime.pushStackItem(runtime.callerAddress.toEVMWord)
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.BASE))
+    runtime.addGasCost(FeeClass.BASE)
   }
 
   def static CALLVALUE(EVMRuntime runtime) {
     runtime.pushStackItem(runtime.value)
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.BASE))
+    runtime.addGasCost(FeeClass.BASE)
   }
 
   def static CALLDATALOAD(EVMRuntime runtime) {
@@ -63,12 +63,12 @@ abstract class EnvironmentalInformation {
     }
 
     runtime.pushStackItem(new EVMWord(bytes))
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
+    runtime.addGasCost(FeeClass.VERYLOW)
   }
 
   def static CALLDATASIZE(EVMRuntime runtime) {
     runtime.pushStackItem(new EVMWord(runtime.inputData.size))
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.BASE))
+    runtime.addGasCost(FeeClass.BASE)
   }
 
   def static CALLDATACOPY(EVMRuntime runtime) {
@@ -97,12 +97,13 @@ abstract class EnvironmentalInformation {
     EVMRuntime.calcMemorySize(runtime.memorySize, s0, s2)
 
     val var_cost = EVMOperation.FEE_SCHEDULE.get(FeeClass.COPY).mul(s2.divRoundUp(32))
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW).add(var_cost))
+    runtime.addGasCost(FeeClass.VERYLOW)
+    runtime.addGasCost(var_cost)
   }
 
   def static CODESIZE(EVMRuntime runtime) {
     runtime.pushStackItem(new EVMWord(runtime.code.size))
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.BASE))
+    runtime.addGasCost(FeeClass.BASE)
   }
 
   def static CODECOPY(EVMRuntime runtime) {
@@ -131,18 +132,19 @@ abstract class EnvironmentalInformation {
     EVMRuntime.calcMemorySize(runtime.memorySize, s0, s2)
 
     val var_cost = EVMOperation.FEE_SCHEDULE.get(FeeClass.COPY).mul(s2.divRoundUp(32))
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW).add(var_cost))
+    runtime.addGasCost(FeeClass.VERYLOW)
+    runtime.addGasCost(var_cost)
   }
 
   def static GASPRICE(EVMRuntime runtime) {
     runtime.pushStackItem(runtime.gasPrice)
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.BASE))
+    runtime.addGasCost(FeeClass.BASE)
   }
 
   def static EXTCODESIZE(EVMRuntime runtime) {
     val s0 = runtime.popStackItem
     runtime.pushStackItem(new EVMWord(runtime.worldState.getCodeAt(new Address(s0)).size))
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.EXTCODE))
+    runtime.addGasCost(FeeClass.EXTCODE)
   }
 
   def static EXTCODECOPY(EVMRuntime runtime) {
@@ -172,6 +174,7 @@ abstract class EnvironmentalInformation {
     EVMRuntime.calcMemorySize(runtime.memorySize, s1, s3)
 
     val var_cost = EVMOperation.FEE_SCHEDULE.get(FeeClass.COPY).mul(s2.divRoundUp(32))
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.EXTCODE).add(var_cost))
+    runtime.addGasCost(FeeClass.EXTCODE)
+    runtime.addGasCost(var_cost)
   }
 }

@@ -23,6 +23,7 @@ import org.itemis.types.UnsignedByteList
 import org.itemis.blockchain.BlockchainData
 import java.util.Set
 import org.itemis.types.impl.Address
+import org.itemis.evm.EVMOperation.FeeClass
 
 final class EVMRuntime {
   @Accessors private final WorldState worldState
@@ -204,7 +205,10 @@ final class EVMRuntime {
     gasUsed
   }
   
-  //TODO: change parameter to FeeClass
+  def void addGasCost(FeeClass feeClass) {
+    addGasCost(EVMOperation.FEE_SCHEDULE.get(feeClass))
+  }
+  
   def void addGasCost(EVMWord gasAmount) {
     gasUsed = gasUsed.add(gasAmount)
     if (gasUsed.greaterThan(currentBlock.gasLimit)) {

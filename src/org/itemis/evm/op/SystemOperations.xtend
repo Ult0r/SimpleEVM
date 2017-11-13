@@ -11,7 +11,6 @@ package org.itemis.evm.op
 
 import org.itemis.evm.EVMRuntime
 import org.itemis.types.impl.EVMWord
-import org.itemis.evm.EVMOperation
 import org.itemis.evm.EVMOperation.FeeClass
 
 abstract class SystemOperations {
@@ -50,7 +49,7 @@ abstract class SystemOperations {
 
     runtime.memorySize = EVMRuntime.calcMemorySize(runtime.memorySize, s1, s2)
 
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.CREATE))
+    runtime.addGasCost(FeeClass.CREATE)
   }
 
   def static CALL(EVMRuntime runtime) {

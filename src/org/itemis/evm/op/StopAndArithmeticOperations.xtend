@@ -27,21 +27,21 @@ abstract class StopAndArithmeticOperations {
     val s1 = runtime.popStackItem
     runtime.pushStackItem(s0.add(s1))
 
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
+    runtime.addGasCost(FeeClass.VERYLOW)
   }
 
   def static MUL(EVMRuntime runtime) {
     val s0 = runtime.popStackItem
     val s1 = runtime.popStackItem
     runtime.pushStackItem(s0.mul(s1))
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.LOW))
+    runtime.addGasCost(FeeClass.LOW)
   }
 
   def static SUB(EVMRuntime runtime) {
     val s0 = runtime.popStackItem
     val s1 = runtime.popStackItem
     runtime.pushStackItem(s0.sub(s1))
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.VERYLOW))
+    runtime.addGasCost(FeeClass.VERYLOW)
   }
 
   def static DIV(EVMRuntime runtime) {
@@ -52,7 +52,7 @@ abstract class StopAndArithmeticOperations {
     } else {
       runtime.pushStackItem(EVMWord.fromBigInteger(s0.toUnsignedBigInteger.divide(s1.toUnsignedBigInteger)))
     }
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.LOW))
+    runtime.addGasCost(FeeClass.LOW)
   }
 
   def static SDIV(EVMRuntime runtime) {
@@ -65,7 +65,7 @@ abstract class StopAndArithmeticOperations {
     } else {
       runtime.pushStackItem(s0.div(s1))
     }
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.LOW))
+    runtime.addGasCost(FeeClass.LOW)
   }
 
   def static MOD(EVMRuntime runtime) {
@@ -76,7 +76,7 @@ abstract class StopAndArithmeticOperations {
     } else {
       runtime.pushStackItem(EVMWord.fromBigInteger(s0.toUnsignedBigInteger.mod(s1.toUnsignedBigInteger)))
     }
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.LOW))
+    runtime.addGasCost(FeeClass.LOW)
   }
 
   def static SMOD(EVMRuntime runtime) {
@@ -87,7 +87,7 @@ abstract class StopAndArithmeticOperations {
     } else {
       runtime.pushStackItem(EVMWord.fromBigInteger(s0.toBigInteger.mod(s1.toBigInteger)))
     }
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.LOW))
+    runtime.addGasCost(FeeClass.LOW)
   }
 
   def static ADDMOD(EVMRuntime runtime) {
@@ -100,7 +100,7 @@ abstract class StopAndArithmeticOperations {
     } else {
       runtime.pushStackItem(EVMWord.fromBigInteger(s0.toBigInteger.add(s1.toBigInteger).mod(s2.toBigInteger)))
     }
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.MID))
+    runtime.addGasCost(FeeClass.MID)
   }
 
   def static MULMOD(EVMRuntime runtime) {
@@ -113,7 +113,7 @@ abstract class StopAndArithmeticOperations {
     } else {
       runtime.pushStackItem(EVMWord.fromBigInteger(s0.toBigInteger.multiply(s1.toBigInteger).mod(s2.toBigInteger)))
     }
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.MID))
+    runtime.addGasCost(FeeClass.MID)
   }
 
   def static EXP(EVMRuntime runtime) {
@@ -122,11 +122,12 @@ abstract class StopAndArithmeticOperations {
 
     if(s1.zero) {
       runtime.pushStackItem(EVMWord.ONE)
-      runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.EXP))
+      runtime.addGasCost(FeeClass.EXP)
     } else {
       runtime.pushStackItem(EVMWord.fromBigInteger(s0.toBigInteger.modPow(s1.toBigInteger, MAX_VALUE)))
       val var_cost = EVMOperation.FEE_SCHEDULE.get(FeeClass.EXP).mul(1 + s1.log(256))
-      runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.EXP).add(var_cost))
+      runtime.addGasCost(FeeClass.EXP)
+      runtime.addGasCost(var_cost)
     }
   }
 
@@ -149,6 +150,6 @@ abstract class StopAndArithmeticOperations {
     }
 
     runtime.pushStackItem(EVMWord.fromBigInteger(result))
-    runtime.addGasCost(EVMOperation.FEE_SCHEDULE.get(FeeClass.LOW))
+    runtime.addGasCost(FeeClass.LOW)
   }
 }
