@@ -33,6 +33,8 @@ final class EVMRuntime {
   @Accessors private EVMWord memorySize = EVMWord.ZERO
   private EVMStack stack = new EVMStack()
   
+  @Accessors private EVMWord gasAvailable //doesn't change during execution
+  
   @Accessors private Address codeAddress                         //Ia
   @Accessors private Address originAddress                       //Io
   @Accessors private EVMWord gasPrice                            //Ip
@@ -49,15 +51,23 @@ final class EVMRuntime {
   @Accessors private EVMWord refundBalance = EVMWord.ZERO
   private EVMWord gasUsed = EVMWord.ZERO
   
+  @Accessors private byte[] returnValue
+  
   new(WorldState ws) {
     worldState = ws
   }
   
-  def EVMRuntime createNestedRuntime(EVMWord value, byte[] code) {
+  def EVMRuntime createNewAccountRuntime(EVMWord gasAvailable, EVMWord value, byte[] code) {
+    createNestedRuntime(gasAvailable, this.codeAddress, value, code)
+  }
+  
+  def EVMRuntime createNestedRuntime(EVMWord gasAvailable, Address codeAddress, EVMWord value, byte[] code) {
     val result = new EVMRuntime(worldState)
     
+    this.gasAvailable = gasAvailable
+    
     result.fillEnvironmentInfo(
-      null, //TODO: new account address
+      codeAddress,
       originAddress,
       gasPrice,
       null, //no data
@@ -97,6 +107,30 @@ final class EVMRuntime {
       worldState.getCodeAt(t.to).parseCode,
       BlockchainData.getBlockByNumber(worldState.currentBlockNumber),
       EVMWord.ZERO
+    )
+  }
+  
+  def void fillEnvironmentInfo(
+    Address codeAddress,
+    Address originAddress,
+    EVMWord gasPrice,
+    UnsignedByte[] inputData,
+    Address callerAddress,
+    EVMWord value,
+    UnsignedByteList code,
+    Block currentBlock,
+    EVMWord depth
+  ) {
+    fillEnvironmentInfo(
+      codeAddress,
+      originAddress,
+      gasPrice,
+      inputData,
+      callerAddress,
+      value,
+      code.parseCode,
+      currentBlock,
+      depth
     )
   }
   
@@ -171,6 +205,11 @@ final class EVMRuntime {
     
     fillEnvironmentInfo(t)
     
+    if (gasAvailable.greaterThan(currentBlock.gasLimit)) {
+      throw new RuntimeException("Trying to use more gas than the block allows")
+    }
+    gasAvailable = t.gasLimit
+    
     patch.clear
     selfDestructSet.clear
     logs.clear
@@ -203,6 +242,10 @@ final class EVMRuntime {
   
   def EVMWord getGasUsed() {
     gasUsed
+  }
+  
+  def EVMWord getGasStillAvailable() {
+    gasAvailable.sub(gasUsed)
   }
   
   def void addGasCost(FeeClass feeClass) {
@@ -241,5 +284,10 @@ final class EVMRuntime {
       }
       if (roundedUp.lessThan(s)) s else roundedUp
     }
+  }
+  
+  //L(n)
+  def static EVMWord allButOne64th(EVMWord n) {
+    n.sub(n.div(64))
   }
 }
