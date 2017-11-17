@@ -71,6 +71,7 @@ abstract class SystemOperations {
     runtime.memorySize = EVMRuntime.calcMemorySize(runtime.memorySize, s1, s2)
   }
   
+  //TODO: rework this
   def private static _CALL(EVMRuntime runtime, boolean useStackParameter) {
     val s0 = runtime.popStackItem
     val s1 = new Address(runtime.popStackItem)
