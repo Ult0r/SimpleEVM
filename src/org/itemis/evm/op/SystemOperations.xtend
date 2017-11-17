@@ -72,17 +72,17 @@ abstract class SystemOperations {
   
   def private static _CALL(EVMRuntime runtime, boolean useStackParameter) {
     val s0 = runtime.popStackItem
-    val s1 = runtime.popStackItem
-    val to = if (useStackParameter) new Address(s1) else runtime.codeAddress
+    val s1 = new Address(runtime.popStackItem)
     val s2 = runtime.popStackItem
     val s3 = runtime.popStackItem
     val s4 = runtime.popStackItem
     val s5 = runtime.popStackItem
     val s6 = runtime.popStackItem
 
+    val to = if (useStackParameter) s1 else runtime.codeAddress
     val balance = runtime.patch.getBalance(runtime.worldState, runtime.callerAddress)
     
-    val cNew = if (runtime.worldState.accountExists(to)) EVMOperation.FEE_SCHEDULE.get(FeeClass.NEWACCOUNT) else EVMWord.ZERO //XXX: assuming that this changes to 'to' in CALLCODE
+    val cNew = if (runtime.worldState.accountExists(s1)) EVMOperation.FEE_SCHEDULE.get(FeeClass.NEWACCOUNT) else EVMWord.ZERO
     val cXfer = if (!s2.zero) EVMOperation.FEE_SCHEDULE.get(FeeClass.CALLVALUE) else EVMWord.ZERO
     val cExtra = EVMOperation.FEE_SCHEDULE.get(FeeClass.CALL).add(cXfer).add(cNew)
     val cGascap = if (runtime.gasAvailable.greaterThanEquals(cExtra)) {
@@ -99,7 +99,7 @@ abstract class SystemOperations {
     }
     
     if (s2.lessThanEquals(balance) && runtime.depth.intValue < 1024) {
-      val o = runtime.worldState.getCodeAt(to) 
+      val o = runtime.worldState.getCodeAt(s1) 
       val n = EVMWord.min(s6, new EVMWord(o.size))
       
       for (var j = 0; j < n.intValue - 1; j++) {
@@ -114,7 +114,7 @@ abstract class SystemOperations {
         i.map[new UnsignedByte(it)],
         runtime.codeAddress,
         s2,
-        runtime.worldState.getCodeAt(to),
+        runtime.worldState.getCodeAt(s1),
         runtime.currentBlock,
         runtime.depth.inc
       )
