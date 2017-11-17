@@ -19,6 +19,7 @@ import org.itemis.utils.StaticUtils
 import org.itemis.blockchain.Account
 import org.itemis.types.UnsignedByteList
 import org.itemis.evm.EVMOperation
+import org.itemis.evm.HaltException
 
 abstract class SystemOperations {
   //TODO: does gas cost get deducted no matter if create/call/etc successful?
@@ -150,7 +151,17 @@ abstract class SystemOperations {
   }
 
   def static RETURN(EVMRuntime runtime) {
-    // TODO  
+    val s0 = runtime.popStackItem
+    val s1 = runtime.popStackItem
+    
+    runtime.returnValue = newByteArrayOfSize(s1.intValue)
+    for (var i = 0; i < s1.intValue; i++) {
+      runtime.returnValue.set(i, runtime.memory.get(s0.add(i)))
+    }
+    
+    runtime.memorySize = EVMRuntime.calcMemorySize(runtime.memorySize, s0, s1)
+    
+    throw new HaltException("RETURN")
   }
 
   def static DELEGATECALL(EVMRuntime runtime) {

@@ -171,6 +171,8 @@ final class EVMRuntime {
         EVMOperation.executeOp(op, this)
         pc++
       }
+    } catch (HaltException h) {
+      return true
     } catch (RuntimeException e) {
       return false
     }
