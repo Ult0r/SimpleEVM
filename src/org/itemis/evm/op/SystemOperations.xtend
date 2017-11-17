@@ -69,10 +69,11 @@ abstract class SystemOperations {
 
     runtime.memorySize = EVMRuntime.calcMemorySize(runtime.memorySize, s1, s2)
   }
-
-  def static CALL(EVMRuntime runtime) {
+  
+  def private static _CALL(EVMRuntime runtime, boolean useStackParameter) {
     val s0 = runtime.popStackItem
-    val s1 = new Address(runtime.popStackItem)
+    val s1 = runtime.popStackItem
+    val to = if (useStackParameter) new Address(s1) else runtime.codeAddress
     val s2 = runtime.popStackItem
     val s3 = runtime.popStackItem
     val s4 = runtime.popStackItem
@@ -81,7 +82,7 @@ abstract class SystemOperations {
 
     val balance = runtime.patch.getBalance(runtime.worldState, runtime.callerAddress)
     
-    val cNew = if (runtime.worldState.accountExists(s1)) EVMOperation.FEE_SCHEDULE.get(FeeClass.NEWACCOUNT) else EVMWord.ZERO
+    val cNew = if (runtime.worldState.accountExists(to)) EVMOperation.FEE_SCHEDULE.get(FeeClass.NEWACCOUNT) else EVMWord.ZERO //XXX: assuming that this changes to 'to' in CALLCODE
     val cXfer = if (!s2.zero) EVMOperation.FEE_SCHEDULE.get(FeeClass.CALLVALUE) else EVMWord.ZERO
     val cExtra = EVMOperation.FEE_SCHEDULE.get(FeeClass.CALL).add(cXfer).add(cNew)
     val cGascap = if (runtime.gasAvailable.greaterThanEquals(cExtra)) {
@@ -98,22 +99,22 @@ abstract class SystemOperations {
     }
     
     if (s2.lessThanEquals(balance) && runtime.depth.intValue < 1024) {
-      val o = runtime.worldState.getCodeAt(s1) 
+      val o = runtime.worldState.getCodeAt(to) 
       val n = EVMWord.min(s6, new EVMWord(o.size))
       
       for (var j = 0; j < n.intValue - 1; j++) {
         runtime.memory.put(s5.add(j), o.get(j).byteValue)
       }
       
-      val contractRuntime = runtime.createNestedRuntime(s0, s1, s2, o.elements.map[byteValue])
+      val contractRuntime = runtime.createNestedRuntime(s0, to, s2, o.elements.map[byteValue])
       contractRuntime.fillEnvironmentInfo(
-        s1,
+        to,
         runtime.originAddress,
         runtime.gasPrice,
         i.map[new UnsignedByte(it)],
         runtime.codeAddress,
         s2,
-        runtime.worldState.getCodeAt(s1),
+        runtime.worldState.getCodeAt(to),
         runtime.currentBlock,
         runtime.depth.inc
       )
@@ -140,8 +141,12 @@ abstract class SystemOperations {
     runtime.addGasCost(cCall)
   }
 
+  def static CALL(EVMRuntime runtime) {
+    _CALL(runtime, true)
+  }
+
   def static CALLCODE(EVMRuntime runtime) {
-    // TODO  
+    _CALL(runtime, false)
   }
 
   def static RETURN(EVMRuntime runtime) {
