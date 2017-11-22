@@ -25,7 +25,7 @@ abstract class StackMemoryStorageAndFlowOperations {
 
     val bytes = newByteArrayOfSize(32)
     for (var i = 0; i < 32; i++) {
-      bytes.set(i, runtime.memory.get(s0.add(i)))
+      bytes.set(i, runtime.getMemoryElement(s0.add(i)))
     }
     runtime.pushStackItem(new EVMWord(bytes))
 
@@ -40,7 +40,7 @@ abstract class StackMemoryStorageAndFlowOperations {
 
     val bytes = s1.toByteArray
     for (var i = 0; i < 32; i++) {
-      runtime.memory.put(s0.add(i), bytes.get(i))
+      runtime.setMemoryElement(s0.add(i), bytes.get(i))
     }
 
     runtime.memorySize = EVMRuntime.calcMemorySize(runtime.memorySize, s0, new EVMWord(32))
@@ -52,7 +52,7 @@ abstract class StackMemoryStorageAndFlowOperations {
     val s0 = runtime.popStackItem
     val s1 = runtime.popStackItem
 
-    runtime.memory.put(s0, s1.toByteArray.get(0))
+    runtime.setMemoryElement(s0, s1.toByteArray.get(0))
 
     runtime.memorySize = EVMRuntime.calcMemorySize(runtime.memorySize, s0, EVMWord.ONE)
 

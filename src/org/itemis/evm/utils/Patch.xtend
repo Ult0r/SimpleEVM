@@ -65,6 +65,15 @@ final class Patch {
 
     result
   }
+  
+  def Patch mergeOtherPatch(Patch other) {
+    val result = new Patch()
+    
+    result.changes.putAll(changes)
+    result.changes.putAll(other.changes)
+    
+    result
+  }
 
   def void setBalance(Address address, EVMWord balance) {
     if(changes.containsKey(address)) {
@@ -105,6 +114,10 @@ final class Patch {
 
   def boolean hasChanged(Address address) {
     return changes.containsKey(address)
+  }
+  
+  def boolean accountExists(WorldState ws, Address address) {
+    return changes.containsKey(address) || ws.accountExists(address)
   }
 
   def EVMWord getBalance(WorldState ws, Address address) {

@@ -42,4 +42,8 @@ class EVMStack {
   def int size() {
     elements.size
   }
+  
+  def List<EVMWord> getElements() {
+    elements
+  }
 }

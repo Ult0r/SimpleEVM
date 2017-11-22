@@ -21,7 +21,7 @@ abstract class LoggingOperations {
 
     val data = newByteArrayOfSize(s1.intValue)
     for (var i = 0; i < s1.intValue; i++) {
-      data.set(i, runtime.memory.get(s0.add(i)))
+      data.set(i, runtime.getMemoryElement(s0.add(i)))
     }
 
     runtime.logs.add(

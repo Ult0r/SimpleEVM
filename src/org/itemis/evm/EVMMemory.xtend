@@ -17,30 +17,30 @@ import java.util.Map
 //volatile and dynamically sized
 class EVMMemory {
   private final Map<EVMWord, Byte> elements = newHashMap
-  private EVMWord size = EVMWord.ZERO
 
   def Byte get(EVMWord index) {
-    elements.get(index)
+    if (elements.containsKey(index)) {
+      elements.get(index)
+    } else {
+      0 as byte      
+    }
   }
-
+  
   def EVMMemory put(EVMWord index, Byte value) {
-    size = size.inc
     elements.put(index, value)
     this
   }
 
   def EVMMemory remove(EVMWord index) {
-    size = size.dec
     elements.remove(index)
     this
   }
-
-  def EVMWord size() {
-    size
+  
+  def Map<EVMWord, Byte> elements() {
+    elements
   }
-
+  
   def void clear() {
-    size = EVMWord.ZERO
     elements.clear
   }
 }

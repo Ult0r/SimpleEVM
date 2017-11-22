@@ -25,7 +25,7 @@ abstract class SHA3 {
 
     val list = newArrayList
     while(counter.lessThan(topBorder)) {
-      list.add(runtime.memory.get(counter))
+      list.add(runtime.getMemoryElement(counter))
       counter.inc
     }
 

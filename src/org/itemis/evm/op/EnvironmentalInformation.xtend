@@ -87,7 +87,7 @@ abstract class EnvironmentalInformation {
     val _s2 = s2.intValue
 
     for (var i = 0; i < _s2; i++) {
-      runtime.memory.put(s0.add(i), (try {
+      runtime.setMemoryElement(s0.add(i), (try {
         runtime.inputData.get(_s1 + i)
       } catch(Exception e) {
         new UnsignedByte(0x00)
@@ -122,7 +122,7 @@ abstract class EnvironmentalInformation {
     val _s2 = s2.intValue
 
     for (var i = 0; i < _s2; i++) {
-      runtime.memory.put(s0.add(i), EVMOperation.OP_INFO.get(try {
+      runtime.setMemoryElement(s0.add(i), EVMOperation.OP_INFO.get(try {
         runtime.code.get(_s1 + i)
       } catch(Exception e) {
         OpCode.STOP
@@ -164,7 +164,7 @@ abstract class EnvironmentalInformation {
     val _s3 = s3.intValue
 
     for (var i = 0; i < _s3; i++) {
-      runtime.memory.put(s1.add(i), EVMOperation.OP_INFO.get(try {
+      runtime.setMemoryElement(s1.add(i), EVMOperation.OP_INFO.get(try {
         runtime.worldState.getCodeAt(new Address(s0)).get(_s2 + i)
       } catch(Exception e) {
         OpCode.STOP

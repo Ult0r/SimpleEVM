@@ -28,10 +28,13 @@ import org.itemis.evm.EVMOperation.FeeClass
 final class EVMRuntime {
   @Accessors private final WorldState worldState
   
+  @Accessors private final EVMRuntime parentRuntime
+  
   @Accessors private int pc = 0
-  @Accessors private EVMMemory memory = new EVMMemory()
+  private EVMMemory memory = new EVMMemory()
   @Accessors private EVMWord memorySize = EVMWord.ZERO
   private EVMStack stack = new EVMStack()
+  private int elementsTakenFromParentStack = 0
   
   @Accessors private EVMWord gasAvailable //doesn't change during execution
   
@@ -45,7 +48,7 @@ final class EVMRuntime {
   @Accessors private Block currentBlock                          //IH
   @Accessors private EVMWord depth                               //Ie
   
-  @Accessors private Patch patch = new Patch()
+  @Accessors private Patch patch = new Patch() //storage changes
   @Accessors private Set<Address> selfDestructSet = newHashSet
   @Accessors private List<EVMLog> logs = newArrayList
   @Accessors private EVMWord refundBalance = EVMWord.ZERO
@@ -54,17 +57,16 @@ final class EVMRuntime {
   @Accessors private byte[] returnValue
   
   new(WorldState ws) {
+    this(ws, null)
+  }
+  
+  private new(WorldState ws, EVMRuntime parentRuntime) {
     worldState = ws
+    this.parentRuntime = parentRuntime
   }
   
   def EVMRuntime createNewAccountRuntime(EVMWord gasAvailable, EVMWord value, byte[] code) {
-    createNestedRuntime(gasAvailable, this.codeAddress, value, code)
-  }
-  
-  def EVMRuntime createNestedRuntime(EVMWord gasAvailable, Address codeAddress, EVMWord value, byte[] code) {
-    val result = new EVMRuntime(worldState)
-    
-    this.gasAvailable = gasAvailable
+    val result = createNestedRuntime(gasAvailable)
     
     result.fillEnvironmentInfo(
       codeAddress,
@@ -77,6 +79,15 @@ final class EVMRuntime {
       currentBlock,
       depth.inc
     )
+    
+    result
+  }
+  
+  def EVMRuntime createNestedRuntime(EVMWord gasAvailable) {
+    val result = new EVMRuntime(worldState, this)
+    
+    result.gasAvailable = gasAvailable
+    result.memorySize = memorySize
     
     result
   }
@@ -182,10 +193,31 @@ final class EVMRuntime {
     val unusedGas = currentBlock.gasLimit.sub(gasUsed)
     val refund = EVMWord.min(gasUsed.div(2), refundBalance)
     
-    patch.addBalance(worldState, callerAddress, unusedGas.add(refund))
-    patch.applyChanges(worldState)
+    if (parentRuntime === null) {
+      patch.addBalance(worldState, callerAddress, unusedGas.add(refund))
+      patch.applyChanges(worldState)
     
-    worldState.incExecutedTransaction
+      worldState.incExecutedTransaction
+    } else {
+      parentRuntime.patch.mergeOtherPatch(patch)
+      
+      for (memoryEntry: memory.elements.entrySet) {
+        parentRuntime.setMemoryElement(memoryEntry.key, memoryEntry.value)        
+      }
+      parentRuntime.memorySize = memorySize
+      
+      for (var i = 0; i < elementsTakenFromParentStack; i++) {
+        parentRuntime.popStackItem
+      }
+      for (stackEntry: stack.elements) {
+        parentRuntime.pushStackItem(stackEntry)
+      }
+      
+      parentRuntime.selfDestructSet.addAll(selfDestructSet)
+      parentRuntime.logs.addAll(logs)
+      parentRuntime.refundBalance.add(refundBalance)
+      parentRuntime.gasAvailable.add(gasStillAvailable)
+    }
   }
   
   def boolean run() {
@@ -223,16 +255,26 @@ final class EVMRuntime {
   
   def EVMWord popStackItem() {
     if (stack.size == 0) {
-      throw new RuntimeException("Pop on empty stack")
+      if (parentRuntime === null) {
+        throw new RuntimeException("Pop on empty stack")
+      } else {
+        parentRuntime.getStackItem(elementsTakenFromParentStack++)
+      }
+    } else {
+      stack.pop
     }
-    stack.pop
   }
   
   def EVMWord getStackItem(int n) {
     if (stack.size <= n) {
-      throw new RuntimeException("Stack index out of bounds")
+      if (parentRuntime === null) {
+        throw new RuntimeException("Stack index out of bounds")
+      } else {
+        parentRuntime.getStackItem(n - stack.size)
+      }
+    } else {
+      stack.get(n)
     }
-    stack.get(n)
   }
   
   def pushStackItem(EVMWord value) {
@@ -286,6 +328,20 @@ final class EVMRuntime {
       }
       if (roundedUp.lessThan(s)) s else roundedUp
     }
+  }
+  
+  def Byte getMemoryElement(EVMWord index) {
+    if (memory.get(index) != 0) {
+      memory.get(index)
+    } else if (parentRuntime !== null) {
+      parentRuntime.getMemoryElement(index)
+    } else {
+      0 as byte
+    } 
+  }
+  
+  def void setMemoryElement(EVMWord index, Byte value) {
+    memory.put(index, value)
   }
   
   //L(n)
