@@ -64,10 +64,10 @@ abstract class SystemOperations {
   //returns unused gas
   def private static EVMWord sigma(EVMRuntime runtime, Address sender, Address origin, Address recipient, Address codeAddress, EVMWord gasAvailable, EVMWord gasPrice, EVMWord value, EVMWord apparentValue, byte[] data, EVMWord depth) {
     switch recipient.toEVMWord.intValue {
-      case 1: null //TODO precompiled contract ECREC
-      case 2: null //TODO precompiled contract SHA256
-      case 3: null //TODO precompiled contract RIP160
-      case 4: null //TODO precompiled contract ID
+      case 1: throw new UnsupportedOperationException("ECDSARECOVER not implemented yet") //TODO precompiled contract ECREC
+      case 2: throw new UnsupportedOperationException("SHA2-256 not implemented yet") //TODO precompiled contract SHA256
+      case 3: throw new UnsupportedOperationException("RIPEMD-160 not implemented yet") //TODO precompiled contract RIP160
+      case 4: throw new UnsupportedOperationException("ID not implemented yet") //TODO precompiled contract ID
       default: {
         val contractRuntime = runtime.createNestedRuntime(gasAvailable)
         contractRuntime.fillEnvironmentInfo(
