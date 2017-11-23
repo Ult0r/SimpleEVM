@@ -106,7 +106,7 @@ class Block {
     val List<UnsignedByte[]> fields = newArrayList
     fields.add(parentHash.toUnsignedByteArray)
     fields.add(ommersHash.toUnsignedByteArray)
-    fields.add(beneficiary.toUnsignedByteArray.take(20))
+    fields.add(beneficiary.toUnsignedByteArray)
     fields.add(stateRoot.toUnsignedByteArray)
     fields.add(transactionsRoot.toUnsignedByteArray)
     fields.add(receiptsRoot.toUnsignedByteArray)

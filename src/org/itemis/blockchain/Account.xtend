@@ -58,7 +58,7 @@ class Account {
 
   new(MerklePatriciaTrie trie, Hash256 rootHash, Address address) {
     val root = trie.getNode(new UnsignedByteList(rootHash.toUnsignedByteArray))
-    val path = keccak256(address.toUnsignedByteArray.map[byteValue].take(20))
+    val path = keccak256(address.toByteArray)
 
     try {
       val node = root.getNode(trie, new NibbleList(path.toByteArray)) as Leaf
@@ -85,12 +85,12 @@ class Account {
     account.add(codeHash.toUnsignedByteArray)
 
     val value = rlp(account)
-    val path = keccak256(address.toUnsignedByteArray.map[byteValue].take(20))
+    val path = keccak256(address.toByteArray)
 
     trie.putElement(new NibbleList(path.toByteArray), value)
   }
 
   def void removeFromTrie(MerklePatriciaTrie trie, Address address) {
-    // TODO
+    trie.root.removeElement(trie, new NibbleList(address.toUnsignedByteArray))
   }
 }

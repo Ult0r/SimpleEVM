@@ -76,7 +76,7 @@ class Transaction {
     fields.add(gasPrice.trimTrailingZerosAndReverse)
     fields.add(gasLimit.trimTrailingZerosAndReverse)
     if(to !== null) {
-      fields.add(to.toUnsignedByteArray.take(20))
+      fields.add(to.toUnsignedByteArray)
     } else {
       fields.add(newArrayOfSize(0))
     }
