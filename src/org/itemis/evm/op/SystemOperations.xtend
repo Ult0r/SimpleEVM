@@ -22,7 +22,6 @@ import org.itemis.evm.EVMOperation
 import org.itemis.evm.HaltException
 
 abstract class SystemOperations {
-  //TODO: does gas cost get deducted no matter if create/call/etc successful?
   def static CREATE(EVMRuntime runtime) {
     val s0 = runtime.popStackItem
     val s1 = runtime.popStackItem
