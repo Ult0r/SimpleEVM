@@ -62,11 +62,7 @@ class Transaction {
 
   // TODO: Test
   def Hash256 hash() {
-    val fields = fields
-    val _fields = fields.take(5).toList
-    _fields.add(fields.last)
-
-    keccak256(rlp(_fields).map[byteValue])
+    keccak256(rlp(fields).map[byteValue])
   }
 
   // TODO: Test
@@ -81,12 +77,13 @@ class Transaction {
       fields.add(newArrayOfSize(0))
     }
     fields.add(value.trimTrailingZerosAndReverse)
+    fields.add(data)
+    
     val vArray = newArrayOfSize(1)
     vArray.set(0, v)
     fields.add(vArray)
-    fields.add(r.trimTrailingZerosAndReverse)
-    fields.add(s.trimTrailingZerosAndReverse)
-    fields.add(data)
+    fields.add(r.trimTrailingZerosAndReverse.reverseView)
+    fields.add(s.trimTrailingZerosAndReverse.reverseView)
 
     fields
   }
