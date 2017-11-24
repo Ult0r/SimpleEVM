@@ -61,7 +61,7 @@ class Block {
     genesis.number = EVMWord.ZERO
     genesis.gasLimit = EVMWord.fromString("0x8813")
     genesis.gasUsed = EVMWord.ZERO
-    genesis.timestamp = new EVMWord(1438269973) // Jul-30-2015 15:26:13 UTC //XXX: paper specifies 0 here
+    genesis.timestamp = EVMWord.ZERO // Jul-30-2015 15:26:13 UTC //XXX: paper specifies 0 here
     genesis.extraData = StaticUtils.fromHex("0x11bbe8db4e347b4e8c937c1c8370e4b5ed33adb3db69cbdb7a38e1e50b1b82fa")
     genesis.mixHash = Hash256.ZERO
     genesis.nonce = EthashNonce.fromString("0x0000000000000042") // 66 dec
