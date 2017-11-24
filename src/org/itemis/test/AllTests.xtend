@@ -23,9 +23,12 @@ import org.itemis.test.evm.utils.EVMUtilsTest
 import org.itemis.test.evm.utils.MerklePatriciaTrieTest
 import org.itemis.test.blockchain.WorldStateTest
 import org.itemis.test.ressources.MainnetAllocDataTest
+import org.itemis.test.blockchain.TransactionTest
 
 @RunWith(Suite)
-@SuiteClasses(BlockTest,
+@SuiteClasses(
+  BlockTest,
+  TransactionTest,
   WorldStateTest,
   
   EVMUtilsTest,
