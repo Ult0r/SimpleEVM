@@ -59,6 +59,10 @@ class Transaction {
     // TODO: remove this when implementing Cipolla
     sender = Address.fromString(obj.get("from").asString)
   }
+  
+  def Hash256 messageHash() {
+    keccak256(rlp(fields.take(6).toList).map[byteValue])
+  }
 
   def Hash256 hash() {
     keccak256(rlp(fields).map[byteValue])
