@@ -39,9 +39,9 @@ class Transaction {
   }
 
   new(JsonObject obj) {
-    nonce = new EVMWord(obj.get("nonce").asString.fromHex.reverseView)
-    gasPrice = new EVMWord(obj.get("gasPrice").asString.fromHex.reverseView)
-    gasLimit = new EVMWord(obj.get("gas").asString.fromHex.reverseView)
+    nonce = new EVMWord(obj.get("nonce").asString.fromHex(true).reverseView)
+    gasPrice = new EVMWord(obj.get("gasPrice").asString.fromHex(true).reverseView)
+    gasLimit = new EVMWord(obj.get("gas").asString.fromHex(true).reverseView)
 
     value = new EVMWord(obj.get("value").asString.fromHex.reverseView)
 
