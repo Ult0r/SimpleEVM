@@ -60,12 +60,10 @@ class Transaction {
     sender = Address.fromString(obj.get("from").asString)
   }
 
-  // TODO: Test
   def Hash256 hash() {
     keccak256(rlp(fields).map[byteValue])
   }
 
-  // TODO: Test
   def List<UnsignedByte[]> getFields() {
     val List<UnsignedByte[]> fields = newArrayList
     fields.add(nonce.trimTrailingZerosAndReverse)
