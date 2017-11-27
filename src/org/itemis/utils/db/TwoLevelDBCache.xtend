@@ -24,22 +24,13 @@ import java.util.function.Function
 import java.sql.Connection
 import java.sql.ResultSet
 import com.google.common.cache.Cache
-import java.lang.Thread.State
+import org.itemis.utils.Shutdownable
+import org.itemis.utils.ShutdownSequence
 
-final class TwoLevelDBCache<K, V> {
+final class TwoLevelDBCache<K, V> implements Shutdownable {
   extension DataBaseWrapper db = new DataBaseWrapper
 
   private final static Logger LOGGER = LoggerFactory.getLogger("Trie")
-  
-  private final Thread shutdown = {
-    val t = new Thread() {
-      override run() {
-        _flush
-      }
-    }
-    Runtime.runtime.addShutdownHook(t)
-    t
-  }
 
   private final String dbName
   private final DataBaseID dbType
@@ -98,6 +89,8 @@ final class TwoLevelDBCache<K, V> {
     this.parseSelectResult = parseSelectResult
     this.deleteStatement = DataBaseWrapper.getConnection(dbType, dbName).createPreparedStatement(deleteStatement)
     this.fillDeleteStatement = fillDeleteStatement
+    
+    ShutdownSequence.registerShutdownInstance(this)
   }
 
   def V lookUp(K key) {
@@ -114,12 +107,6 @@ final class TwoLevelDBCache<K, V> {
   }
 
   def void flush() {
-    if (shutdown.state == State.RUNNABLE) {
-      _flush
-    }
-  }
-  
-  def private void _flush() {
     var conn = DataBaseWrapper.getConnection(dbType, dbName)
     conn.query("SET FILES LOG FALSE")
     conn.commit
@@ -240,5 +227,9 @@ final class TwoLevelDBCache<K, V> {
       conn.commit
       conn.autoCommit = true
     }
+  }
+  
+  override shutdown() {
+    flush()
   }
 }

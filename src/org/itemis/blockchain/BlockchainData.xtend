@@ -24,7 +24,7 @@ import org.itemis.types.impl.Bloom2048
 import org.itemis.types.impl.Address
 import org.itemis.types.impl.EthashNonce
 import java.math.BigInteger
-import java.lang.Thread.State
+import org.itemis.utils.ShutdownSequence
 
 abstract class BlockchainData {
   static extension JsonRPCWrapper j = new JsonRPCWrapper
@@ -151,16 +151,11 @@ abstract class BlockchainData {
     [BlockchainData::fillTransactionDeleteStatement(it)]
   )
   
-  private final static Thread shutdown = {
-    val t = new Thread() {
-      override run() {
-        _flush
-      }
-    }
-    Runtime.runtime.addShutdownHook(t)
-    t
+  private final static boolean shutdownHookAdded = {
+    ShutdownSequence.registerShutdownClass(BlockchainData)
+    true
   }
-
+  
   // BlockLookUp
   def private static PreparedStatement fillBlockLookUpInsertStatement(
     Triple<EVMWord, Hash256, PreparedStatement> triple) {
@@ -533,14 +528,14 @@ abstract class BlockchainData {
 
     resultTransaction
   }
-
-  def static void flush() {
-    if (shutdown.state == State.RUNNABLE) {
-      _flush
+  
+  def static void shutdown() {
+    if (shutdownHookAdded) {
+      flush
     }
   }
-  
-  def private static void _flush() {
+
+  def static void flush() {
     blockLookUp.flush
     block.flush
     ommerLookUp.flush

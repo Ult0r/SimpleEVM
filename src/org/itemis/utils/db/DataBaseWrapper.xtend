@@ -19,9 +19,15 @@ import java.sql.Statement
 import org.itemis.types.impl.EVMWord
 import java.sql.PreparedStatement
 import java.util.Map
+import org.itemis.utils.ShutdownSequence
 
 final class DataBaseWrapper {
   private final static Logger LOGGER = LoggerFactory.getLogger("Database")
+  
+  private final static boolean shutdownHookAdded = {
+    ShutdownSequence.registerShutdownClass(DataBaseWrapper, 20)
+    true
+  }
 
   public enum DataBaseID {
     STATE,
@@ -42,19 +48,8 @@ final class DataBaseWrapper {
     File.separator + "%s" + OPTIONS
 
   private final static Map<Pair<DataBaseID, String>, Connection> connections = newHashMap
-  private final static Thread shutdown = new Thread() {
-    override run() {
-      closeAllConnections()
-    }
-  }
 
   def static Connection getConnection(DataBaseID db, String dbName) {
-    try {
-      Runtime.runtime.addShutdownHook(shutdown)
-    } catch (IllegalArgumentException e) {
-      //do nothing
-    }
-    
     if (connections.containsKey(Pair.of(db, dbName))) {
       connections.get(Pair.of(db, dbName))
     } else {
@@ -70,12 +65,19 @@ final class DataBaseWrapper {
       conn
     }
   }
+  
+  def static void shutdown() {
+    if (shutdownHookAdded) {
+      closeAllConnections
+    }
+  }
 
-  def private static void closeAllConnections() {
+  def static void closeAllConnections() {
     val list = connections.entrySet.toList.map[key].toList
     for (conn : list) {
       closeConnection(conn.key, conn.value)
     }
+    connections.clear
   }
 
   def static void closeConnection(DataBaseID db, String dbName) {
