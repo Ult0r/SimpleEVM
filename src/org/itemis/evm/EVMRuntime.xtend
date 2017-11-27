@@ -24,7 +24,6 @@ import org.itemis.blockchain.BlockchainData
 import java.util.Set
 import org.itemis.types.impl.Address
 import org.itemis.evm.EVMOperation.FeeClass
-import org.itemis.types.impl.Bloom2048
 
 final class EVMRuntime {
   @Accessors private final WorldState worldState
