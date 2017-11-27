@@ -90,6 +90,5 @@ class EthashTest {
     Assert.assertEquals(result.key, block1.mixHash)
     Assert.assertTrue(
       result.value.toEVMWord.toBigInteger.compareTo(TWO.pow(256).divide(block1.difficulty.toBigInteger)) == -1)
-    BlockchainData.flush
   }
 }
