@@ -11,7 +11,6 @@ package org.itemis.test.blockchain
 
 import org.junit.Test
 import org.itemis.blockchain.WorldState
-import org.itemis.utils.db.DataBaseWrapper
 import org.junit.Assert
 import org.itemis.types.impl.EVMWord
 import org.itemis.ressources.JsonRPCWrapper
@@ -26,8 +25,6 @@ class WorldStateTest {
 
     val size = ws.accountCount
     val root = ws.stateRoot
-
-    DataBaseWrapper.closeAllConnections
 
     Assert.assertEquals(size, 8893)
     Assert.assertEquals(root, eth_getBlockByNumber(EVMWord.ZERO, null).stateRoot)

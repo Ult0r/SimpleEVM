@@ -52,8 +52,6 @@ class MerklePatriciaTrieTest {
     ])
 
     Assert.assertEquals(trie.trieRoot.toHexString, "0x8AAD789DFF2F538BCA5D8EA56E8ABE10F4C7BA3A5DEA95FEA4CD6E7C3A1168D3")
-
-    DataBaseWrapper.closeAllConnections
   }
 
   @Test
@@ -75,7 +73,5 @@ class MerklePatriciaTrieTest {
 
     Assert.assertEquals(size, 44410)
     Assert.assertEquals(trie.trieRoot, eth_getBlockByNumber(EVMWord.ZERO, null).stateRoot)
-
-    DataBaseWrapper.closeAllConnections
   }
 }

@@ -42,9 +42,20 @@ final class DataBaseWrapper {
     File.separator + "%s" + OPTIONS
 
   private final static Map<Pair<DataBaseID, String>, Connection> connections = newHashMap
+  private final static Thread shutdown = new Thread() {
+    override run() {
+      closeAllConnections()
+    }
+  }
 
   def static Connection getConnection(DataBaseID db, String dbName) {
-    if(connections.containsKey(Pair.of(db, dbName))) {
+    try {
+      Runtime.runtime.addShutdownHook(shutdown)
+    } catch (IllegalArgumentException e) {
+      //do nothing
+    }
+    
+    if (connections.containsKey(Pair.of(db, dbName))) {
       connections.get(Pair.of(db, dbName))
     } else {
       LOGGER.debug("connecting to '" + dbName + "' of type " + db.toString)
@@ -60,8 +71,7 @@ final class DataBaseWrapper {
     }
   }
 
-  def static void closeAllConnections() {
-    // TODO: shutdown hook
+  def private static void closeAllConnections() {
     val list = connections.entrySet.toList.map[key].toList
     for (conn : list) {
       closeConnection(conn.key, conn.value)

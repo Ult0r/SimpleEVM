@@ -16,7 +16,6 @@ import org.junit.Assert
 import org.itemis.utils.StaticUtils
 import org.itemis.blockchain.BlockchainData
 import java.math.BigInteger
-import org.itemis.utils.db.DataBaseWrapper
 import org.itemis.evm.utils.Ethash
 
 class EthashTest {
@@ -92,6 +91,5 @@ class EthashTest {
     Assert.assertTrue(
       result.value.toEVMWord.toBigInteger.compareTo(TWO.pow(256).divide(block1.difficulty.toBigInteger)) == -1)
     BlockchainData.flush
-    DataBaseWrapper.closeAllConnections
   }
 }
