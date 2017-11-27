@@ -62,6 +62,22 @@ class Utils implements Serializable {
     StaticUtils.toUnsignedBytes(n)
   }
 
+  def Hash256 ripemd_160(String input) {
+    StaticUtils.ripemd_160(input)
+  }
+
+  def Hash256 ripemd_160(byte[] input) {
+    StaticUtils.ripemd_160(input)
+  }
+
+  def Hash256 sha2_256(String input) {
+    StaticUtils.sha2_256(input)
+  }
+
+  def Hash256 sha2_256(byte[] input) {
+    StaticUtils.sha2_256(input)
+  }
+
   def Hash256 keccak256(String input) {
     StaticUtils.keccak256(input)
   }

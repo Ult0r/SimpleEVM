@@ -10,19 +10,21 @@
 
 package org.itemis.utils
 
-import org.itemis.types.UnsignedByte
-import org.bouncycastle.jcajce.provider.digest.Keccak
 import java.io.File
-import java.nio.file.Files
-import org.itemis.types.Nibble
 import java.math.BigInteger
+import java.nio.file.Files
+import org.bouncycastle.asn1.x9.X9IntegerConverter
+import org.bouncycastle.jcajce.provider.digest.Keccak
+import org.bouncycastle.jcajce.provider.digest.RIPEMD160
+import org.bouncycastle.jcajce.provider.digest.SHA256
+import org.bouncycastle.jce.ECNamedCurveTable
+import org.bouncycastle.math.ec.ECAlgorithms
+import org.bouncycastle.math.ec.custom.sec.SecP256K1Curve
+import org.bouncycastle.math.ec.custom.sec.SecP256K1Point
+import org.itemis.types.Nibble
+import org.itemis.types.UnsignedByte
 import org.itemis.types.impl.Hash256
 import org.itemis.types.impl.Hash512
-import org.bouncycastle.math.ec.custom.sec.SecP256K1Curve
-import org.bouncycastle.asn1.x9.X9IntegerConverter
-import org.bouncycastle.jce.ECNamedCurveTable
-import org.bouncycastle.math.ec.custom.sec.SecP256K1Point
-import org.bouncycastle.math.ec.ECAlgorithms
 
 abstract class StaticUtils {
   // if n = 0, results in bits 0-7
@@ -162,6 +164,22 @@ abstract class StaticUtils {
     }
 
     result
+  }
+
+  def static Hash256 ripemd_160(String input) {
+    ripemd_160(input.bytes)
+  }
+
+  def static Hash256 ripemd_160(byte[] input) {
+    new Hash256(new RIPEMD160.Digest().digest(input))
+  }
+
+  def static Hash256 sha2_256(String input) {
+    sha2_256(input.bytes)
+  }
+
+  def static Hash256 sha2_256(byte[] input) {
+    new Hash256(new SHA256.Digest().digest(input))
   }
 
   def static Hash256 keccak256(String input) {

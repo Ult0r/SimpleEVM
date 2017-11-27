@@ -20,6 +20,10 @@ import org.itemis.blockchain.Account
 import org.itemis.types.UnsignedByteList
 import org.itemis.evm.EVMOperation
 import org.itemis.evm.HaltException
+import java.util.Optional
+import java.util.Arrays
+import java.math.BigInteger
+import org.itemis.types.impl.Hash256
 
 abstract class SystemOperations {
   def static CREATE(EVMRuntime runtime) {
@@ -61,34 +65,115 @@ abstract class SystemOperations {
     runtime.memorySize = EVMRuntime.calcMemorySize(runtime.memorySize, s1, s2)
   }
   
-  //returns unused gas
-  def private static EVMWord sigma(EVMRuntime runtime, Address sender, Address origin, Address recipient, Address codeAddress, EVMWord gasAvailable, EVMWord gasPrice, EVMWord value, EVMWord apparentValue, byte[] data, EVMWord depth) {
-    switch recipient.toEVMWord.intValue {
-      case 1: throw new UnsupportedOperationException("ECDSARECOVER not implemented yet") //TODO precompiled contract ECREC
-      case 2: throw new UnsupportedOperationException("SHA2-256 not implemented yet") //TODO precompiled contract SHA256
-      case 3: throw new UnsupportedOperationException("RIPEMD-160 not implemented yet") //TODO precompiled contract RIP160
-      case 4: throw new UnsupportedOperationException("ID not implemented yet") //TODO precompiled contract ID
-      default: {
-        val contractRuntime = runtime.createNestedRuntime(gasAvailable)
-        contractRuntime.fillEnvironmentInfo(
-          recipient,
-          origin,
-          gasPrice,
-          data.map[new UnsignedByte(it)],
-          sender,
-          apparentValue,
-          runtime.worldState.getCodeAt(codeAddress),
-          runtime.currentBlock,
-          depth
-        )
-        
-        if (contractRuntime.run) {
-          runtime.pushStackItem(EVMWord.ONE)
-          contractRuntime.gasStillAvailable
+  def private static Optional<EVMRuntime> ECDSARECOVER(EVMRuntime runtime, byte[] data) {
+    val returnRuntime = runtime.createNestedRuntime(EVMWord.ZERO)
+    
+    val d = Arrays.copyOf(data, 128)
+    
+    val h = new Hash256(d.subList(0, 32))
+    val v = new Integer(d.get(63)) //XXX: or 32
+    val r = new BigInteger(d.subList(64, 96))
+    val s = new BigInteger(d.subList(96, 128))
+    
+    try {
+      val hash = StaticUtils.keccak256(StaticUtils.ECDSARecover(v, s, r, h)).toByteArray
+      returnRuntime.returnValue = newByteArrayOfSize(32)
+      System.arraycopy(hash, 12, returnRuntime.returnValue, 12, 20)
+      Optional.of(returnRuntime)
+    } catch (Exception e) {
+      Optional.empty
+    }
+  }
+  
+  def private static Optional<EVMRuntime> SHA256(EVMRuntime runtime, byte[] data) {
+    val returnRuntime = runtime.createNestedRuntime(EVMWord.ZERO)
+    
+    val hash = StaticUtils.sha2_256(data).toByteArray
+    returnRuntime.returnValue = newByteArrayOfSize(32)
+    System.arraycopy(hash, 0, returnRuntime.returnValue, 0, 32)
+    
+    Optional.of(returnRuntime)
+  }
+  
+  def private static Optional<EVMRuntime> RIPEMD_160(EVMRuntime runtime, byte[] data) {
+    val returnRuntime = runtime.createNestedRuntime(EVMWord.ZERO)
+    
+    val hash = StaticUtils.ripemd_160(data).toByteArray
+    returnRuntime.returnValue = newByteArrayOfSize(32)
+    System.arraycopy(hash, 0, returnRuntime.returnValue, 12, 20)
+    
+    Optional.of(returnRuntime)
+  }
+  
+  def private static Optional<EVMRuntime> ID(EVMRuntime runtime, byte[] data) {
+    val returnRuntime = runtime.createNestedRuntime(EVMWord.ZERO)
+    
+    returnRuntime.returnValue = newByteArrayOfSize(data.length)
+    System.arraycopy(data, 0, returnRuntime.returnValue, 0, data.length)
+    
+    Optional.of(returnRuntime)
+  }
+  
+  def private static Optional<EVMRuntime> pre(int address, EVMRuntime runtime, EVMWord gasAvailable, byte[] data) {
+    switch address {
+      case 1: {
+        if (gasAvailable.greaterThanEquals(new EVMWord(3000))) {
+          ECDSARECOVER(runtime, data)
         } else {
-          runtime.pushStackItem(EVMWord.ZERO)
-          gasAvailable
+          Optional.empty
         }
+      }
+      case 2: {
+        val cost = new EVMWord(60).add(new EVMWord(12).mul(new EVMWord(data.length).divRoundUp(32)))
+        if (gasAvailable.greaterThanEquals(cost)) {
+          SHA256(runtime, data)
+        } else {
+          Optional.empty
+        }
+      }
+      case 3: {
+        val cost = new EVMWord(600).add(new EVMWord(120).mul(new EVMWord(data.length).divRoundUp(32)))
+        if (gasAvailable.greaterThanEquals(cost)) {
+          RIPEMD_160(runtime, data)
+        } else {
+          Optional.empty
+        }
+      }
+      case 4: {
+        val cost = new EVMWord(15).add(new EVMWord(3).mul(new EVMWord(data.length).divRoundUp(32)))
+        if (gasAvailable.greaterThanEquals(cost)) {
+          ID(runtime, data)
+        } else {
+          Optional.empty
+        }
+      }
+    }
+  }
+  
+  //returns unused gas
+  def private static Optional<EVMRuntime> sigma(EVMRuntime runtime, Address sender, Address origin, Address recipient, Address codeAddress, EVMWord gasAvailable, EVMWord gasPrice, EVMWord value, EVMWord apparentValue, byte[] data, EVMWord depth) {
+    if (recipient.toEVMWord.intValue <= 4) {
+      pre(recipient.toEVMWord.intValue, runtime, gasAvailable, data)
+    } else {
+      val contractRuntime = runtime.createNestedRuntime(gasAvailable)
+      contractRuntime.fillEnvironmentInfo(
+        recipient,
+        origin,
+        gasPrice,
+        data.map[new UnsignedByte(it)],
+        sender,
+        apparentValue,
+        runtime.worldState.getCodeAt(codeAddress),
+        runtime.currentBlock,
+        depth
+      )
+      
+      if (contractRuntime.run) {
+        runtime.pushStackItem(EVMWord.ONE)
+        Optional.of(contractRuntime)
+      } else {
+        runtime.pushStackItem(EVMWord.ZERO)
+        Optional.empty
       }
     }
   }
@@ -135,24 +220,20 @@ abstract class SystemOperations {
     for (var j = 0; j < s4.intValue; j++) {
       i.set(j, runtime.getMemoryElement(s3.add(j)))
     }
-    
-    val o = runtime.worldState.getCodeAt(s1)
-    val n = EVMWord.min(s6, new EVMWord(o.size))
-    for (var j = 0; j < n.intValue - 1; j++) {
-      runtime.setMemoryElement(s5.add(j), o.get(j).byteValue)
-    }
       
     runtime.memorySize = EVMRuntime.calcMemorySize(EVMRuntime.calcMemorySize(runtime.memorySize, s3, s4), s5, s6)
     runtime.addGasCost(cCall)
     
+    val gasPassed = CCALLGAS(runtime, s0, s1, s2)
+    
     if (s2.lessThanEquals(balance) && runtime.depth.intValue < 1024) {
-      val leftOverGas = sigma(
+      val contractRuntime = sigma(
         runtime,
         runtime.codeAddress,
         runtime.originAddress,
         if (isCall) s1 else runtime.codeAddress,
         s1,
-        CCALLGAS(runtime, s0, s1, s2),
+        gasPassed,
         runtime.gasPrice,
         s2,
         s2,
@@ -160,7 +241,17 @@ abstract class SystemOperations {
         runtime.depth.inc
       )
       
-      runtime.addGasCost(leftOverGas.negate)
+      if (contractRuntime.present) {
+        runtime.addGasCost(contractRuntime.get.gasStillAvailable.negate)
+    
+        val o = contractRuntime.get.returnValue
+        val n = EVMWord.min(s6, new EVMWord(o.size))
+        for (var j = 0; j < n.intValue - 1; j++) {
+          runtime.setMemoryElement(s5.add(j), o.get(j).byteValue)
+        }
+      } else {
+        runtime.addGasCost(gasPassed.negate)
+      }
     }
   }
   
@@ -204,17 +295,11 @@ abstract class SystemOperations {
       i.set(j, runtime.getMemoryElement(s3.add(j)))
     }
     
-    val o = runtime.worldState.getCodeAt(s1)
-    val n = EVMWord.min(s6, new EVMWord(o.size))
-    for (var j = 0; j < n.intValue - 1; j++) {
-      runtime.setMemoryElement(s5.add(j), o.get(j).byteValue)
-    }
-      
     runtime.memorySize = EVMRuntime.calcMemorySize(EVMRuntime.calcMemorySize(runtime.memorySize, s3, s4), s5, s6)
     runtime.addGasCost(cCall)
     
     if (runtime.value.lessThanEquals(balance) && runtime.depth.intValue < 1024) {
-      val leftOverGas = sigma(
+      val contractRuntime = sigma(
         runtime,
         runtime.callerAddress,
         runtime.originAddress,
@@ -228,7 +313,17 @@ abstract class SystemOperations {
         runtime.depth.inc
       )
       
-      runtime.addGasCost(leftOverGas.negate)
+      if (contractRuntime.present) {
+        runtime.addGasCost(contractRuntime.get.gasStillAvailable.negate)
+    
+        val o = contractRuntime.get.returnValue
+        val n = EVMWord.min(s6, new EVMWord(o.size))
+        for (var j = 0; j < n.intValue - 1; j++) {
+          runtime.setMemoryElement(s5.add(j), o.get(j).byteValue)
+        }
+      } else {
+        runtime.addGasCost(s0.negate)
+      }
     }
   }
 
