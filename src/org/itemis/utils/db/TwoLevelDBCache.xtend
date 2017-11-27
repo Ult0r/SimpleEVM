@@ -24,11 +24,22 @@ import java.util.function.Function
 import java.sql.Connection
 import java.sql.ResultSet
 import com.google.common.cache.Cache
+import java.lang.Thread.State
 
 final class TwoLevelDBCache<K, V> {
   extension DataBaseWrapper db = new DataBaseWrapper
 
   private final static Logger LOGGER = LoggerFactory.getLogger("Trie")
+  
+  private final Thread shutdown = {
+    val t = new Thread() {
+      override run() {
+        _flush
+      }
+    }
+    Runtime.runtime.addShutdownHook(t)
+    t
+  }
 
   private final String dbName
   private final DataBaseID dbType
@@ -45,7 +56,7 @@ final class TwoLevelDBCache<K, V> {
   private final Function<Pair<K, PreparedStatement>, PreparedStatement> fillDeleteStatement
 
   private boolean flushing = false
-
+  
   new(int maxCacheSize, DataBaseID dbType, String dbName, String dbTable, String insertStatement,
     Function<Triple<K, V, PreparedStatement>, PreparedStatement> fillInsertStatement, String selectStatement,
     Function<Pair<K, PreparedStatement>, PreparedStatement> fillSelectStatement,
@@ -103,7 +114,12 @@ final class TwoLevelDBCache<K, V> {
   }
 
   def void flush() {
-    // TODO: shutdown hook
+    if (shutdown.state == State.RUNNABLE) {
+      _flush
+    }
+  }
+  
+  def private void _flush() {
     var conn = DataBaseWrapper.getConnection(dbType, dbName)
     conn.query("SET FILES LOG FALSE")
     conn.commit

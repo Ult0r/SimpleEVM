@@ -154,7 +154,7 @@ abstract class BlockchainData {
   private final static Thread shutdown = {
     val t = new Thread() {
       override run() {
-        flush()
+        _flush
       }
     }
     Runtime.runtime.addShutdownHook(t)
@@ -536,12 +536,16 @@ abstract class BlockchainData {
 
   def static void flush() {
     if (shutdown.state == State.RUNNABLE) {
-      blockLookUp.flush
-      block.flush
-      ommerLookUp.flush
-      ommer.flush
-      transactionLookUp.flush
-      transaction.flush
+      _flush
     }
+  }
+  
+  def private static void _flush() {
+    blockLookUp.flush
+    block.flush
+    ommerLookUp.flush
+    ommer.flush
+    transactionLookUp.flush
+    transaction.flush
   }
 }
