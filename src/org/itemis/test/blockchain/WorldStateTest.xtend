@@ -13,11 +13,9 @@ import org.junit.Test
 import org.itemis.blockchain.WorldState
 import org.junit.Assert
 import org.itemis.types.impl.EVMWord
-import org.itemis.ressources.JsonRPCWrapper
+import org.itemis.blockchain.BlockchainData
 
 class WorldStateTest {
-  extension JsonRPCWrapper j = new JsonRPCWrapper
-
   @Test
   def void testInitWorldState() {
     val ws = new WorldState("testInitWorldState")
@@ -27,6 +25,6 @@ class WorldStateTest {
     val root = ws.stateRoot
 
     Assert.assertEquals(size, 8893)
-    Assert.assertEquals(root, eth_getBlockByNumber(EVMWord.ZERO, null).stateRoot)
+    Assert.assertEquals(root, BlockchainData.getBlockByNumber(EVMWord.ZERO).stateRoot)
   }
 }

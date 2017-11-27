@@ -16,16 +16,15 @@ import org.junit.Test
 import org.itemis.utils.Utils
 import org.itemis.types.UnsignedByte
 import org.itemis.types.NibbleList
-import org.itemis.ressources.JsonRPCWrapper
 import org.itemis.types.impl.EVMWord
 import org.junit.Assert
 import org.itemis.utils.db.DataBaseWrapper.DataBaseID
 import org.itemis.utils.db.DataBaseWrapper
 import org.itemis.blockchain.Account
+import org.itemis.blockchain.BlockchainData
 
 class MerklePatriciaTrieTest {
   extension Utils u = new Utils
-  extension JsonRPCWrapper j = new JsonRPCWrapper
   extension DataBaseWrapper db = new DataBaseWrapper
 
   @Test
@@ -72,6 +71,6 @@ class MerklePatriciaTrieTest {
     val size = res.getLong(1)
 
     Assert.assertEquals(size, 44410)
-    Assert.assertEquals(trie.trieRoot, eth_getBlockByNumber(EVMWord.ZERO, null).stateRoot)
+    Assert.assertEquals(trie.trieRoot, BlockchainData.getBlockByNumber(EVMWord.ZERO).stateRoot)
   }
 }
