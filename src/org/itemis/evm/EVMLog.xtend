@@ -13,6 +13,7 @@ import org.eclipse.xtend.lib.annotations.Accessors
 import org.itemis.types.impl.EVMWord
 import java.util.List
 import org.itemis.types.impl.Address
+import org.itemis.types.impl.Bloom2048
 
 final class EVMLog {
   @Accessors private final Address address
@@ -54,5 +55,15 @@ final class EVMLog {
     this.topics.add(topic1)
     this.topics.add(topic2)
     this.topics.add(topic3)
+  }
+  
+  
+  def public Bloom2048 addToBloom(Bloom2048 bloom) {
+    var result = bloom
+    result = result.addToBloom(address.toByteArray)
+    for (topic: topics) {
+      result = result.addToBloom(topic.toByteArray)
+    }
+    result
   }
 }

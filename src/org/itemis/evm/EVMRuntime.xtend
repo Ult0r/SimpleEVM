@@ -24,6 +24,7 @@ import org.itemis.blockchain.BlockchainData
 import java.util.Set
 import org.itemis.types.impl.Address
 import org.itemis.evm.EVMOperation.FeeClass
+import org.itemis.types.impl.Bloom2048
 
 final class EVMRuntime {
   @Accessors private final WorldState worldState
@@ -221,9 +222,8 @@ final class EVMRuntime {
   }
   
   def boolean run() {
-    //TODO: validate logs
     val success = _run
-    if (success /*&& logs valid */) {
+    if (success) {
       cleanup
     }
     success
@@ -239,10 +239,10 @@ final class EVMRuntime {
     
     fillEnvironmentInfo(t)
     
+    gasAvailable = t.gasLimit
     if (gasAvailable.greaterThan(currentBlock.gasLimit)) {
       throw new RuntimeException("Trying to use more gas than the block allows")
     }
-    gasAvailable = t.gasLimit
     
     patch.clear
     selfDestructSet.clear
