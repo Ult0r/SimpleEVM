@@ -89,4 +89,8 @@ class Utils implements Serializable {
   def boolean isPrime(BigInteger number) {
     StaticUtils.isPrime(number)
   }
+  
+  def byte[] ECDSARecover(int recId, BigInteger s, BigInteger r, Hash256 msgHash) {
+    StaticUtils.ECDSARecover(recId, s, r, msgHash)     
+  }
 }

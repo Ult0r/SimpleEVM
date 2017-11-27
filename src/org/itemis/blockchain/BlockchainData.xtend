@@ -23,6 +23,7 @@ import org.itemis.types.impl.Hash256
 import org.itemis.types.impl.Bloom2048
 import org.itemis.types.impl.Address
 import org.itemis.types.impl.EthashNonce
+import java.math.BigInteger
 
 abstract class BlockchainData {
   static extension JsonRPCWrapper j = new JsonRPCWrapper
@@ -426,8 +427,8 @@ abstract class BlockchainData {
       resultTransaction.to = if(_to !== null) new Address(_to)
       resultTransaction.value = new EVMWord(resultSet.getBytes("value"))
       resultTransaction.v = new UnsignedByte(resultSet.getInt("v"))
-      resultTransaction.r = new EVMWord(resultSet.getBytes("r"))
-      resultTransaction.s = new EVMWord(resultSet.getBytes("s"))
+      resultTransaction.r = new BigInteger(resultSet.getBytes("r"))
+      resultTransaction.s = new BigInteger(resultSet.getBytes("s"))
       resultTransaction.data = resultSet.getBytes("data").map[new UnsignedByte(it)]
 
       resultTransaction

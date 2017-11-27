@@ -18,6 +18,11 @@ import org.itemis.types.Nibble
 import java.math.BigInteger
 import org.itemis.types.impl.Hash256
 import org.itemis.types.impl.Hash512
+import org.bouncycastle.math.ec.custom.sec.SecP256K1Curve
+import org.bouncycastle.asn1.x9.X9IntegerConverter
+import org.bouncycastle.jce.ECNamedCurveTable
+import org.bouncycastle.math.ec.custom.sec.SecP256K1Point
+import org.bouncycastle.math.ec.ECAlgorithms
 
 abstract class StaticUtils {
   // if n = 0, results in bits 0-7
@@ -214,5 +219,39 @@ abstract class StaticUtils {
       }
     }
     return true
+  }
+  
+  def static byte[] ECDSARecover(int recId, BigInteger s, BigInteger r, Hash256 msgHash) {
+    val compressed = false
+    
+    val _curve = ECNamedCurveTable.getParameterSpec("secp256k1")
+    val n = _curve.n
+    val i = BigInteger.valueOf(recId.longValue / 2)
+    val x = r.add(i.multiply(n))
+    
+    val SecP256K1Curve curve = _curve.curve as SecP256K1Curve
+    val prime = curve.q
+    if (x.compareTo(prime) >= 0) {
+      throw new IllegalArgumentException("Illegal coordinates since everything is modulo Q")
+    }
+    
+    val x9 = new X9IntegerConverter()
+    val compEnc = x9.integerToBytes(x, 1 + x9.getByteLength(curve))
+    compEnc.set(0, if ((recId.bitwiseAnd(1)) == 1) 0x03 as byte else 0x02 as byte)
+    val R = curve.decodePoint(compEnc)
+    
+    if (!R.multiply(n).isInfinity) {
+      throw new IllegalArgumentException("Infinite solutions aren't supported")
+    }
+    
+    val e = new BigInteger(1, msgHash.toByteArray)
+    
+    val eInv = BigInteger.ZERO.subtract(e).mod(n)
+    val rInv = r.modInverse(n)
+    val srInv = rInv.multiply(s).mod(n)
+    val eInvrInv = rInv.multiply(eInv).mod(n)
+    
+    val SecP256K1Point q = ECAlgorithms.sumOfTwoMultiplies(_curve.g, eInvrInv, R, srInv) as SecP256K1Point
+    q.getEncoded(compressed)
   }
 }

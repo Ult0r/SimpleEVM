@@ -18,6 +18,8 @@ import java.util.List
 import org.itemis.evm.utils.EVMUtils
 import org.itemis.types.impl.Address
 import org.itemis.types.impl.Hash256
+import java.math.BigInteger
+import org.itemis.utils.StaticUtils
 
 class Transaction {
   extension Utils u = new Utils
@@ -29,11 +31,9 @@ class Transaction {
   @Accessors private Address to // 160-bit address
   @Accessors private EVMWord value
   @Accessors private UnsignedByte v
-  @Accessors private EVMWord r
-  @Accessors private EVMWord s
+  @Accessors private BigInteger r
+  @Accessors private BigInteger s
   @Accessors private UnsignedByte[] data
-  // TODO: remove this when implementing Cipolla
-  private Address sender // 160-bit address
 
   new() {
   }
@@ -43,11 +43,11 @@ class Transaction {
     gasPrice = new EVMWord(obj.get("gasPrice").asString.fromHex(true).reverseView)
     gasLimit = new EVMWord(obj.get("gas").asString.fromHex(true).reverseView)
 
-    value = new EVMWord(obj.get("value").asString.fromHex.reverseView)
+    value = new EVMWord(obj.get("value").asString.fromHex(true).reverseView)
 
     v = fromHex(obj.get("v").asString).map[new UnsignedByte(it)].get(0)
-    r = EVMWord.fromString(obj.get("r").asString)
-    s = EVMWord.fromString(obj.get("s").asString)
+    r = new BigInteger(StaticUtils.fromHex(obj.get("r").asString))
+    s = new BigInteger(StaticUtils.fromHex(obj.get("s").asString))
 
     val isData = !obj.get("to").jsonNull
     if(isData) {
@@ -55,9 +55,6 @@ class Transaction {
     }
 
     data = obj.get("input").asString.fromHex.map[new UnsignedByte(it)]
-
-    // TODO: remove this when implementing Cipolla
-    sender = Address.fromString(obj.get("from").asString)
   }
   
   def Hash256 messageHash() {
@@ -84,14 +81,20 @@ class Transaction {
     val vArray = newArrayOfSize(1)
     vArray.set(0, v)
     fields.add(vArray)
-    fields.add(r.trimTrailingZerosAndReverse.reverseView)
-    fields.add(s.trimTrailingZerosAndReverse.reverseView)
+    fields.add(r.toByteArray.map[new UnsignedByte(it)])
+    fields.add(s.toByteArray.map[new UnsignedByte(it)])
 
     fields
   }
 
   def Address getSender() {
-    // TODO: use Cipolla to generate sender from v, r, s
-    sender
+    val recId = switch (v.intValue) {
+      case 0x1b: 0
+      case 0x1c: 1
+      case 0x25: 0 //XXX: not sure why this changed somewhere between blocks 2,500,000 and 3,000,000
+      case 0x26: 1 //XXX: not sure why this changed somewhere between blocks 2,500,000 and 3,000,000
+    }
+    val pubKey = ECDSARecover(recId, s, r, messageHash)
+    new Address(StaticUtils.keccak256(pubKey.subList(1, pubKey.length)).toByteArray.drop(12))
   }
 }
