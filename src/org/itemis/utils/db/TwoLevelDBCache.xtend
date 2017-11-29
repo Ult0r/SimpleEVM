@@ -235,7 +235,9 @@ final class TwoLevelDBCache<K, V> implements Shutdownable {
   }
   
   override shutdown() {
-    flush()
+    flush
+  }
+  
   def void makeSavepoint(String name) {
     flush
     makeSavepoint(dbType, dbName, name)
