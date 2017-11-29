@@ -26,6 +26,7 @@ import java.sql.ResultSet
 import com.google.common.cache.Cache
 import org.itemis.utils.Shutdownable
 import org.itemis.utils.ShutdownSequence
+import java.io.File
 
 final class TwoLevelDBCache<K, V> implements Shutdownable {
   extension DataBaseWrapper db = new DataBaseWrapper
@@ -91,6 +92,10 @@ final class TwoLevelDBCache<K, V> implements Shutdownable {
     this.fillDeleteStatement = fillDeleteStatement
     
     ShutdownSequence.registerShutdownInstance(this)
+  }
+  
+  def File getLocation() {
+    DataBaseWrapper.getLocation(dbType, dbName)
   }
 
   def V lookUp(K key) {

@@ -22,8 +22,16 @@ import org.itemis.evm.utils.MerklePatriciaTrie.Node
 import org.itemis.utils.StaticUtils
 import org.itemis.types.UnsignedByteList
 import org.itemis.types.impl.Hash256
+import java.io.FileReader
+import java.io.FileWriter
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class MerklePatriciaTrie {
+  extension Utils u = new Utils()
+  
+  private final static Logger LOGGER = LoggerFactory.getLogger("Trie")
+  
   public static final Hash256 EMPTY_TRIE_HASH = Hash256.fromString(
     "0x56E81F171BCC55A6FF8345E692C0F86E5B48E01B996CADC001622FB5E363B421")
 
@@ -39,6 +47,21 @@ class MerklePatriciaTrie {
   new(String name, int maxPrefixLength, int maxDataLength) {
     this.name = name
     this.cache = new MerklePatriciaTrieCache(name, maxPrefixLength, maxDataLength)
+    val rootFile = cache.location.toPath.resolve("root.dat").toFile
+    if (rootFile.exists) {
+      try {
+        val _root = newCharArrayOfSize(32 * 2)
+        val fr = new FileReader(rootFile) 
+        fr.read(_root)
+        //TODO
+        println(_root.join.fromHex.toHex)
+        println(getNode(new UnsignedByteList(_root.join.fromHex)))
+        root = getNode(new UnsignedByteList(_root.join.fromHex))
+        fr.close
+      } catch (Exception e) {
+        LOGGER.warn("Couldn't read root hash")
+      }
+    }
   }
 
   def Hash256 getTrieRoot() {
@@ -52,6 +75,16 @@ class MerklePatriciaTrie {
 
   def void putElement(NibbleList key, UnsignedByte[] value) {
     root = root.putElement(this, key, value)
+    
+    val rootFile = cache.location.toPath.resolve("root.dat").toFile
+    try {
+      val fw = new FileWriter(rootFile)
+      fw.write(root.hash.elements.toHex.substring(2))
+      fw.flush
+      fw.close
+    } catch (Exception e) {
+      LOGGER.warn("Couldn't write root hash: " + e.message)
+    }
   }
 
   def Node getNode(UnsignedByteList hash) {

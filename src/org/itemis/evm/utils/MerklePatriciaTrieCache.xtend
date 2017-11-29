@@ -27,6 +27,7 @@ import org.itemis.evm.utils.MerklePatriciaTrie.Branch
 import org.itemis.types.UnsignedByteList
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.io.File
 
 class MerklePatriciaTrieCache {
   private final static Logger LOGGER = LoggerFactory.getLogger("Trie")
@@ -70,6 +71,10 @@ class MerklePatriciaTrieCache {
       DELETE_STMT_STR,
       [MerklePatriciaTrieCache::fillDeleteStatement(it)]
     )
+  }
+  
+  def File getLocation() {
+    cache.location
   }
 
   def Node lookUp(UnsignedByteList hash) {

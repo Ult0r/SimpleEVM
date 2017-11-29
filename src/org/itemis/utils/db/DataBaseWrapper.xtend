@@ -48,6 +48,15 @@ final class DataBaseWrapper {
     File.separator + "%s" + OPTIONS
 
   private final static Map<Pair<DataBaseID, String>, Connection> connections = newHashMap
+  
+  def static File getLocation(DataBaseID db, String dbName) {
+    new File(System.getProperty("user.dir") + File.separator + switch (db) {
+      case STATE: String.format(STATE_LOCATION, dbName, dbName)
+      case ALLOC: String.format(ALLOC_LOCATION, dbName, dbName)
+      case TRIE: String.format(TRIE_LOCATION, dbName, dbName)
+      case CHAINDATA: String.format(CHAINDATA_LOCATION, dbName, dbName)
+    }.split(";").get(0).split('\\\\').reverseView.drop(1).toList.reverseView.join('\\\\'))
+  }
 
   def static Connection getConnection(DataBaseID db, String dbName) {
     if (connections.containsKey(Pair.of(db, dbName))) {
