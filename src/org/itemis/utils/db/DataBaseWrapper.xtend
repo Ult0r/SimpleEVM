@@ -38,14 +38,10 @@ final class DataBaseWrapper {
 
   private final static String OPTIONS = ";shutdown=true" + ";hsqldb.default_table_type=cached" + ""
 
-  private final static String STATE_LOCATION = "db" + File.separator + "state" + File.separator + "%s" +
-    File.separator + "%s" + OPTIONS
-  private final static String ALLOC_LOCATION = "db" + File.separator + "alloc" + File.separator + "%s" +
-    File.separator + "%s" + OPTIONS
-  private final static String TRIE_LOCATION = "db" + File.separator + "trie" + File.separator + "%s" + File.separator +
-    "%s" + OPTIONS
-  private final static String CHAINDATA_LOCATION = "db" + File.separator + "chaindata" + File.separator + "%s" +
-    File.separator + "%s" + OPTIONS
+  private final static String STATE_LOCATION     = "db" + File.separator + "state" + File.separator + "%s" + File.separator + "_" + OPTIONS
+  private final static String ALLOC_LOCATION     = "db" + File.separator + "alloc" + File.separator + "%s" + File.separator + "_" + OPTIONS
+  private final static String TRIE_LOCATION      = "db" + File.separator + "trie" + File.separator + "%s" + File.separator + "_" + OPTIONS
+  private final static String CHAINDATA_LOCATION = "db" + File.separator + "chaindata" + File.separator + "%s" + File.separator + "_" + OPTIONS
 
   private final static Map<Pair<DataBaseID, String>, Connection> connections = newHashMap
   
