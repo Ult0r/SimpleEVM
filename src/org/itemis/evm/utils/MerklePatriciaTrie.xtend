@@ -53,9 +53,6 @@ class MerklePatriciaTrie {
         val _root = newCharArrayOfSize(32 * 2)
         val fr = new FileReader(rootFile) 
         fr.read(_root)
-        //TODO
-        println(_root.join.fromHex.toHex)
-        println(getNode(new UnsignedByteList(_root.join.fromHex)))
         root = getNode(new UnsignedByteList(_root.join.fromHex))
         fr.close
       } catch (Exception e) {
