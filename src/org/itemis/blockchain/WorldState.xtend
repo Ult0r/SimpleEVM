@@ -89,7 +89,7 @@ class WorldState {
     )
     
     this.codeDB = new TwoLevelDBCache<Address, UnsignedByteList>(
-      org.itemis.blockchain.WorldState.MAX_CODE_DB_CACHE_SIZE,
+      MAX_CODE_DB_CACHE_SIZE,
       DataBaseID.STATE,
       name,
       CODE_TABLE_STR,
