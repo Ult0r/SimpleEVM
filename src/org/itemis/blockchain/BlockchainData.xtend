@@ -40,13 +40,13 @@ abstract class BlockchainData {
   private final static int MAX_TRANSACTION_CACHE_SIZE = 10
 
   private final static String BLOCK_LOOKUP_TABLE_STR = "blockLookUp (blockNumber BINARY(32) PRIMARY KEY, blockHash BINARY(32))"
-  private final static String BLOCK_TABLE_STR = "block (blockHash BINARY(32) PRIMARY KEY, parentHash BINARY(32), ommersHash BINARY(32), beneficiary BINARY(32), stateRoot BINARY(32), transactionsRoot BINARY(32), receiptsRoot BINARY(32), logsBloom BINARY(128), difficulty BINARY(32), number BINARY(32), gasUsed BINARY(32), gasLimit BINARY(32), timestamp BINARY(32), extraData BINARY(32), mixHash BINARY(32), nonce BINARY(32))"
+  private final static String BLOCK_TABLE_STR = "block (blockHash BINARY(32) PRIMARY KEY, parentHash BINARY(32), ommersHash BINARY(32), beneficiary BINARY(20), stateRoot BINARY(32), transactionsRoot BINARY(32), receiptsRoot BINARY(32), logsBloom BINARY(256), difficulty BINARY(32), number BINARY(32), gasUsed BINARY(32), gasLimit BINARY(32), timestamp BINARY(32), extraData BINARY(32), mixHash BINARY(32), nonce BINARY(32))"
 
   private final static String OMMER_LOOKUP_TABLE_STR = "ommerLookUp (blockHash BINARY(32), index INTEGER, ommerHash BINARY(32), PRIMARY KEY (blockHash, index))"
-  private final static String OMMER_TABLE_STR = "ommer (blockHash BINARY(32) PRIMARY KEY, parentHash BINARY(32), ommersHash BINARY(32), beneficiary BINARY(32), stateRoot BINARY(32), transactionsRoot BINARY(32), receiptsRoot BINARY(32), logsBloom BINARY(128), difficulty BINARY(32), number BINARY(32), gasUsed BINARY(32), gasLimit BINARY(32), timestamp BINARY(32), extraData BINARY(32), mixHash BINARY(32), nonce BINARY(32))"
+  private final static String OMMER_TABLE_STR = "ommer (blockHash BINARY(32) PRIMARY KEY, parentHash BINARY(32), ommersHash BINARY(32), beneficiary BINARY(20), stateRoot BINARY(32), transactionsRoot BINARY(32), receiptsRoot BINARY(32), logsBloom BINARY(256), difficulty BINARY(32), number BINARY(32), gasUsed BINARY(32), gasLimit BINARY(32), timestamp BINARY(32), extraData BINARY(32), mixHash BINARY(32), nonce BINARY(32))"
 
   private final static String TRANSACTION_LOOKUP_TABLE_STR = "transactionLookUp (blockNumber BINARY(32), index INTEGER, transactionHash BINARY(32), PRIMARY KEY (blockNumber, index))"
-  private final static String TRANSACTION_TABLE_STR = "transaction (transactionHash BINARY(32) PRIMARY KEY, nonce BINARY(32), gasPrice BINARY(32), gasLimit BINARY(32), recipient BINARY(32), value BINARY(32), v TINYINT, r BINARY(32), s BINARY(32), data LONGVARCHAR)"
+  private final static String TRANSACTION_TABLE_STR = "transaction (transactionHash BINARY(32) PRIMARY KEY, nonce BINARY(32), gasPrice BINARY(32), gasLimit BINARY(32), recipient BINARY(20), value BINARY(32), v TINYINT, r BINARY(32), s BINARY(32), data LONGVARCHAR)"
 
   private final static String INSERT_BLOCK_LOOKUP_STMT_STR = "INSERT INTO blockLookUp VALUES (?, ?)"
   private final static String SELECT_BLOCK_LOOKUP_STMT_STR = "SELECT * FROM blockLookUp WHERE blockNumber=?"

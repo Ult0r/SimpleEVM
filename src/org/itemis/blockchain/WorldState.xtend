@@ -47,8 +47,8 @@ class WorldState {
   private final static int MAX_CODE_DB_CACHE_SIZE    = 10
   private final static int MAX_STORAGE_CACHE_SIZE = 100
 
-  private final static String ACCOUNT_TABLE_STR = "accounts (address BINARY(32) PRIMARY KEY, creationBlock BIGINT NOT NULL)"
-  private final static String CODE_TABLE_STR    = "code (address BINARY(32) PRIMARY KEY, code LONGVARCHAR)"
+  private final static String ACCOUNT_TABLE_STR = "accounts (address BINARY(20) PRIMARY KEY, creationBlock BIGINT NOT NULL)"
+  private final static String CODE_TABLE_STR    = "code (address BINARY(20) PRIMARY KEY, code LONGVARCHAR)"
   
   private final static String INSERT_ACCOUNT_STMT_STR = "INSERT INTO accounts VALUES (?, ?)"
   private final static String SELECT_ACCOUNT_STMT_STR = "SELECT * FROM accounts WHERE address=?"
@@ -141,13 +141,13 @@ class WorldState {
     try {
       resultSet.next
       
-      if (!address.equals(new EVMWord(resultSet.getBytes("address")))) {
+      if (!address.equals(new Address(resultSet.getBytes("address")))) {
         throw new IllegalArgumentException("address unequal")
       }
       
       resultSet.getLong("creationBlock")
     } catch (Exception e) {
-      LOGGER.error(e.message)
+      LOGGER.debug(e.message)
       null
     }
   }
@@ -215,7 +215,9 @@ class WorldState {
       val balance = e.value
       val account = new Account(balance)
       
-      putAccount(EVMWord.ZERO, address, account)
+      if (!accountExists(address)) {
+        putAccount(EVMWord.ZERO, address, account)
+      }
     }
   }
   
