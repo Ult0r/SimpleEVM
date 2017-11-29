@@ -478,7 +478,7 @@ class MerklePatriciaTrie {
           this.paths.set(key.head.intValue, child.putElement(trie, key.tail, value).hash)
         }
       }
-
+      
       trie.cache.putNode(this)
       this
     }

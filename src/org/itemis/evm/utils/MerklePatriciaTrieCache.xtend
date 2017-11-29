@@ -111,8 +111,8 @@ class MerklePatriciaTrieCache {
       Leaf,
       Extension: newArrayList(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
         null)
-      Branch: node.paths.map[if(it !== null) new EVMWord(it.elements)]
-    }.map[if(it !== null) toByteArray]
+      Branch: node.paths.map[if(it !== null) it.elements]
+    }.map[if(it !== null) it.map[byteValue]]
     val prefix = switch (node) {
       Null,
       Branch: null
@@ -194,7 +194,7 @@ class MerklePatriciaTrieCache {
       }
 
       if(!node.hash.equals(hash)) {
-        throw new IllegalArgumentException("hash unequal")
+        throw new IllegalArgumentException(String.format("hash unequal: is %s but should be %s", StaticUtils.toHex(node.hash.elements), StaticUtils.toHex(hash.elements)))
       }
 
       node
