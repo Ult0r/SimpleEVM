@@ -80,6 +80,24 @@ final class ShutdownSequence extends Thread {
     seq.shutdownClasses.add(Pair.of(c, p))
   }
   
+  def static void deregisterShutdownInstance(Shutdownable s) {
+    deregisterShutdownInstance(s, 10)
+  }
+  
+  def static void deregisterShutdownInstance(Shutdownable s, Integer p) {
+    LOGGER.info(String.format("deregistering %s for shutdown", s.toString))
+    seq.shutdownInstances.remove(Pair.of(s, p))
+  }
+  
+  def static void deregisterShutdownClass(Class<?> c) {
+    deregisterShutdownClass(c, 10)  
+  }
+  
+  def static void deregisterShutdownClass(Class<?> c, Integer p) {
+    LOGGER.info(String.format("deregistering %s for shutdown", c.toString))
+    seq.shutdownClasses.remove(Pair.of(c, p))
+  }
+  
   def static Thread getShutdownSequence() {
     seq
   }
