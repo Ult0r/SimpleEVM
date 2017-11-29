@@ -203,4 +203,20 @@ class MerklePatriciaTrieCache {
       null
     }
   }
+  
+  def void makeSavepoint(String name) {
+    cache.makeSavepoint(name)
+  }
+  
+  def void loadSavepoint(String name) {
+    cache.loadSavepoint(name)
+  }
+  
+  def void copyTo(String name) {
+    cache.copyTo(name)
+  }
+  
+  def void delete() {
+    cache.delete
+  }
 }

@@ -366,4 +366,43 @@ class WorldState {
   def void incExecutedTransaction() {
     executedTransactions = executedTransactions.inc
   }
+  
+  def void makeSavepoint(String name) {
+    accountTrie.makeSavepoint(name)
+    for (storageTrie: storageTries.entrySet.map[value]) {
+      storageTrie.makeSavepoint(name)
+    }
+  }
+  
+  def void loadSavepoint(String name) {
+    accountTrie.loadSavepoint(name)
+    for (storageTrie: storageTries.entrySet.map[value]) {
+      storageTrie.loadSavepoint(name)
+    }
+  }
+  
+  def void copyTo(String name) {
+    accountTrie.copyTo(String.format("%s_accountTrie", name))
+    
+    accountDB.flush
+    codeDB.flush
+    copyDB(DataBaseID.STATE, this.name, name)
+    
+    for (storageTrie: storageTries.entrySet.map[value]) {
+      storageTrie.copyTo(String.format("%s_%s", name, storageTrie.location.toPath.fileName.toString.split("_").tail.join("_")))
+    }
+  }
+  
+  def void delete() {
+    accountTrie.delete
+    accountDB.delete
+    codeDB.delete
+    for (storageTrie: storageTries.entrySet.map[value]) {
+      storageTrie.delete
+    }
+  }
+  
+  def static boolean exists(String name) {
+    DataBaseWrapper.getLocation(DataBaseID.STATE, name).exists
+  }
 }

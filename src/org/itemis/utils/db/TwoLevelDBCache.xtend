@@ -236,5 +236,23 @@ final class TwoLevelDBCache<K, V> implements Shutdownable {
   
   override shutdown() {
     flush()
+  def void makeSavepoint(String name) {
+    flush
+    makeSavepoint(dbType, dbName, name)
+  }
+  
+  def void loadSavepoint(String name) {
+    flush
+    loadSavepoint(dbType, dbName, name)
+  }
+  
+  def void copyTo(String name) {
+    flush
+    copyDB(dbType, dbName, name)
+  }
+  
+  def void delete() {
+    ShutdownSequence.deregisterShutdownInstance(this)
+    deleteDB(dbType, dbName)
   }
 }

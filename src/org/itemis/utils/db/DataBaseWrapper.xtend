@@ -19,6 +19,7 @@ import java.sql.Statement
 import java.sql.PreparedStatement
 import java.util.Map
 import org.itemis.utils.ShutdownSequence
+import org.apache.commons.io.FileUtils
 
 final class DataBaseWrapper {
   private final static Logger LOGGER = LoggerFactory.getLogger("Database")
@@ -189,5 +190,29 @@ final class DataBaseWrapper {
       null
     }
   }
+  
+  def void deleteDB(DataBaseID dbType, String dbName) {
+    closeConnection(dbType, dbName)
+    FileUtils.deleteDirectory(getLocation(dbType, dbName))
+  }
+  
+  def ResultSet copyDB(DataBaseID dbType, String dbName, String newName) {
+    query(dbType, dbName, String.format("BACKUP DATABASE TO '%s/' BLOCKING AS FILES", getLocation(dbType, newName).absolutePath.replace("\\", "/")))
+  }
+  
+  def ResultSet makeSavepoint(DataBaseID dbType, String dbName, String savepointName) {
+    makeSavepoint(getConnection(dbType, dbName), savepointName)
+  }
+  
+  def ResultSet makeSavepoint(Connection conn, String savepointName) {
+    query(conn, String.format("SAVEPOINT %s", savepointName))
+  }
+  
+  def ResultSet loadSavepoint(DataBaseID dbType, String dbName, String savepointName) {
+    loadSavepoint(getConnection(dbType, dbName), savepointName)
+  }
+  
+  def ResultSet loadSavepoint(Connection conn, String savepointName) {
+    query(conn, String.format("ROLLBACK TO SAVEPOINT %s", savepointName))
   }
 }

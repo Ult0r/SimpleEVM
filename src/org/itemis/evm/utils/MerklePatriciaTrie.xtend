@@ -26,6 +26,7 @@ import java.io.FileReader
 import java.io.FileWriter
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.io.File
 
 class MerklePatriciaTrie {
   extension Utils u = new Utils()
@@ -91,9 +92,38 @@ class MerklePatriciaTrie {
   def String toGraphViz() {
     String.format("digraph G {\n%s}", root.toGraphViz(this, "  ROOT"))
   }
+  
+  def File getLocation() {
+    cache.location
+  }
 
   def void flush() {
     cache.flush
+  }
+  
+  def void makeSavepoint(String name) {
+    cache.makeSavepoint(name)
+  }
+  
+  def void loadSavepoint(String name) {
+    cache.loadSavepoint(name)
+  }
+  
+  def void copyTo(String name) {
+    cache.copyTo(name)
+    val rootFile = cache.location.toPath.parent.resolve(name).resolve("root.dat").toFile
+    try {
+      val fw = new FileWriter(rootFile)
+      fw.write(root.hash.elements.toHex.substring(2))
+      fw.flush
+      fw.close
+    } catch (Exception e) {
+      LOGGER.warn("Couldn't write root hash: " + e.message)
+    }
+  }
+  
+  def void delete() {
+    cache.delete
   }
 
   static abstract class Node {
