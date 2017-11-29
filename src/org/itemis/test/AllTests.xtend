@@ -24,10 +24,12 @@ import org.itemis.test.evm.utils.MerklePatriciaTrieTest
 import org.itemis.test.blockchain.WorldStateTest
 import org.itemis.test.ressources.MainnetAllocDataTest
 import org.itemis.test.blockchain.TransactionTest
+import org.itemis.test.blockchain.ExecutionTest
 
 @RunWith(Suite)
 @SuiteClasses(
   BlockTest,
+  ExecutionTest,
   TransactionTest,
   WorldStateTest,
   
