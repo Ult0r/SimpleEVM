@@ -16,7 +16,6 @@ import java.sql.ResultSet
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.sql.Statement
-import org.itemis.types.impl.EVMWord
 import java.sql.PreparedStatement
 import java.util.Map
 import org.itemis.utils.ShutdownSequence
@@ -190,8 +189,5 @@ final class DataBaseWrapper {
       null
     }
   }
-
-  def String formatForQuery(EVMWord word) {
-    word.toHexString.substring(2)
   }
 }
