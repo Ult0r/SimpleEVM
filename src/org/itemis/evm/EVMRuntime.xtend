@@ -31,9 +31,6 @@ import org.itemis.evm.utils.EVMUtils
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
-import java.io.File
-import org.itemis.evm.op.SystemOperations
-import org.itemis.evm.op.StackMemoryStorageAndFlowOperations
 
 final class EVMRuntime {
   extension EVMUtils e = new EVMUtils
