@@ -19,6 +19,7 @@ class UnsignedByte extends Number implements Comparable<UnsignedByte> {
   extension Utils u = new Utils
   
   public static final UnsignedByte ZERO = new UnsignedByte(0)
+  public static final UnsignedByte ONE = new UnsignedByte(1)
 
   private short value = 0 as short
 
@@ -83,7 +84,7 @@ class UnsignedByte extends Number implements Comparable<UnsignedByte> {
   }
 
   def String toHexString() {
-    "0x" + higherNibble.toHex + lowerNibble.toHex
+    toHex(#[this])
   }
 
   def String toBitString() {
@@ -138,7 +139,7 @@ class UnsignedByte extends Number implements Comparable<UnsignedByte> {
   }
 
   def UnsignedByte inc() {
-    add(new UnsignedByte(1))
+    add(UnsignedByte.ONE)
   }
 
   def UnsignedByte add(UnsignedByte other) {
