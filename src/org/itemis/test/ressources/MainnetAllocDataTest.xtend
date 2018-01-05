@@ -13,8 +13,6 @@ import org.junit.Test
 import org.itemis.ressources.MainnetAllocData
 import java.nio.charset.Charset
 import org.junit.Assert
-import org.itemis.types.impl.EVMWord
-import org.itemis.types.impl.Address
 
 class MainnetAllocDataTest {
 
@@ -32,9 +30,11 @@ class MainnetAllocDataTest {
     MainnetAllocData.ensureDataIsWritten
 
     Assert.assertEquals(MainnetAllocData.getMainnetAllocDataSize, 8893)
-
-    val k = Address.fromString("0x39C773367C8825D3596C686F42BF0D14319E3F84")
-    val v = EVMWord.fromString("0x0000BA85A0D1753F07")
-    Assert.assertEquals(MainnetAllocData.getBalanceForAddress(k), v)
+    
+    val iter = MainnetAllocData.mainnetAllocDataQueryIterator
+    while (iter.hasNext) {
+      val value = iter.next
+      Assert.assertEquals(MainnetAllocData.getBalanceForAddress(value.key), value.value)
+    }
   }
 }
