@@ -50,14 +50,22 @@ class MerklePatriciaTrie {
     this.cache = new MerklePatriciaTrieCache(name, maxPrefixLength, maxDataLength)
     val rootFile = cache.location.toPath.resolve("root.dat").toFile
     if (rootFile.exists) {
+      var FileReader fr = null
       try {
         val _root = newCharArrayOfSize(32 * 2)
-        val fr = new FileReader(rootFile) 
+        fr = new FileReader(rootFile)
         fr.read(_root)
-        root = getNode(new UnsignedByteList(_root.join.fromHex))
+        root = getNode(new UnsignedByteList(_root.join.fromHex)) ?: if (new Hash256(_root.join.fromHex).equals(EMPTY_TRIE_HASH)) {
+          new Null
+        } else {
+          throw new NullPointerException("No root node found")
+        } 
         fr.close
       } catch (Exception e) {
-        LOGGER.warn("Couldn't read root hash")
+        LOGGER.warn("Couldn't read root hash for " + name + ": " + e.toString)
+        if (fr !== null) {
+          fr.close
+        }
       }
     }
   }
@@ -75,13 +83,17 @@ class MerklePatriciaTrie {
     root = root.putElement(this, key, value)
     
     val rootFile = cache.location.toPath.resolve("root.dat").toFile
+    var FileWriter fw = null
     try {
-      val fw = new FileWriter(rootFile)
+      fw = new FileWriter(rootFile)
       fw.write(root.hash.elements.toHex.substring(2))
       fw.flush
       fw.close
     } catch (Exception e) {
-      LOGGER.warn("Couldn't write root hash: " + e.message)
+      LOGGER.warn("Couldn't write root hash for " + name + ": " + e.toString)
+      if (fw !== null) {
+        fw.close
+      }
     }
   }
 
@@ -101,24 +113,20 @@ class MerklePatriciaTrie {
     cache.flush
   }
   
-  def void makeSavepoint(String name) {
-    cache.makeSavepoint(name)
-  }
-  
-  def void loadSavepoint(String name) {
-    cache.loadSavepoint(name)
-  }
-  
   def void copyTo(String name) {
     cache.copyTo(name)
     val rootFile = cache.location.toPath.parent.resolve(name).resolve("root.dat").toFile
+    var FileWriter fw = null
     try {
-      val fw = new FileWriter(rootFile)
+      fw = new FileWriter(rootFile)
       fw.write(root.hash.elements.toHex.substring(2))
       fw.flush
       fw.close
     } catch (Exception e) {
-      LOGGER.warn("Couldn't write root hash: " + e.message)
+      LOGGER.warn("Couldn't write root hash for " + name + ": " + e.toString)
+      if (fw !== null) {
+        fw.close
+      }
     }
   }
   
@@ -199,6 +207,7 @@ class MerklePatriciaTrie {
     }
 
     override putElement(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value) {
+//      LOGGER.trace(key.toString)
       new Leaf(trie, key, value)
     }
 
@@ -262,9 +271,9 @@ class MerklePatriciaTrie {
     }
 
     override putElement(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value) {
+//      LOGGER.trace(key.toString)
       if(thisKey.equals(key)) {
-        this.value = value
-        this
+        new Leaf(trie, key, value)
       } else {
         if(!trie.keepIntermediates) {
           trie.cache.removeNode(this)
@@ -351,6 +360,7 @@ class MerklePatriciaTrie {
     }
 
     override putElement(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value) {
+//      LOGGER.trace(key.toString)
       if(!trie.keepIntermediates) {
         trie.cache.removeNode(this)
       }
@@ -493,18 +503,24 @@ class MerklePatriciaTrie {
     }
 
     override putElement(MerklePatriciaTrie trie, NibbleList key, UnsignedByte[] value) {
+//      LOGGER.trace(key.toString)
+//      LOGGER.trace(hash.elements.toHex)
       if(!trie.keepIntermediates) {
         trie.cache.removeNode(this)
       }
 
       if(key.length == 0) {
+//        LOGGER.trace("length 0")
         this.value = value
       } else {
+//        LOGGER.trace("length != 0")
         val child = trie.cache.lookUp(this.paths.get(key.head.intValue))
         if(child === null) {
+//          LOGGER.trace("null\n")
           val leaf = new Leaf(trie, key.tail, value)
           this.paths.set(key.head.intValue, leaf.hash)
         } else {
+//          LOGGER.trace("not null\n")
           this.paths.set(key.head.intValue, child.putElement(trie, key.tail, value).hash)
         }
       }
@@ -529,10 +545,21 @@ class MerklePatriciaTrie {
     }
 
     override getNode(MerklePatriciaTrie trie, NibbleList keyFromHere) {
+//      println("- " + keyFromHere.toString)
+//      println("-- " + hash.elements.toHex)
       val child = trie.cache.lookUp(this.paths.get(keyFromHere.head.intValue))
       if(child !== null) {
         child.getNode(trie, keyFromHere.tail)
       } else {
+//        println(this.paths !== null)
+//        println("tried " + keyFromHere.head.intValue)
+//        for (var i = 0; i < 16; i++) {
+//          if (this.paths.get(i) !== null) {
+//            println("--- " + i + " = " + this.paths.get(i).elements.toHex)
+//          } else {
+//            println("--- " + i + " = null")
+//          }
+//        }
         throw new IllegalArgumentException("Node doesn't exist")
       }
     }
