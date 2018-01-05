@@ -159,7 +159,7 @@ abstract class MainnetAllocData {
 
   private def static void writeMainnetAllocData() {
     val shortened = new File(SHORTENED_ALLOC_FILE) // rlp already decoded
-    val List<Pair<EVMWord, EVMWord>> entries = newArrayList
+    val List<Pair<Address, EVMWord>> entries = newArrayList
     if(shortened.exists) {
       LOGGER.debug("reading from shortened")
       val fis = new FileInputStream(shortened)
@@ -169,7 +169,7 @@ abstract class MainnetAllocData {
         if(fis.read(buffer) != 32) {
           throw new IllegalArgumentException("shortened file in wrong format")
         }
-        val address = new EVMWord(buffer)
+        val address = new Address(buffer)
         if(fis.read(buffer) != 32) {
           throw new IllegalArgumentException("shortened file in wrong format")
         }
@@ -187,7 +187,7 @@ abstract class MainnetAllocData {
         while(left.length < 20) {
           left.add(0, UnsignedByte.ZERO)
         }
-        val address = new EVMWord(left)
+        val address = new Address(left.map[byteValue])
 
         val right = if(c.children.length == 2) c.children.get(1).data
         val balance = if(right === null) {
@@ -211,13 +211,11 @@ abstract class MainnetAllocData {
     val conn = DataBaseWrapper.getConnection(DataBaseID.ALLOC, "alloc")
 
     conn.createTable("alloc", "(address BINARY(32) PRIMARY KEY, balance BINARY(32) NOT NULL)")
+    val stmt = conn.createPreparedStatement("INSERT INTO alloc VALUES (?, ?)")
     for (e : entries) {
-      val query = String.format(
-        "INSERT INTO alloc VALUES ('%s', '%s')",
-        e.key.toHexString.substring(2),
-        e.value.toHexString.substring(2)
-      )
-      conn.query(query)
+      stmt.setBytes(1, e.key.toByteArray)
+      stmt.setBytes(2, e.value.toByteArray)
+      stmt.executePreparedStatement
     }
   }
 
