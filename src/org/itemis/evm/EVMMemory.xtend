@@ -26,8 +26,24 @@ class EVMMemory {
     }
   }
   
+  def EVMWord getWord(EVMWord index) {
+    val bytes = newByteArrayOfSize(32)
+    for (var i = 0; i < 32; i++) {
+      bytes.set(31 - i, get(index.add(i)))
+    }
+    new EVMWord(bytes)
+  }
+  
   def EVMMemory put(EVMWord index, Byte value) {
     elements.put(index, value)
+    this
+  }
+  
+  def EVMMemory putWord(EVMWord index, EVMWord word) {
+    val bytes = word.toByteArray
+    for (var i = 0; i < 32; i++) {
+      put(index.add(31 - i), bytes.get(i))
+    }
     this
   }
 
