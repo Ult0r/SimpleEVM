@@ -47,6 +47,14 @@
     <File name="Execution Feedback" fileName="log/executionFeedback.log" append="false">
       <PatternLayout pattern="${log_pattern}"/>
     </File>
+  
+    <File name="Node" fileName="log/node.log" append="false">
+      <PatternLayout pattern="${log_pattern}"/>
+    </File>
+  
+    <File name="SessionListener" fileName="log/sessionListener.log" append="false">
+      <PatternLayout pattern="${log_pattern}"/>
+    </File>
 	
   </Appenders>
   
@@ -77,6 +85,14 @@
     
     <Logger name="Execution Feedback" level="trace">
       <AppenderRef ref="Execution Feedback" level="INFO"/>
+    </Logger>
+    
+    <Logger name="Node" level="trace">
+      <AppenderRef ref="Node" level="INFO"/>
+    </Logger>
+    
+    <Logger name="SessionListener" level="trace">
+      <AppenderRef ref="SessionListener" level="INFO"/>
     </Logger>
    
     <Root level="error">
