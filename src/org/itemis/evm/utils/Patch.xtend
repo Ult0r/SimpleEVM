@@ -40,9 +40,13 @@ final class Patch {
           result.setStorageValue(addr, cell.key, cell.value)
         }
       }
-
-      oldAccount.balance = acc.value.left
-      oldAccount.balance = acc.value.middle
+      
+      if (acc.value.left !== null) {
+        oldAccount.balance = acc.value.left
+      }
+      if (acc.value.middle !== null) {
+        oldAccount.nonce = acc.value.middle
+      }
       ws.setAccount(addr, oldAccount)
 
       for (cell : acc.value.right.entrySet) {
@@ -85,11 +89,13 @@ final class Patch {
   }
 
   def void addBalance(WorldState ws, Address address, EVMWord balance) {
-    setBalance(address, getBalance(ws, address).add(balance))
+    val currentBalance = getBalance(ws, address)
+    setBalance(address, currentBalance.add(balance))
   }
 
   def void subtractBalance(WorldState ws, Address address, EVMWord balance) {
-    setBalance(address, getBalance(ws, address).sub(balance))
+    val currentBalance = getBalance(ws, address)
+    setBalance(address, currentBalance.sub(balance))
   }
 
   def void setNonce(Address address, EVMWord nonce) {
@@ -125,7 +131,7 @@ final class Patch {
     if(changesVal !== null && changesVal.left !== null) {
       changesVal.left
     } else {
-      ws.getBalance(address)
+      ws.getAccount(address).balance
     }
   }
 
@@ -134,7 +140,7 @@ final class Patch {
     if(changesVal !== null && changesVal.middle !== null) {
       changesVal.middle
     } else {
-      ws.getNonce(address)
+      ws.getAccount(address).nonce
     }
   }
 
