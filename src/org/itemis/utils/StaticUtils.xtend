@@ -38,6 +38,8 @@ abstract class StaticUtils {
     toHex(new UnsignedByte(n.value))
   }
 
+  //TODO add to Util
+  //TODO remove usages of toHex(UnsignedByte(b))
   def static String toHex(UnsignedByte b) {
     switch b.value as int {
       case 0,
@@ -244,7 +246,7 @@ abstract class StaticUtils {
     
     val _curve = ECNamedCurveTable.getParameterSpec("secp256k1")
     val n = _curve.n
-    val i = BigInteger.valueOf(recId.longValue / 2)
+    val i = BigInteger.valueOf((recId / 2) as long)
     val x = r.add(i.multiply(n))
     
     val SecP256K1Curve curve = _curve.curve as SecP256K1Curve
@@ -255,11 +257,11 @@ abstract class StaticUtils {
     
     val x9 = new X9IntegerConverter()
     val compEnc = x9.integerToBytes(x, 1 + x9.getByteLength(curve))
-    compEnc.set(0, if ((recId.bitwiseAnd(1)) == 1) 0x03 as byte else 0x02 as byte)
+    compEnc.set(0, if ((recId.bitwiseAnd(1)) == 1) (0x03 as byte) else (0x02 as byte))
     val R = curve.decodePoint(compEnc)
     
     if (!R.multiply(n).isInfinity) {
-      throw new IllegalArgumentException("Infinite solutions aren't supported")
+      throw new IllegalArgumentException("nR is not a valid curve point")
     }
     
     val e = new BigInteger(1, msgHash.toByteArray)
