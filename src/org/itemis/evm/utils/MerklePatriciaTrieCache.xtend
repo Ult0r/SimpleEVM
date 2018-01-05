@@ -199,17 +199,9 @@ class MerklePatriciaTrieCache {
 
       node
     } catch(Exception e) {
-      LOGGER.warn(e.message)
+      LOGGER.info(e.message)
       null
     }
-  }
-  
-  def void makeSavepoint(String name) {
-    cache.makeSavepoint(name)
-  }
-  
-  def void loadSavepoint(String name) {
-    cache.loadSavepoint(name)
   }
   
   def void copyTo(String name) {
