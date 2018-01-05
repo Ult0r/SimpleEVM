@@ -97,6 +97,7 @@ class StaticEVMUtils {
         val _head = new UnsignedByte(head)
         switch (head) {
           case 0x80: {
+            result.add(new TreeNode(newArrayList as UnsignedByte[]))
             usedLength = 1
           }
           case head < 0x80: {
