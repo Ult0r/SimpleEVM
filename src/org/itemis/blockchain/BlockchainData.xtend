@@ -25,11 +25,18 @@ import org.itemis.types.impl.Address
 import org.itemis.types.impl.EthashNonce
 import java.math.BigInteger
 import org.itemis.utils.ShutdownSequence
+import java.util.Queue
+import java.util.concurrent.LinkedBlockingQueue
 
 abstract class BlockchainData {
   static extension JsonRPCWrapper j = new JsonRPCWrapper
 
   private final static Logger LOGGER = LoggerFactory.getLogger("Database")
+  
+  //when changing timeout to -1 (infinite), make sure to also adapt the requestLock()-method
+  private final static long LOCK_TIMEOUT = 500
+  private static boolean LOCKED = false
+  private static Queue<Thread> REQUESTER = new LinkedBlockingQueue()
 
   private final static int MAX_BLOCK_LOOKUP_CACHE_SIZE = 10
   private final static int MAX_BLOCK_CACHE_SIZE = 10
@@ -560,41 +567,114 @@ abstract class BlockchainData {
       transaction.put(transactionHash, t)
     }
   }
-
-  def static Block getBlockByHash(Hash256 blockHash) {
+  
+  //timeout in millis, -1 = infinite
+  //returns success
+  def static boolean requestLock() {
+    val requester = Thread.currentThread
+    val timeout = LOCK_TIMEOUT
+    
+    if (LOCKED) {
+//      if (timeout == -1) {
+//        REQUESTER.add(requester)
+//        requester.wait
+//      } else {
+      REQUESTER.add(requester)
+      requester.wait(timeout)
+//      }
+      
+      val success = !LOCKED
+      if (success) {
+        LOCKED = true
+      }
+      success
+    } else {
+      LOCKED = true
+      true
+    }
+  }
+  
+  def static void releaseLock() {
+    LOCKED = false
+    if (REQUESTER.peek !== null) {
+      REQUESTER.remove.notify
+    }
+  }
+  
+  def static Block getBlockByHash(Hash256 blockHash) {     
+    if (!requestLock) {
+      throw new IllegalStateException("couldn't get lock")
+    }
+    
     var resultBlock = block.lookUp(blockHash)
     if(resultBlock === null) {
       resultBlock = eth_getBlockByHash(blockHash)
       persistBlock(resultBlock, blockHash)
     }
-
+    
+    releaseLock()
+    
     resultBlock
   }
 
   def static Hash256 getBlockHashByNumber(EVMWord blockNumber) {
-    blockLookUp.lookUp(blockNumber) ?: eth_getBlockByNumber_hash(blockNumber, null)
-  }
+    if (!requestLock) {
+      throw new IllegalStateException("couldn't get lock")
+    }
+    
+    val result = blockLookUp.lookUp(blockNumber) ?: eth_getBlockByNumber_hash(blockNumber, null)
+    
+    releaseLock()
 
+    result
+  }
+  
   def static Block getBlockByNumber(EVMWord blockNumber) {
-    getBlockByHash(getBlockHashByNumber(blockNumber))
+    if (!requestLock) {
+      throw new IllegalStateException("couldn't get lock")
+    }
+    
+    val result = getBlockByHash(getBlockHashByNumber(blockNumber))
+    
+    releaseLock()
+
+    result
   }
 
   def static Block getOmmerByBlockHashAndIndex(Hash256 blockHash, Integer index) {
+    if (!requestLock) {
+      throw new IllegalStateException("couldn't get lock")
+    }
+    
     var resultHash = ommerLookUp.lookUp(Pair.of(blockHash, index))
     var resultBlock = ommer.lookUp(resultHash)
     if(resultBlock === null) {
       resultBlock = eth_getUncleByBlockHashAndIndex(blockHash, new EVMWord(index))
       persistOmmer(resultBlock, resultBlock.hash, blockHash, index)
     }
+    
+    releaseLock()
 
     resultBlock
   }
 
   def static Block getOmmerByBlockNumberAndIndex(EVMWord blockNumber, Integer index) {
-    getOmmerByBlockHashAndIndex(getBlockHashByNumber(blockNumber), index)
-  }
+    if (!requestLock) {
+      throw new IllegalStateException("couldn't get lock")
+    }
+    
+    val result = getOmmerByBlockHashAndIndex(getBlockHashByNumber(blockNumber), index)
+    
+    releaseLock()
 
+    result
+  }
+  
   def static Transaction getTransactionByHash(Hash256 transactionHash) {
+    if (!requestLock) {
+      throw new IllegalStateException("couldn't get lock")
+    }
+    
     var resultTransaction = transaction.lookUp(transactionHash)
     if(resultTransaction === null) {
       resultTransaction = eth_getTransactionByHash(transactionHash)
@@ -603,16 +683,24 @@ abstract class BlockchainData {
       }
     }
 
+    releaseLock()
+
     resultTransaction
   }
 
   def static Transaction getTransactionByBlockHashAndIndex(Hash256 blockHash, Integer index) {
+    if (!requestLock) {
+      throw new IllegalStateException("couldn't get lock")
+    }
+    
     var transactionHash = transactionLookUp.lookUp(Pair.of(blockHash, index))
     var resultTransaction = transaction.lookUp(transactionHash)
     if(resultTransaction === null) {
       resultTransaction = eth_getTransactionByBlockHashAndIndex(blockHash, new EVMWord(index))
       persistTransaction(resultTransaction, transactionHash, blockHash, index)
     }
+
+    releaseLock()
 
     resultTransaction
   }
@@ -624,11 +712,17 @@ abstract class BlockchainData {
   }
 
   def static void flush() {
+    if (!requestLock) {
+      throw new IllegalStateException("couldn't get lock")
+    }
+    
     blockLookUp.flush
     block.flush
     ommerLookUp.flush
     ommer.flush
     transactionLookUp.flush
     transaction.flush
+    
+    releaseLock()
   }
 }

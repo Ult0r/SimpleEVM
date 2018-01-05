@@ -37,7 +37,9 @@ final class EVMRuntime {
   
   private static final Logger LOGGER = LoggerFactory.getLogger("General")
   private static final Logger EXECUTION_LOGGER = LoggerFactory.getLogger("Execution Feedback")
-  private static final Gson gson = new GsonBuilder().setPrettyPrinting.create
+  private static final Gson GSON = new GsonBuilder().setPrettyPrinting.create
+  
+  @Accessors private final Thread session
   
   @Accessors private final WorldState worldState
   
@@ -70,10 +72,11 @@ final class EVMRuntime {
   @Accessors private byte[] returnValue
   
   new(WorldState ws) {
-    this(ws, null)
+    this(Thread.currentThread(), ws, null)
   }
   
-  private new(WorldState ws, EVMRuntime parentRuntime) {
+  private new(Thread t, WorldState ws, EVMRuntime parentRuntime) {
+    session = t
     worldState = ws
     this.parentRuntime = parentRuntime
   }
@@ -97,7 +100,7 @@ final class EVMRuntime {
   }
   
   def EVMRuntime createNestedRuntime(EVMWord gasAvailable) {
-    val result = new EVMRuntime(worldState, this)
+    val result = new EVMRuntime(session, worldState, this)
     
     result.gasAvailable = gasAvailable
     result.memorySize = memorySize
@@ -249,7 +252,7 @@ final class EVMRuntime {
       jsonChild.add("after", EVMExecutionFeedback.after(this))
       executionFeedback.add(executedOpCodes.toString + " - halting", jsonChild)
       
-      EXECUTION_LOGGER.info(gson.toJson(executionFeedback))
+      EXECUTION_LOGGER.info(org.itemis.evm.EVMRuntime.GSON.toJson(executionFeedback))
       return true
     } catch (EVMRuntimeException e) {
       if (e.toString.contains("out of gas")) {
@@ -259,7 +262,7 @@ final class EVMRuntime {
         LOGGER.error("\n" + e.stackTrace.map[toString].join("\n"))
       }
       executionFeedback.add("exception", EVMExecutionFeedback.after(this))
-      EXECUTION_LOGGER.info(gson.toJson(executionFeedback))
+      EXECUTION_LOGGER.info(org.itemis.evm.EVMRuntime.GSON.toJson(executionFeedback))
       return false
     }
   }
