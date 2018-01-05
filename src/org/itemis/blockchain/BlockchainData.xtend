@@ -40,19 +40,19 @@ abstract class BlockchainData {
   private final static int MAX_TRANSACTION_CACHE_SIZE = 10
 
   private final static String BLOCK_LOOKUP_TABLE_STR = "blockLookUp (blockNumber BINARY(32) PRIMARY KEY, blockHash BINARY(32))"
-  private final static String BLOCK_TABLE_STR = "block (blockHash BINARY(32) PRIMARY KEY, parentHash BINARY(32), ommersHash BINARY(32), beneficiary BINARY(20), stateRoot BINARY(32), transactionsRoot BINARY(32), receiptsRoot BINARY(32), logsBloom BINARY(256), difficulty BINARY(32), number BINARY(32), gasUsed BINARY(32), gasLimit BINARY(32), timestamp BINARY(32), extraData BINARY(32), mixHash BINARY(32), nonce BINARY(32))"
+  private final static String BLOCK_TABLE_STR = "block (blockHash BINARY(32) PRIMARY KEY, parentHash BINARY(32), ommersHash BINARY(32), beneficiary BINARY(20), stateRoot BINARY(32), transactionsRoot BINARY(32), receiptsRoot BINARY(32), logsBloom BINARY(256), difficulty BINARY(32), number BINARY(32), gasUsed BINARY(32), gasLimit BINARY(32), timestamp BINARY(32), extraData BINARY(32), mixHash BINARY(32), nonce BINARY(32), transactionCount BIGINT, ommerCount BIGINT)"
 
   private final static String OMMER_LOOKUP_TABLE_STR = "ommerLookUp (blockHash BINARY(32), index INTEGER, ommerHash BINARY(32), PRIMARY KEY (blockHash, index))"
   private final static String OMMER_TABLE_STR = "ommer (blockHash BINARY(32) PRIMARY KEY, parentHash BINARY(32), ommersHash BINARY(32), beneficiary BINARY(20), stateRoot BINARY(32), transactionsRoot BINARY(32), receiptsRoot BINARY(32), logsBloom BINARY(256), difficulty BINARY(32), number BINARY(32), gasUsed BINARY(32), gasLimit BINARY(32), timestamp BINARY(32), extraData BINARY(32), mixHash BINARY(32), nonce BINARY(32))"
 
   private final static String TRANSACTION_LOOKUP_TABLE_STR = "transactionLookUp (blockNumber BINARY(32), index INTEGER, transactionHash BINARY(32), PRIMARY KEY (blockNumber, index))"
-  private final static String TRANSACTION_TABLE_STR = "transaction (transactionHash BINARY(32) PRIMARY KEY, nonce BINARY(32), gasPrice BINARY(32), gasLimit BINARY(32), recipient BINARY(20), value BINARY(32), v TINYINT, r BINARY(32), s BINARY(32), data LONGVARCHAR)"
+  private final static String TRANSACTION_TABLE_STR = "transaction (transactionHash BINARY(32) PRIMARY KEY, nonce BINARY(32), gasPrice BINARY(32), gasLimit BINARY(32), recipient BINARY(20), value BINARY(32), v TINYINT, r BINARY(32), s BINARY(32), data LONGVARBINARY, sender BINARY(20))"
 
   private final static String INSERT_BLOCK_LOOKUP_STMT_STR = "INSERT INTO blockLookUp VALUES (?, ?)"
   private final static String SELECT_BLOCK_LOOKUP_STMT_STR = "SELECT * FROM blockLookUp WHERE blockNumber=?"
   private final static String DELETE_BLOCK_LOOKUP_STMT_STR = "DELETE FROM blockLookUp WHERE blockNumber=?"
 
-  private final static String INSERT_BLOCK_STMT_STR = "INSERT INTO block VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+  private final static String INSERT_BLOCK_STMT_STR = "INSERT INTO block VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
   private final static String SELECT_BLOCK_STMT_STR = "SELECT * FROM block WHERE blockHash=?"
   private final static String DELETE_BLOCK_STMT_STR = "DELETE FROM block WHERE blockHash=?"
 
@@ -68,7 +68,7 @@ abstract class BlockchainData {
   private final static String SELECT_TRANSACTION_LOOKUP_STMT_STR = "SELECT * FROM transactionLookUp WHERE blockNumber=? AND index=?"
   private final static String DELETE_TRANSACTION_LOOKUP_STMT_STR = "DELETE FROM transactionLookUp WHERE blockNumber=? AND index=?"
 
-  private final static String INSERT_TRANSACTION_STMT_STR = "INSERT INTO transaction VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+  private final static String INSERT_TRANSACTION_STMT_STR = "INSERT INTO transaction VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
   private final static String SELECT_TRANSACTION_STMT_STR = "SELECT * FROM transaction WHERE transactionHash=?"
   private final static String DELETE_TRANSACTION_STMT_STR = "DELETE FROM transaction WHERE transactionHash=?"
 
@@ -117,10 +117,10 @@ abstract class BlockchainData {
     "chain",
     OMMER_TABLE_STR,
     INSERT_OMMER_STMT_STR,
-    [BlockchainData::fillBlockInsertStatement(it)],
+    [BlockchainData::fillOmmerInsertStatement(it)],
     SELECT_OMMER_STMT_STR,
     [BlockchainData::fillBlockSelectStatement(it)],
-    [BlockchainData::readBlockFromResultSet(it)],
+    [BlockchainData::readOmmerFromResultSet(it)],
     DELETE_OMMER_STMT_STR,
     [BlockchainData::fillBlockDeleteStatement(it)]
   )
@@ -195,7 +195,9 @@ abstract class BlockchainData {
 
       new Hash256(resultSet.getBytes("blockHash"))
     } catch(Exception e) {
-      LOGGER.debug(e.message)
+      if (!e.toString.contains("invalid cursor state")) {
+        LOGGER.debug(e.message)
+      }
       null
     }
   }
@@ -222,6 +224,8 @@ abstract class BlockchainData {
     stmt.setBytes(14, block.extraData)
     stmt.setBytes(15, block.mixHash.toByteArray)
     stmt.setBytes(16, block.nonce.toByteArray)
+    stmt.setLong(17, block.transactions.length)
+    stmt.setLong(18, block.ommers.length)
 
     stmt
   }
@@ -246,6 +250,7 @@ abstract class BlockchainData {
 
   def private static Block readBlockFromResultSet(Pair<ResultSet, Hash256> pair) {
     val resultSet = pair.key
+    val hash = pair.value
 
     try {
       resultSet.next
@@ -267,15 +272,23 @@ abstract class BlockchainData {
       resultBlock.extraData = resultSet.getBytes("extraData")
       resultBlock.mixHash = new Hash256(resultSet.getBytes("mixHash"))
       resultBlock.nonce = new EthashNonce(resultSet.getBytes("nonce"))
+      for (var t = 0; t < resultSet.getLong("transactionCount"); t++) {
+        resultBlock.transactions.add(getTransactionByBlockHashAndIndex(hash, t))
+      }
+      for (var o = 0; o < resultSet.getLong("ommerCount"); o++) {
+        resultBlock.ommers.add(getOmmerByBlockHashAndIndex(hash, o).hash)
+      }
 
       resultBlock
     } catch(Exception e) {
-      LOGGER.debug(e.message)
+      if (!e.toString.contains("invalid cursor state")) {
+        LOGGER.debug(e.message)
+      }
       null
     }
   }
 
-  // Ommer
+  // OmmerLookUp
   def private static PreparedStatement fillOmmerLookUpInsertStatement(
     Triple<Pair<Hash256, Integer>, Hash256, PreparedStatement> triple) {
     val blockHash = triple.left.key
@@ -322,7 +335,68 @@ abstract class BlockchainData {
 
       new Hash256(resultSet.getBytes("ommerHash"))
     } catch(Exception e) {
-      LOGGER.debug(e.message)
+      if (!e.toString.contains("invalid cursor state")) {
+        LOGGER.debug(e.message)
+      }
+      null
+    }
+  }
+
+  // Ommer
+  def private static PreparedStatement fillOmmerInsertStatement(Triple<Hash256, Block, PreparedStatement> triple) {
+    val blockHash = triple.left
+    val block = triple.middle
+    val stmt = triple.right
+
+    stmt.setBytes(1, blockHash.toByteArray)
+    stmt.setBytes(2, block.parentHash.toByteArray)
+    stmt.setBytes(3, block.ommersHash.toByteArray)
+    stmt.setBytes(4, block.beneficiary.toByteArray)
+    stmt.setBytes(5, block.stateRoot.toByteArray)
+    stmt.setBytes(6, block.transactionsRoot.toByteArray)
+    stmt.setBytes(7, block.receiptsRoot.toByteArray)
+    stmt.setBytes(8, block.logsBloom.toByteArray)
+    stmt.setBytes(9, block.difficulty.toByteArray)
+    stmt.setBytes(10, block.number.toByteArray)
+    stmt.setBytes(11, block.gasUsed.toByteArray)
+    stmt.setBytes(12, block.gasLimit.toByteArray)
+    stmt.setBytes(13, block.timestamp.toByteArray)
+    stmt.setBytes(14, block.extraData)
+    stmt.setBytes(15, block.mixHash.toByteArray)
+    stmt.setBytes(16, block.nonce.toByteArray)
+
+    stmt
+  }
+
+  def private static Block readOmmerFromResultSet(Pair<ResultSet, Hash256> pair) {
+    val resultSet = pair.key
+
+    try {
+      resultSet.next
+
+      val resultBlock = new Block()
+
+      resultBlock.parentHash = new Hash256(resultSet.getBytes("parentHash"))
+      resultBlock.ommersHash = new Hash256(resultSet.getBytes("ommersHash"))
+      resultBlock.beneficiary = new Address(resultSet.getBytes("beneficiary"))
+      resultBlock.stateRoot = new Hash256(resultSet.getBytes("stateRoot"))
+      resultBlock.transactionsRoot = new Hash256(resultSet.getBytes("transactionsRoot"))
+      resultBlock.receiptsRoot = new Hash256(resultSet.getBytes("receiptsRoot"))
+      resultBlock.logsBloom = new Bloom2048(resultSet.getBytes("logsBloom"))
+      resultBlock.difficulty = new EVMWord(resultSet.getBytes("difficulty"))
+      resultBlock.number = new EVMWord(resultSet.getBytes("number"))
+      resultBlock.gasUsed = new EVMWord(resultSet.getBytes("gasUsed"))
+      resultBlock.gasLimit = new EVMWord(resultSet.getBytes("gasLimit"))
+      resultBlock.timestamp = new EVMWord(resultSet.getBytes("timestamp"))
+      resultBlock.extraData = resultSet.getBytes("extraData")
+      resultBlock.mixHash = new Hash256(resultSet.getBytes("mixHash"))
+      resultBlock.nonce = new EthashNonce(resultSet.getBytes("nonce"))
+
+      resultBlock
+    } catch(Exception e) {
+      if (!e.toString.contains("invalid cursor state")) {
+        LOGGER.debug(e.message)
+      }
       null
     }
   }
@@ -374,30 +448,36 @@ abstract class BlockchainData {
 
       new Hash256(resultSet.getBytes("transactionHash"))
     } catch(Exception e) {
-      LOGGER.debug(e.message)
+      if (!e.toString.contains("invalid cursor state")) {
+        LOGGER.debug(e.message)
+      }
       null
     }
   }
 
   // Transaction
-  def private static PreparedStatement fillTransactionInsertStatement(
-    Triple<Hash256, Transaction, PreparedStatement> triple) {
-    val transactionHash = triple.left
-    val transaction = triple.middle
-    val stmt = triple.right
-
-    stmt.setBytes(1, transactionHash.toByteArray)
-    stmt.setBytes(2, transaction.nonce.toByteArray)
-    stmt.setBytes(3, transaction.gasPrice.toByteArray)
-    stmt.setBytes(4, transaction.gasLimit.toByteArray)
-    stmt.setBytes(5, if(transaction.to !== null) transaction.to.toByteArray)
-    stmt.setBytes(6, transaction.value.toByteArray)
-    stmt.setInt(7, transaction.v.intValue)
-    stmt.setBytes(8, transaction.r.toByteArray)
-    stmt.setBytes(9, transaction.s.toByteArray)
-    stmt.setBytes(10, transaction.getData().map[byteValue])
-
-    stmt
+  def private static PreparedStatement fillTransactionInsertStatement(Triple<Hash256, Transaction, PreparedStatement> triple) {
+    try {
+      val transactionHash = triple.left
+      val transaction = triple.middle
+      val stmt = triple.right
+  
+      stmt.setBytes(1, transactionHash.toByteArray)
+      stmt.setBytes(2, transaction.nonce.toByteArray)
+      stmt.setBytes(3, transaction.gasPrice.toByteArray)
+      stmt.setBytes(4, transaction.gasLimit.toByteArray)
+      stmt.setBytes(5, if(transaction.to !== null) transaction.to.toByteArray)
+      stmt.setBytes(6, transaction.value.toByteArray)
+      stmt.setInt(7, transaction.v.intValue)
+      stmt.setBytes(8, transaction.r.toByteArray)
+      stmt.setBytes(9, transaction.s.toByteArray)
+      stmt.setBytes(10, transaction.data.map[byteValue])
+      stmt.setBytes(11, transaction.sender.toByteArray)
+  
+      stmt
+    } catch (Exception e) {
+      throw e
+    }
   }
 
   def private static PreparedStatement fillTransactionSelectStatement(Pair<Hash256, PreparedStatement> pair) {
@@ -429,17 +509,20 @@ abstract class BlockchainData {
       resultTransaction.nonce = new EVMWord(resultSet.getBytes("nonce"))
       resultTransaction.gasPrice = new EVMWord(resultSet.getBytes("gasPrice"))
       resultTransaction.gasLimit = new EVMWord(resultSet.getBytes("gasLimit"))
-      val _to = resultSet.getBytes("to")
+      val _to = resultSet.getBytes("recipient")
       resultTransaction.to = if(_to !== null) new Address(_to)
       resultTransaction.value = new EVMWord(resultSet.getBytes("value"))
       resultTransaction.v = new UnsignedByte(resultSet.getInt("v"))
       resultTransaction.r = new BigInteger(resultSet.getBytes("r"))
       resultTransaction.s = new BigInteger(resultSet.getBytes("s"))
       resultTransaction.data = resultSet.getBytes("data").map[new UnsignedByte(it)]
+      resultTransaction.sender = new Address(resultSet.getBytes("sender"))
 
       resultTransaction
     } catch(Exception e) {
-      LOGGER.debug(e.message)
+      if (!e.toString.contains("invalid cursor state")) {
+        LOGGER.debug(e.message)
+      }
       null
     }
   }
@@ -497,13 +580,18 @@ abstract class BlockchainData {
   }
 
   def static Block getOmmerByBlockHashAndIndex(Hash256 blockHash, Integer index) {
-    var resultBlock = ommer.lookUp(ommerLookUp.lookUp(Pair.of(blockHash, index)))
+    var resultHash = ommerLookUp.lookUp(Pair.of(blockHash, index))
+    var resultBlock = ommer.lookUp(resultHash)
     if(resultBlock === null) {
       resultBlock = eth_getUncleByBlockHashAndIndex(blockHash, new EVMWord(index))
       persistOmmer(resultBlock, resultBlock.hash, blockHash, index)
     }
 
     resultBlock
+  }
+
+  def static Block getOmmerByBlockNumberAndIndex(EVMWord blockNumber, Integer index) {
+    getOmmerByBlockHashAndIndex(getBlockHashByNumber(blockNumber), index)
   }
 
   def static Transaction getTransactionByHash(Hash256 transactionHash) {
@@ -521,7 +609,7 @@ abstract class BlockchainData {
   def static Transaction getTransactionByBlockHashAndIndex(Hash256 blockHash, Integer index) {
     var transactionHash = transactionLookUp.lookUp(Pair.of(blockHash, index))
     var resultTransaction = transaction.lookUp(transactionHash)
-    if(transactionHash === null) {
+    if(resultTransaction === null) {
       resultTransaction = eth_getTransactionByBlockHashAndIndex(blockHash, new EVMWord(index))
       persistTransaction(resultTransaction, transactionHash, blockHash, index)
     }
