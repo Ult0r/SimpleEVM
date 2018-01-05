@@ -34,6 +34,7 @@ class Transaction {
   @Accessors private BigInteger r
   @Accessors private BigInteger s
   @Accessors private UnsignedByte[] data
+  @Accessors private Address sender //TODO: fix cipolla
 
   new() {
   }
@@ -46,8 +47,8 @@ class Transaction {
     value = new EVMWord(obj.get("value").asString.fromHex(true).reverseView)
 
     v = fromHex(obj.get("v").asString).map[new UnsignedByte(it)].get(0)
-    r = new BigInteger(StaticUtils.fromHex(obj.get("r").asString))
-    s = new BigInteger(StaticUtils.fromHex(obj.get("s").asString))
+    r = new BigInteger(StaticUtils.fromHex(obj.get("r").asString, true))
+    s = new BigInteger(StaticUtils.fromHex(obj.get("s").asString, true))
 
     val isData = !obj.get("to").jsonNull
     if(isData) {
@@ -55,6 +56,7 @@ class Transaction {
     }
 
     data = obj.get("input").asString.fromHex.map[new UnsignedByte(it)]
+    sender = Address.fromString(obj.get("from").asString)
   }
   
   def Hash256 messageHash() {
@@ -88,13 +90,16 @@ class Transaction {
   }
 
   def Address getSender() {
-    val recId = switch (v.intValue) {
-      case 0x1b: 0
-      case 0x1c: 1
-      case 0x25: 0 //XXX: not sure why this changed somewhere between blocks 2,500,000 and 3,000,000
-      case 0x26: 1 //XXX: not sure why this changed somewhere between blocks 2,500,000 and 3,000,000
-    }
-    val pubKey = ECDSARecover(recId, s, r, messageHash)
-    new Address(StaticUtils.keccak256(pubKey.subList(1, pubKey.length)).toByteArray.drop(12))
+    sender
+
+//TODO: fix cipolla
+//    val recId = switch (v.intValue) {
+//      case 0x1b: 0
+//      case 0x1c: 1
+//      case 0x25: 0 //XXX: not sure why this changed somewhere between blocks 2,500,000 and 3,000,000
+//      case 0x26: 1 //XXX: not sure why this changed somewhere between blocks 2,500,000 and 3,000,000
+//    }
+//    val pubKey = ECDSARecover(recId, s, r, messageHash)
+//    new Address(StaticUtils.keccak256(pubKey.subList(1, pubKey.length)).toByteArray.drop(12))
   }
 }
