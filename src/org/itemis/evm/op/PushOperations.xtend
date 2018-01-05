@@ -18,13 +18,13 @@ abstract class PushOperations {
     var bytes = newByteArrayOfSize(32)
 
     for (var i = 0; i < 32; i++) {
-      bytes.set(i, if(i < n) {
-        runtime.code.get(runtime.pc + i).value.byteValue
+      if (i < n) {
+        bytes.set(n - i - 1, runtime.code.get(runtime.pc + i + 1).value.byteValue)
       } else {
-        0 as byte
-      })
+        bytes.set(i, 0 as byte)
+      }
     }
-
+    
     runtime.pushStackItem(new EVMWord(bytes))
     runtime.addGasCost(FeeClass.VERYLOW)
   }
