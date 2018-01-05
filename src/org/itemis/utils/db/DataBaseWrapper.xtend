@@ -137,7 +137,7 @@ final class DataBaseWrapper {
 
   def ResultSet query(Connection conn, String query) {
     try {
-//      LOGGER.debug("trying to execute query: " + query)
+//      LOGGER.info("trying to execute query: " + query)
       val statement = conn.createStatement()
       val hasResult = statement.execute(query)
       if(hasResult) statement.resultSet
@@ -156,7 +156,7 @@ final class DataBaseWrapper {
 
   def void executeBatch(Connection conn, Statement batch) {
     try {
-//      LOGGER.debug("trying to execute batch: " + batch.toString)
+//      LOGGER.info("trying to execute batch: " + batch.toString)
       batch.executeBatch
     } catch(Exception e) {
       if(!e.message.contains("integrity constraint violation")) {
@@ -176,7 +176,7 @@ final class DataBaseWrapper {
 
   def ResultSet executePreparedStatement(PreparedStatement stmt) {
     try {
-//      LOGGER.debug("trying to execute prepared statement")
+//      LOGGER.info("trying to execute prepared statement")
       stmt.execute
       stmt.resultSet
     } catch(Exception e) {
@@ -194,21 +194,5 @@ final class DataBaseWrapper {
   
   def ResultSet copyDB(DataBaseID dbType, String dbName, String newName) {
     query(dbType, dbName, String.format("BACKUP DATABASE TO '%s/' BLOCKING AS FILES", getLocation(dbType, newName).absolutePath.replace("\\", "/")))
-  }
-  
-  def ResultSet makeSavepoint(DataBaseID dbType, String dbName, String savepointName) {
-    makeSavepoint(getConnection(dbType, dbName), savepointName)
-  }
-  
-  def ResultSet makeSavepoint(Connection conn, String savepointName) {
-    query(conn, String.format("SAVEPOINT %s", savepointName))
-  }
-  
-  def ResultSet loadSavepoint(DataBaseID dbType, String dbName, String savepointName) {
-    loadSavepoint(getConnection(dbType, dbName), savepointName)
-  }
-  
-  def ResultSet loadSavepoint(Connection conn, String savepointName) {
-    query(conn, String.format("ROLLBACK TO SAVEPOINT %s", savepointName))
   }
 }
