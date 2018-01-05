@@ -17,6 +17,7 @@ import org.itemis.types.impl.EVMWord
 import org.itemis.evm.EVMOperation.FeeClass
 import org.itemis.evm.EVMOperation.OpCode
 import org.itemis.types.impl.Address
+import org.itemis.evm.EVMRuntimeException
 
 abstract class EnvironmentalInformation {
   def static ADDRESS(EVMRuntime runtime) {
@@ -49,7 +50,7 @@ abstract class EnvironmentalInformation {
   def static CALLDATALOAD(EVMRuntime runtime) {
     val s0 = runtime.popStackItem
     if(s0.trimTrailingZerosAndReverse.size > 4) {
-      throw new RuntimeException("stack element is larger than 4 byte")
+      throw new EVMRuntimeException("stack element is larger than 4 byte")
     }
     val _s0 = s0.intValue
 
@@ -77,12 +78,12 @@ abstract class EnvironmentalInformation {
     val s2 = runtime.popStackItem
 
     if(s1.trimTrailingZerosAndReverse.size > 4) {
-      throw new RuntimeException("stack element is larger than 4 byte")
+      throw new EVMRuntimeException("stack element is larger than 4 byte")
     }
     val _s1 = s1.intValue
 
     if(s2.trimTrailingZerosAndReverse.size > 4) {
-      throw new RuntimeException("stack element is larger than 4 byte")
+      throw new EVMRuntimeException("stack element is larger than 4 byte")
     }
     val _s2 = s2.intValue
 
@@ -94,7 +95,7 @@ abstract class EnvironmentalInformation {
       }).byteValue)
     }
 
-    EVMRuntime.calcMemorySize(runtime.memorySize, s0, s2)
+    runtime.memorySize = EVMRuntime.calcMemorySize(runtime.memorySize, s0, s2)
 
     val var_cost = EVMOperation.FEE_SCHEDULE.get(FeeClass.COPY).mul(s2.divRoundUp(32))
     runtime.addGasCost(FeeClass.VERYLOW)
@@ -112,24 +113,24 @@ abstract class EnvironmentalInformation {
     val s2 = runtime.popStackItem
 
     if(s1.trimTrailingZerosAndReverse.size > 4) {
-      throw new RuntimeException("stack element is larger than 4 byte")
+      throw new EVMRuntimeException("stack element is larger than 4 byte")
     }
     val _s1 = s1.intValue
 
     if(s2.trimTrailingZerosAndReverse.size > 4) {
-      throw new RuntimeException("stack element is larger than 4 byte")
+      throw new EVMRuntimeException("stack element is larger than 4 byte")
     }
     val _s2 = s2.intValue
 
     for (var i = 0; i < _s2; i++) {
-      runtime.setMemoryElement(s0.add(i), EVMOperation.OP_INFO.get(try {
-        runtime.code.get(_s1 + i)
+      runtime.setMemoryElement(s0.add(i), try {
+        runtime.code.get(_s1 + i).value.byteValue
       } catch(Exception e) {
-        OpCode.STOP
-      }).left.byteValue)
+        EVMOperation.OP_INFO.get(OpCode.STOP).left.byteValue
+      })
     }
 
-    EVMRuntime.calcMemorySize(runtime.memorySize, s0, s2)
+    runtime.memorySize = EVMRuntime.calcMemorySize(runtime.memorySize, s0, s2)
 
     val var_cost = EVMOperation.FEE_SCHEDULE.get(FeeClass.COPY).mul(s2.divRoundUp(32))
     runtime.addGasCost(FeeClass.VERYLOW)
@@ -154,12 +155,12 @@ abstract class EnvironmentalInformation {
     val s3 = runtime.popStackItem
 
     if(s2.trimTrailingZerosAndReverse.size > 4) {
-      throw new RuntimeException("stack element is larger than 4 byte")
+      throw new EVMRuntimeException("stack element is larger than 4 byte")
     }
     val _s2 = s3.intValue
 
     if(s3.trimTrailingZerosAndReverse.size > 4) {
-      throw new RuntimeException("stack element is larger than 4 byte")
+      throw new EVMRuntimeException("stack element is larger than 4 byte")
     }
     val _s3 = s3.intValue
 
@@ -171,7 +172,7 @@ abstract class EnvironmentalInformation {
       }).left.byteValue)
     }
 
-    EVMRuntime.calcMemorySize(runtime.memorySize, s1, s3)
+    runtime.memorySize = EVMRuntime.calcMemorySize(runtime.memorySize, s1, s3)
 
     val var_cost = EVMOperation.FEE_SCHEDULE.get(FeeClass.COPY).mul(s2.divRoundUp(32))
     runtime.addGasCost(FeeClass.EXTCODE)
