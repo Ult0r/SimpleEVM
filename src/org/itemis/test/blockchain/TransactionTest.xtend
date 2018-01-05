@@ -31,5 +31,17 @@ class TransactionTest {
       BlockchainData.getTransactionByHash(new Hash256(StaticUtils.fromHex("0xc55e2b90168af6972193c1f86fa4d7d7b31a29c156665d15b9cd48618b5177ef"))).sender,
       new Address(StaticUtils.fromHex("0x32be343b94f860124dc4fee278fdcbd38c102d88"))
     )
+    Assert.assertEquals(
+      BlockchainData.getTransactionByHash(new Hash256(StaticUtils.fromHex("0x232265581e5a669d06f147a9770f66d181bec1b993353d7819e8dc704f217f70"))).sender,
+      new Address(StaticUtils.fromHex("0xf0c896db24137eda6ec88cf1a95217f8604ae55e"))
+    )
+    Assert.assertEquals(
+      BlockchainData.getTransactionByHash(new Hash256(StaticUtils.fromHex("0xda8981676c9b20e1fd45cb4f8e3ad1aacdd4f4988380eabc3059cfd2048800ff"))).sender,
+      new Address(StaticUtils.fromHex("0x4bb96091ee9d802ed039c4d1a5f6216f90f81b01"))
+    )
+    Assert.assertEquals(
+      BlockchainData.getTransactionByHash(new Hash256(StaticUtils.fromHex("0x5c504ed432cb51138bcf09aa5e8a410dd4a1e204ef84bfed1be16dfba1b22060"))).sender,
+      new Address(StaticUtils.fromHex("0xa1e4380a3b1f749673e270229993ee55f35663b4"))
+    )
   }
 }
