@@ -26,7 +26,7 @@ abstract class SHA3 {
     val list = newArrayList
     while(counter.lessThan(topBorder)) {
       list.add(runtime.getMemoryElement(counter))
-      counter.inc
+      counter = counter.inc
     }
 
     runtime.pushStackItem(StaticUtils.keccak256(list).toEVMWord)
