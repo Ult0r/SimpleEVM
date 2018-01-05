@@ -364,6 +364,7 @@ class JsonRPCWrapperTest {
     val Hash256 parentHash = Hash256.fromString("0x5dbeb17d3c0d0b21167254259274022d8ead55a43453c8492f7568ec9e1b7c16")
 
     Assert.assertEquals(eth_getUncleByBlockHashAndIndex(blockHash, index).parentHash, parentHash)
+    Assert.assertNotNull(eth_getUncleByBlockNumberAndIndex(new EVMWord(97), null, EVMWord.ONE))
   }
 
   @Test
