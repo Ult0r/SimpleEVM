@@ -64,15 +64,15 @@ class Account {
       val node = root.getNode(trie, new NibbleList(path.toByteArray)) as Leaf
       val tree = reverseRLP(node.value)
 
-      this.nonce = new EVMWord(tree.children.get(0).data.map[byteValue])
-      this.balance = new EVMWord(tree.children.get(1).data.map[byteValue])
+      this.nonce = new EVMWord(tree.children.get(0).data.map[byteValue].reverseView) //XXX: reverse?
+      this.balance = new EVMWord(tree.children.get(1).data.map[byteValue].reverseView)
       this.storageRoot = new Hash256(tree.children.get(2).data.map[byteValue])
       this.codeHash = new Hash256(tree.children.get(3).data.map[byteValue])
     } catch(Exception e) {
       this.nonce = EVMWord.ZERO
       this.balance = EVMWord.ZERO
-      this.storageRoot = Hash256.ZERO
-      this.codeHash = Hash256.ZERO
+      this.storageRoot = MerklePatriciaTrie.EMPTY_TRIE_HASH
+      this.codeHash = StaticUtils.keccak256("")
     }
   }
 
