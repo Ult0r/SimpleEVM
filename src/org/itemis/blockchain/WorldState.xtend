@@ -377,6 +377,10 @@ class WorldState {
     storageCache.put(Pair.of(address, offset), value)
   }
   
+  def void setCurrentBlock(EVMWord currentBlock) {
+    currentBlockNumber = currentBlock
+  }
+  
   def void incCurrentBlock() {
     currentBlockNumber = currentBlockNumber.inc
   }

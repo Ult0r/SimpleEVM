@@ -95,9 +95,7 @@ class ExecutionTest {
         Assert.assertNotNull(BlockchainData.getBlockByNumber(new EVMWord(startBlock).dec))
         Assert.assertEquals(ws.stateRoot, BlockchainData.getBlockByNumber(new EVMWord(startBlock).dec).stateRoot)
         LOGGER.trace("loaded state is correct\n")
-        for (var i = 0; i < startBlock; i++) {
-          ws.incCurrentBlock
-        }
+        ws.currentBlock = new EVMWord(startBlock)
         
         for (var b = startBlock; b <= newestBlock.intValue; b++) {
           try {
