@@ -34,4 +34,8 @@ final class Address extends ArbitraryLengthType {
   def static Address fromString(String s) {
     new Address(UnsignedByteArray.fromString(20, s))
   }
+  
+  override toEVMWord() {
+    new EVMWord(toUnsignedByteArray.reverseView)
+  }
 }
