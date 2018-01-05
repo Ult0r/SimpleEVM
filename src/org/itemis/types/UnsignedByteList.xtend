@@ -11,6 +11,7 @@ package org.itemis.types
 
 import org.eclipse.xtend.lib.annotations.Accessors
 import java.util.List
+import org.itemis.utils.StaticUtils
 
 class UnsignedByteList {
   @Accessors private List<UnsignedByte> elements = newArrayList
@@ -53,5 +54,9 @@ class UnsignedByteList {
 
   def int size() {
     elements.size
+  }
+  
+  override toString() {
+    StaticUtils.toHex(elements)
   }
 }
