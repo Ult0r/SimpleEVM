@@ -33,6 +33,8 @@ import org.eclipse.xtend.lib.annotations.Accessors
 import com.google.common.cache.Cache
 import org.itemis.types.impl.Address
 import org.itemis.types.impl.Hash256
+import java.io.FilenameFilter
+import java.io.File
 
 class WorldState {
   extension Utils u = new Utils
@@ -48,7 +50,7 @@ class WorldState {
   private final static int MAX_STORAGE_CACHE_SIZE = 100
 
   private final static String ACCOUNT_TABLE_STR = "accounts (address BINARY(20) PRIMARY KEY, creationBlock BIGINT NOT NULL)"
-  private final static String CODE_TABLE_STR    = "code (address BINARY(20) PRIMARY KEY, code LONGVARCHAR)"
+  private final static String CODE_TABLE_STR    = "code (address BINARY(20) PRIMARY KEY, code LONGVARBINARY)"
   
   private final static String INSERT_ACCOUNT_STMT_STR = "INSERT INTO accounts VALUES (?, ?)"
   private final static String SELECT_ACCOUNT_STMT_STR = "SELECT * FROM accounts WHERE address=?"
@@ -73,6 +75,14 @@ class WorldState {
     this.name = name
     
     this.accountTrie = new MerklePatriciaTrie(name + "_accountTrie")
+    for (storageTrie: DataBaseWrapper.getLocation(DataBaseID.TRIE, name + "_accountTrie").parentFile.list(new FilenameFilter() {
+      override accept(File dir, String filename) {
+        filename.startsWith(name + "_storageTrie")
+      }
+    })) {
+      val addr = new Address(storageTrie.split("_").last.fromHex)
+      this.storageTries.put(addr, new MerklePatriciaTrie(storageTrie))
+    }
     
     this.accountDB = new TwoLevelDBCache<Address, Long>(
       MAX_ACCOUNT_DB_CACHE_SIZE,
@@ -147,7 +157,7 @@ class WorldState {
       
       resultSet.getLong("creationBlock")
     } catch (Exception e) {
-      LOGGER.debug(e.message)
+      LOGGER.info(e.message)
       null
     }
   }
@@ -159,8 +169,8 @@ class WorldState {
     val code = triple.middle
     val stmt = triple.right
     
-    stmt.setBytes(1, address.toUnsignedByteArray.map[byteValue])
-    stmt.setBytes(2, code.elements.map[byteValue])
+    stmt.setBytes(1, address.toByteArray)
+    stmt.setBytes(2, code.elements.map[byteValue] as byte[])
     
     stmt
   }
@@ -201,12 +211,12 @@ class WorldState {
         new UnsignedByteList()
       }
     } catch (Exception e) {
-      LOGGER.error(e.message)
+      LOGGER.info(e.message)
       null
     }
   }
   
-  def loadGenesisState() {
+  def loadGenesisState(boolean ignoreDuplicates) {
     val iter = MainnetAllocData.mainnetAllocDataQueryIterator
     while(iter.hasNext) {
       val e = iter.next
@@ -215,7 +225,7 @@ class WorldState {
       val balance = e.value
       val account = new Account(balance)
       
-      if (!accountExists(address)) {
+      if (ignoreDuplicates || !accountExists(address)) {
         putAccount(EVMWord.ZERO, address, account)
       }
     }
@@ -230,7 +240,11 @@ class WorldState {
   
   //for overwriting accounts
   def void setAccount(Address address, Account account) {
-    account.insertIntoTrie(accountTrie, address)
+    if (!accountExists(address)) {
+      putAccount(currentBlockNumber.dec, address, account)
+    } else {
+      account.insertIntoTrie(accountTrie, address)
+    }
   }
   
   def void deleteAccount(Address address) {
@@ -298,7 +312,7 @@ class WorldState {
   }
   
   def UnsignedByteList getCodeAt(Address address) {
-    codeDB.lookUp(address)
+    codeDB.lookUp(address) ?: new UnsignedByteList(newByteArrayOfSize(0))
   }
   
   def void setCodeAt(Address address, String code) {
@@ -344,7 +358,11 @@ class WorldState {
       storageCache.put(Pair.of(address, offset), value)
       value
     } catch (Exception e) {
-      null
+      if (e.toString.contains("ResultSet is empty") || e instanceof NullPointerException) {
+        EVMWord.ZERO
+      } else {
+        throw e
+      }
     }
   }
   
@@ -367,20 +385,6 @@ class WorldState {
     executedTransactions = executedTransactions.inc
   }
   
-  def void makeSavepoint(String name) {
-    accountTrie.makeSavepoint(name)
-    for (storageTrie: storageTries.entrySet.map[value]) {
-      storageTrie.makeSavepoint(name)
-    }
-  }
-  
-  def void loadSavepoint(String name) {
-    accountTrie.loadSavepoint(name)
-    for (storageTrie: storageTries.entrySet.map[value]) {
-      storageTrie.loadSavepoint(name)
-    }
-  }
-  
   def void copyTo(String name) {
     accountTrie.copyTo(String.format("%s_accountTrie", name))
     
@@ -391,6 +395,10 @@ class WorldState {
     for (storageTrie: storageTries.entrySet.map[value]) {
       storageTrie.copyTo(String.format("%s_%s", name, storageTrie.location.toPath.fileName.toString.split("_").tail.join("_")))
     }
+  }
+  
+  def static void copy(String from, String to) {
+    new WorldState(from).copyTo(to)
   }
   
   def void delete() {
