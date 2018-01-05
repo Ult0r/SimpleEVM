@@ -45,4 +45,8 @@ abstract class ArbitraryLengthType {
       false
     }
   }
+  
+  override int hashCode() {
+    array.hashCode
+  }
 }
