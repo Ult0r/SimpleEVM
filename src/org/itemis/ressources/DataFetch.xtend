@@ -22,12 +22,12 @@ class DataFetch {
   private final static Logger LOGGER = LoggerFactory.getLogger("Network")
 
   private static URL API_URL = new URL("https://mainnet.infura.io")
-  private static int MAX_TRIES = 3
+  private static int MAX_TRIES = 50 //TODO change back to 3
 
   def private JsonElement fetchData(String postData, boolean retryOnNull, int tries, int maxTries) {
-    if(tries >= maxTries) {
-      throw new UnsuccessfulDataFetchException("Wasn't able to retrieve data for " + postData + " after " + tries +
-        "tries.")
+    if (tries >= maxTries) {
+      LOGGER.warn("Wasn't able to retrieve data for " + postData + " after " + tries + " tries.")
+      throw new UnsuccessfulDataFetchException("Wasn't able to retrieve data for " + postData + " after " + tries + " tries.")
     }
 
     var byte[] _postData = postData.bytes
@@ -46,32 +46,33 @@ class DataFetch {
     var DataOutputStream wr = new DataOutputStream(conn.getOutputStream())
     wr.write(_postData)
 
-    if(conn.responseCode != 200) {
+    if (conn.responseCode != 200) {
       val String errorMessage = String.format("returned %d, retrying...", conn.responseCode)
-      LOGGER.warn(errorMessage)
+      LOGGER.info(errorMessage)
 
       fetchData(postData, retryOnNull, tries + 1, maxTries)
     } else {
-      val result = new JsonParser().parse(new InputStreamReader(conn.inputStream))
-      if(result === null) {
-        LOGGER.warn("returned null, retrying...")
+      var JsonElement result = null
+      try {
+        result = new JsonParser().parse(new InputStreamReader(conn.inputStream))
+        if (result === null) {
+          LOGGER.info("returned null, retrying...")
 
-        fetchData(postData, retryOnNull, tries + 1, maxTries)
-      } else {
-        LOGGER.info("result: " + result)
-
-        try {
-          if(result.asJsonObject.get("result").jsonNull && retryOnNull) {
-            LOGGER.warn("result is null, retrying...")
+          fetchData(postData, retryOnNull, tries + 1, maxTries)
+        } else {
+          LOGGER.info("result: " + result)
+          if (result.asJsonObject.get("result").jsonNull && retryOnNull) {
+            LOGGER.info("result is null, retrying...")
 
             fetchData(postData, retryOnNull, tries + 1, maxTries)
           } else {
             result
           }
-        } catch(Exception e) {
-          LOGGER.warn("couldn't parse result")
-          result
+
         }
+      } catch (Exception e) {
+        LOGGER.info("couldn't parse result or out of tries")
+        result
       }
     }
   }
