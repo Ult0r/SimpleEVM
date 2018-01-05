@@ -23,13 +23,9 @@ abstract class StackMemoryStorageAndFlowOperations {
   def static MLOAD(EVMRuntime runtime) {
     val s0 = runtime.popStackItem
 
-    val bytes = newByteArrayOfSize(32)
-    for (var i = 0; i < 32; i++) {
-      bytes.set(i, runtime.getMemoryElement(s0.add(i)))
-    }
-    runtime.pushStackItem(new EVMWord(bytes))
+    runtime.pushStackItem(runtime.getMemoryWord(s0))
 
-    runtime.memorySize = EVMRuntime.calcMemorySize(runtime.memorySize, s0, new EVMWord(32))
+    runtime.memorySize = EVMWord.max(runtime.memorySize, s0.add(32).divRoundUp(32))
 
     runtime.addGasCost(FeeClass.VERYLOW)
   }
@@ -37,13 +33,10 @@ abstract class StackMemoryStorageAndFlowOperations {
   def static MSTORE(EVMRuntime runtime) {
     val s0 = runtime.popStackItem
     val s1 = runtime.popStackItem
+    
+    runtime.setMemoryWord(s0, s1)
 
-    val bytes = s1.toByteArray
-    for (var i = 0; i < 32; i++) {
-      runtime.setMemoryElement(s0.add(i), bytes.get(i))
-    }
-
-    runtime.memorySize = EVMRuntime.calcMemorySize(runtime.memorySize, s0, new EVMWord(32))
+    runtime.memorySize = EVMWord.max(runtime.memorySize, s0.add(32).divRoundUp(32))
 
     runtime.addGasCost(FeeClass.VERYLOW)
   }
@@ -54,14 +47,15 @@ abstract class StackMemoryStorageAndFlowOperations {
 
     runtime.setMemoryElement(s0, s1.toByteArray.get(0))
 
-    runtime.memorySize = EVMRuntime.calcMemorySize(runtime.memorySize, s0, EVMWord.ONE)
+    runtime.memorySize = EVMWord.max(runtime.memorySize, s0.add(1).divRoundUp(32))
 
     runtime.addGasCost(FeeClass.VERYLOW)
   }
 
   def static SLOAD(EVMRuntime runtime) {
     val s0 = runtime.popStackItem
-    runtime.pushStackItem(runtime.patch.getStorageAt(runtime.worldState, runtime.codeAddress, s0))
+    val storageValue = runtime.patch.getStorageAt(runtime.worldState, runtime.codeAddress, s0)
+    runtime.pushStackItem(storageValue)
 
     runtime.addGasCost(FeeClass.SLOAD)
   }
@@ -69,7 +63,7 @@ abstract class StackMemoryStorageAndFlowOperations {
   def static SSTORE(EVMRuntime runtime) {
     val s0 = runtime.popStackItem
     val s1 = runtime.popStackItem
-
+    
     var FeeClass cost
     if(!s1.zero && runtime.patch.getStorageAt(runtime.worldState, runtime.codeAddress, s0).zero) {
       cost = FeeClass.SSET
