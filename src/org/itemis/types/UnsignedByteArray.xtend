@@ -272,7 +272,7 @@ final class UnsignedByteArray {
     val result = new UnsignedByteArray(length)
 
     for (var i = 0; i < length; i++) {
-      result.set(i, get(i))
+      result.set(i, get(length - 1 - i))
     }
 
     result
