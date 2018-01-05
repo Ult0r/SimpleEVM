@@ -71,6 +71,8 @@ class Block {
   }
 
   new() {
+    ommers = newArrayList
+    transactions = newArrayList
   }
 
   new(JsonObject obj) {
@@ -82,8 +84,8 @@ class Block {
     receiptsRoot = Hash256.fromString(obj.get("receiptsRoot").asString)
     logsBloom = Bloom2048.fromString(obj.get("logsBloom").asString)
     difficulty = new EVMWord(fromHex(obj.get("difficulty").asString).reverseView)
-    number = EVMWord.fromString(obj.get("number").asString)
-    gasLimit = new EVMWord(fromHex(obj.get("gasLimit").asString).reverseView)
+    number = new EVMWord(fromHex(obj.get("number").asString, true).reverseView)
+    gasLimit = new EVMWord(fromHex(obj.get("gasLimit").asString, true).reverseView)
     gasUsed = EVMWord.fromString(obj.get("gasUsed").asString) // XXX: reverse?
     timestamp = new EVMWord(fromHex(obj.get("timestamp").asString).reverseView)
     extraData = fromHex(obj.get("extraData").asString)
