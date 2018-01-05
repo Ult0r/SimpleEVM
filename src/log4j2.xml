@@ -52,7 +52,7 @@
       <PatternLayout pattern="${log_pattern}"/>
     </File>
   
-    <File name="SessionController" fileName="log/SessionController.log" append="false">
+    <File name="SessionController" fileName="log/sessionController.log" append="false">
       <PatternLayout pattern="${log_pattern}"/>
     </File>
 	
