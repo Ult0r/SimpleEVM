@@ -80,7 +80,7 @@
     </Logger>
     
     <Logger name="Shutdown" level="trace">
-      <AppenderRef ref="Shutdown" level="INFO"/>
+      <AppenderRef ref="Shutdown" level="trace"/>
     </Logger>
     
     <Logger name="Execution Feedback" level="trace">
@@ -88,11 +88,11 @@
     </Logger>
     
     <Logger name="Node" level="trace">
-      <AppenderRef ref="Node" level="INFO"/>
+      <AppenderRef ref="Node" level="trace"/>
     </Logger>
     
     <Logger name="SessionController" level="trace">
-      <AppenderRef ref="SessionController" level="INFO"/>
+      <AppenderRef ref="SessionController" level="trace"/>
     </Logger>
    
     <Root level="error">
