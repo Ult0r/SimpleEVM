@@ -145,7 +145,8 @@ final class TwoLevelDBCache<K, V> implements Shutdownable {
       val _stmt = fillInsertStatement.apply(Triple.of(key, value, stmt))
       _stmt.executePreparedStatement
     } catch(Exception e) {
-      LOGGER.trace(e.message)
+      LOGGER.trace(e.toString)
+      LOGGER.debug("\n" + e.stackTrace.map[toString].join("\n"))
     }
   }
 
@@ -236,16 +237,6 @@ final class TwoLevelDBCache<K, V> implements Shutdownable {
   
   override shutdown() {
     flush
-  }
-  
-  def void makeSavepoint(String name) {
-    flush
-    makeSavepoint(dbType, dbName, name)
-  }
-  
-  def void loadSavepoint(String name) {
-    flush
-    loadSavepoint(dbType, dbName, name)
   }
   
   def void copyTo(String name) {
