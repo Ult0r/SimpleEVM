@@ -24,6 +24,7 @@ import java.util.Optional
 import java.util.Arrays
 import java.math.BigInteger
 import org.itemis.types.impl.Hash256
+import org.itemis.evm.EVMRuntimeException
 
 abstract class SystemOperations {
   def static CREATE(EVMRuntime runtime) {
@@ -328,7 +329,7 @@ abstract class SystemOperations {
   }
 
   def static INVALID(EVMRuntime runtime) {
-    throw new RuntimeException("INVALID instruction")
+    throw new EVMRuntimeException("INVALID")
   }
 
   def static SELFDESTRUCT(EVMRuntime runtime) {
