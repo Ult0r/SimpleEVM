@@ -130,21 +130,7 @@ class EVMWord {
   }
 
   def boolean greaterThan(EVMWord other) {
-    if(this.isNegative && !other.isNegative) {
-      false
-    } else if(!this.isNegative && other.isNegative) {
-      true
-    } else if(this.isNegative && other.isNegative) {
-      other.negate.greaterThan(this.negate)
-    } else {
-      for (var i = 31; i >= 0; i--) {
-        if(this.get(i) > other.get(i)) {
-          return true
-        }
-      }
-
-      false
-    }
+    this.toBigInteger.compareTo(other.toBigInteger) == 1
   }
 
   def boolean greaterThanEquals(EVMWord other) {
@@ -349,7 +335,7 @@ class EVMWord {
     val _other = other
     val divRem = _this.divideAndRemainder(_other)
 
-    if(divRem.get(1).fromBigInteger.zero) divRem.get(0).fromBigInteger.inc else divRem.get(0).fromBigInteger
+    if(!divRem.get(1).fromBigInteger.zero) divRem.get(0).fromBigInteger.inc else divRem.get(0).fromBigInteger
   }
 
   def EVMWord xor(EVMWord other) {
