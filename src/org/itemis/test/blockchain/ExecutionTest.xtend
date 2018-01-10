@@ -22,6 +22,7 @@ import org.itemis.ressources.JsonRPCWrapper
 import org.itemis.utils.StaticUtils
 
 class ExecutionTest {
+  //TODO: check hash after every transaction
   extension JsonRPCWrapper j = new JsonRPCWrapper
   
   private static final Logger LOGGER = LoggerFactory.getLogger("Tests")
