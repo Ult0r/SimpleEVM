@@ -2,40 +2,60 @@ package org.itemis.main
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import javax.net.ServerSocketFactory
+import java.net.URI
+import org.glassfish.jersey.server.ResourceConfig
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory
+import java.util.logging.LogManager
 
-final class SessionController extends Thread {
+final class SessionController implements Runnable {
   private static final Logger LOGGER = LoggerFactory.getLogger("SessionController")
   
+  private static SessionController CONTROLLER_RUNNABLE
+  private static Thread CONTROLLER
+  
+  private EthereumNode node
+  
   def public static void main(String[] args) {
-    new SessionController().run()
+    CONTROLLER_RUNNABLE = new SessionController
+    CONTROLLER = new Thread(CONTROLLER_RUNNABLE)
+    CONTROLLER.start
+  }
+  
+  def public static void shutdown() {
+    CONTROLLER.interrupt
+  }
+  
+  def public static void startNode() {
+    CONTROLLER_RUNNABLE.node = new EthereumNode
+    CONTROLLER_RUNNABLE.node.start
+  }
+  
+  def public static void shutdownNode() {
+    CONTROLLER_RUNNABLE.node.interrupt
   }
   
   override run() {
+    LogManager.logManager.reset
+    
     LOGGER.trace("creating node")
-    val node = new EthereumNode()
     LOGGER.trace("node done initalizing - starting node")
+    val ResourceConfig config = new ResourceConfig().packages("org.itemis.main")
+    val server = GrizzlyHttpServerFactory.createHttpServer(URI.create("http://localhost:8080/"), config)
+    LOGGER.trace("server started")
+    
     try {
-      node.start
-      LOGGER.trace("node started")
-      
       LOGGER.trace("session controller loop started")
-      val socket = ServerSocketFactory.getDefault.createServerSocket(56789)
-      LOGGER.trace("session controller listening to port 56789...")
-      val _socket = socket.accept
-      if (_socket.inputStream.read == 42) {
-        //shutdown
-        println("42")
-      } else {
-        println("not 42")
-      }
-      LOGGER.trace("session controller loop done")
+      System.out.println("go")
       
-      node.interrupt
-      LOGGER.trace("node done")
+      val dummy = new Integer(0)
+      synchronized(dummy) {
+        dummy.wait()
+      }
     } catch (InterruptedException e) {
       Thread.currentThread.interrupt
-      node.interrupt
+      LOGGER.trace("session controller interrupted")
+      if (node !== null) node.interrupt
+      server.shutdownNow
     }
   }
 }

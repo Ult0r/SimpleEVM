@@ -21,7 +21,7 @@ import org.itemis.evm.EVMRuntime
 import org.itemis.ressources.JsonRPCWrapper
 import org.itemis.utils.StaticUtils
 
-final class EthereumNode extends Thread {
+final class EthereumNode implements Runnable {
   extension JsonRPCWrapper j = new JsonRPCWrapper
   
   private static final Logger LOGGER = LoggerFactory.getLogger("ExecutionFeedback")
@@ -34,8 +34,11 @@ final class EthereumNode extends Thread {
   
   private final WorldState ws
   
+  private final Thread NODE
+  
   new() {
     ws = init()
+    NODE = new Thread(this)
   }
   
   def private update(EVMWord newestBlock) {
@@ -127,7 +130,7 @@ final class EthereumNode extends Thread {
     NODE_LOGGER.trace("initializing...")
     
     LOGGER.trace("removing node DB")
-    new WorldState("node").delete      
+    new WorldState("node").delete
     
     val newestBlock = eth_blockNumber
     NODE_LOGGER.trace(String.format("newest Block: %d", newestBlock.intValue))
@@ -209,10 +212,24 @@ final class EthereumNode extends Thread {
         } else {
           NODE_LOGGER.trace("no update found")
         }
-        sleep(AVERAGE_BLOCK_TIME)
+        Thread.sleep(AVERAGE_BLOCK_TIME)
       }
     } catch (InterruptedException e) {
-      Thread.currentThread.interrupt      
+      Thread.currentThread.interrupt
+      NODE_LOGGER.info("interrupted, node shutting down")
     }
+  }
+  
+  def start() {
+    NODE.start
+  }
+  
+  def join() {
+    NODE.join
+  }
+  
+  def interrupt() {
+    NODE.interrupt
+    LOGGER.trace("node interrupted")
   }
 }

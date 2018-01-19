@@ -20,6 +20,9 @@ dependencies {
   compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.9.0'
   compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
   compile group: 'commons-io', name: 'commons-io', version: '2.6'
+  compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.26'
+  compile group: 'org.glassfish.jersey.containers', name: 'jersey-container-grizzly2-http', version: '2.26'
+  compile group: 'org.glassfish.jersey.inject', name: 'jersey-hk2', version: '2.26'
   testCompile 'junit:junit:4.12'
 }
 
