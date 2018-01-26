@@ -36,6 +36,7 @@ final class EthereumNode implements Runnable {
   
   private final Thread node
   private boolean sleeping = false
+  private boolean copying = false
   
   new() {
     ws = init()
@@ -217,11 +218,19 @@ final class EthereumNode implements Runnable {
         sleeping = true
         Thread.sleep(AVERAGE_BLOCK_TIME)
         sleeping = false
+        while (copying) {
+          NODE_LOGGER.trace("still copying, waiting...")
+          Thread.sleep(50)
+        }
         ws = new WorldState("node")
       }
     } catch (InterruptedException e) {
       Thread.currentThread.interrupt
       NODE_LOGGER.info("interrupted, node shutting down")
+      while (copying) {
+        NODE_LOGGER.trace("still copying, waiting...")
+        Thread.sleep(50)
+      }
       ws.shutdown
     }
   }
@@ -244,8 +253,14 @@ final class EthereumNode implements Runnable {
   }
   
   def synchronized copyWorldState(String destination) {
+    while (!sleeping) {
+      NODE_LOGGER.trace("not currently sleeping, waiting...")
+      Thread.sleep(1000)
+    }
     if (sleeping) {
+      copying = true
       ws.copyTo(destination)
+      copying = false
     }
   }
 }

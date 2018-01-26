@@ -237,6 +237,8 @@ final class TwoLevelDBCache<K, V> implements Shutdownable {
   
   override shutdown() {
     flush
+    ShutdownSequence.deregisterShutdownInstance(this)
+    DataBaseWrapper.closeConnection(dbType, dbName)
   }
   
   def void copyTo(String name) {
