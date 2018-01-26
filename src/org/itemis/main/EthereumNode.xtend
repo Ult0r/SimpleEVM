@@ -32,13 +32,14 @@ final class EthereumNode implements Runnable {
   
   private static final long AVERAGE_BLOCK_TIME = 15000
   
-  private final WorldState ws
+  private WorldState ws
   
-  private final Thread NODE
+  private final Thread node
+  private boolean sleeping = false
   
   new() {
     ws = init()
-    NODE = new Thread(this)
+    node = new Thread(this)
   }
   
   def private update(EVMWord newestBlock) {
@@ -212,24 +213,39 @@ final class EthereumNode implements Runnable {
         } else {
           NODE_LOGGER.trace("no update found")
         }
+        ws.shutdown
+        sleeping = true
         Thread.sleep(AVERAGE_BLOCK_TIME)
+        sleeping = false
+        ws = new WorldState("node")
       }
     } catch (InterruptedException e) {
       Thread.currentThread.interrupt
       NODE_LOGGER.info("interrupted, node shutting down")
+      ws.shutdown
     }
   }
   
-  def start() {
-    NODE.start
+  def synchronized start() {
+    if (!node.isAlive) {
+      node.start
+    } else {
+      NODE_LOGGER.warn("node already running")
+    }
   }
   
-  def join() {
-    NODE.join
+  def synchronized join() {
+    node.join
   }
   
-  def interrupt() {
-    NODE.interrupt
+  def synchronized interrupt() {
+    node.interrupt
     LOGGER.trace("node interrupted")
+  }
+  
+  def synchronized copyWorldState(String destination) {
+    if (sleeping) {
+      ws.copyTo(destination)
+    }
   }
 }

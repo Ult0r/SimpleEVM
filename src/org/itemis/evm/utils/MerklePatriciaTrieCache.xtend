@@ -211,4 +211,8 @@ class MerklePatriciaTrieCache {
   def void delete() {
     cache.delete
   }
+  
+  def void shutdown() {
+    cache.shutdown
+  }
 }

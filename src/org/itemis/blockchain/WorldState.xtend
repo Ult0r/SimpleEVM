@@ -414,6 +414,15 @@ class WorldState {
     }
   }
   
+  def void shutdown() {
+    accountTrie.shutdown
+    accountDB.shutdown
+    codeDB.shutdown
+    for (storageTrie: storageTries.entrySet.map[value]) {
+      storageTrie.shutdown
+    }
+  }
+  
   def static boolean exists(String name) {
     DataBaseWrapper.getLocation(DataBaseID.STATE, name).exists
   }

@@ -133,6 +133,10 @@ class MerklePatriciaTrie {
   def void delete() {
     cache.delete
   }
+  
+  def void shutdown() {
+    cache.shutdown
+  }
 
   static abstract class Node {
     protected extension Utils u = new Utils

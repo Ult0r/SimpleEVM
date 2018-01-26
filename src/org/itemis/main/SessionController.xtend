@@ -34,6 +34,10 @@ final class SessionController implements Runnable {
     CONTROLLER_RUNNABLE.node.interrupt
   }
   
+  def public static void copyNode(String destination) {
+    CONTROLLER_RUNNABLE.node.copyWorldState(destination)
+  }
+  
   override run() {
     LogManager.logManager.reset
     
