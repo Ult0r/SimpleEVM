@@ -7,7 +7,7 @@
  * Contributors:
  * Lars Reimers for itemis AG
  *******************************************************************************/
-package org.itemis.evm.utils
+package org.itemis.types
 
 import org.itemis.utils.db.DataBaseWrapper.DataBaseID
 import org.itemis.types.NibbleList
@@ -19,11 +19,11 @@ import java.sql.ResultSet
 import org.itemis.utils.StaticUtils
 import org.itemis.types.UnsignedByte
 import org.itemis.types.impl.EVMWord
-import org.itemis.evm.utils.MerklePatriciaTrie.Node
-import org.itemis.evm.utils.MerklePatriciaTrie.Null
-import org.itemis.evm.utils.MerklePatriciaTrie.Leaf
-import org.itemis.evm.utils.MerklePatriciaTrie.Extension
-import org.itemis.evm.utils.MerklePatriciaTrie.Branch
+import org.itemis.types.MerklePatriciaTrie.Node
+import org.itemis.types.MerklePatriciaTrie.Null
+import org.itemis.types.MerklePatriciaTrie.Leaf
+import org.itemis.types.MerklePatriciaTrie.Extension
+import org.itemis.types.MerklePatriciaTrie.Branch
 import org.itemis.types.UnsignedByteList
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -213,6 +213,6 @@ class MerklePatriciaTrieCache {
   }
   
   def void shutdown() {
-    cache.shutdown
+    cache.shutdownAndCloseConnection
   }
 }

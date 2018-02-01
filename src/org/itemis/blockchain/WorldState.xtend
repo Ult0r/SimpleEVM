@@ -20,13 +20,13 @@ import org.itemis.types.UnsignedByteList
 import java.sql.ResultSet
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.itemis.evm.utils.MerklePatriciaTrie
+import org.itemis.types.MerklePatriciaTrie
 import com.google.common.cache.CacheBuilder
 import org.itemis.utils.db.DataBaseWrapper
 import org.itemis.ressources.JsonRPCWrapper
 import java.util.Map
 import org.itemis.types.NibbleList
-import org.itemis.evm.utils.MerklePatriciaTrie.Leaf
+import org.itemis.types.MerklePatriciaTrie.Leaf
 import org.itemis.utils.Utils
 import org.itemis.evm.utils.EVMUtils
 import org.eclipse.xtend.lib.annotations.Accessors

@@ -10,7 +10,7 @@
 
 package org.itemis.test.evm.utils
 
-import org.itemis.evm.utils.MerklePatriciaTrie
+import org.itemis.types.MerklePatriciaTrie
 import org.itemis.ressources.MainnetAllocData
 import org.junit.Test
 import org.itemis.utils.Utils

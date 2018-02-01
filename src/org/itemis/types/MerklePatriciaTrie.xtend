@@ -8,7 +8,7 @@
  * Lars Reimers for itemis AG
  *******************************************************************************/
 
-package org.itemis.evm.utils
+package org.itemis.types
 
 import org.itemis.utils.Utils
 import org.itemis.types.UnsignedByte
@@ -17,8 +17,8 @@ import java.util.List
 import org.eclipse.xtend.lib.annotations.Accessors
 import java.util.Map
 import org.itemis.types.NibbleList
-import org.itemis.evm.utils.MerklePatriciaTrie.Branch
-import org.itemis.evm.utils.MerklePatriciaTrie.Node
+import org.itemis.types.MerklePatriciaTrie.Branch
+import org.itemis.types.MerklePatriciaTrie.Node
 import org.itemis.utils.StaticUtils
 import org.itemis.types.UnsignedByteList
 import org.itemis.types.impl.Hash256
@@ -140,7 +140,7 @@ class MerklePatriciaTrie {
 
   static abstract class Node {
     protected extension Utils u = new Utils
-    protected extension EVMUtils e = new EVMUtils
+    protected extension org.itemis.evm.utils.EVMUtils e = new org.itemis.evm.utils.EVMUtils
 
     def abstract UnsignedByteList hash()
 

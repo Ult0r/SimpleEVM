@@ -19,7 +19,7 @@ import org.itemis.evm.utils.StaticEVMUtils
 import org.itemis.utils.Utils
 import org.itemis.evm.utils.EVMUtils
 import org.itemis.types.UnsignedByte
-import org.itemis.evm.utils.MerklePatriciaTrie
+import org.itemis.types.MerklePatriciaTrie
 import java.math.BigInteger
 import org.itemis.types.impl.Hash256
 import org.itemis.types.impl.Address

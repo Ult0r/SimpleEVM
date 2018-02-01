@@ -11,7 +11,7 @@ package org.itemis.blockchain
 
 import org.itemis.types.impl.EVMWord
 import org.eclipse.xtend.lib.annotations.Accessors
-import org.itemis.evm.utils.MerklePatriciaTrie
+import org.itemis.types.MerklePatriciaTrie
 import org.itemis.utils.StaticUtils
 import org.itemis.types.NibbleList
 import org.itemis.types.UnsignedByte
@@ -19,7 +19,7 @@ import java.util.List
 import org.itemis.utils.Utils
 import org.itemis.evm.utils.EVMUtils
 import org.itemis.types.UnsignedByteList
-import org.itemis.evm.utils.MerklePatriciaTrie.Leaf
+import org.itemis.types.MerklePatriciaTrie.Leaf
 import org.itemis.types.impl.Hash256
 import org.itemis.types.impl.Address
 
