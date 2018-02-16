@@ -26,7 +26,7 @@ class DataFetch {
 
   def private JsonElement fetchData(String postData, boolean retryOnNull, int tries, int maxTries) {
     if (tries >= maxTries) {
-      LOGGER.warn("Wasn't able to retrieve data for " + postData + " after " + tries + " tries.")
+      LOGGER.warn("Wasn't able to retrieve data for \"" + postData + "\" after " + tries + " tries.")
       throw new UnsuccessfulDataFetchException("Wasn't able to retrieve data for " + postData + " after " + tries + " tries.")
     }
 

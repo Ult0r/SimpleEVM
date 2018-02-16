@@ -54,7 +54,7 @@ class EVMUtilsTest {
   @Test
   def void testReverseRLP() {
     var emptyData = #[0x80].map[new UnsignedByte(it)]
-    Assert.assertNull(emptyData.reverseRLP.data)
+    Assert.assertEquals(0, emptyData.reverseRLP.data.size)
 
     var dog = #[0x83, 0x64, 0x6F, 0x67].map[x|new UnsignedByte(x)]
     Assert.assertEquals(new String(dog.reverseRLP.data.map[byteValue]), "dog")
