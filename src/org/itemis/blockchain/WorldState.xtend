@@ -416,8 +416,8 @@ class WorldState {
   
   def void shutdown() {
     accountTrie.shutdown
-    accountDB.shutdown
-    codeDB.shutdown
+    accountDB.shutdownAndCloseConnection
+    codeDB.shutdownAndCloseConnection
     for (storageTrie: storageTries.entrySet.map[value]) {
       storageTrie.shutdown
     }

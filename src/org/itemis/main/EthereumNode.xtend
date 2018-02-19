@@ -24,7 +24,7 @@ import org.itemis.utils.StaticUtils
 final class EthereumNode implements Runnable {
   extension JsonRPCWrapper j = new JsonRPCWrapper
   
-  private static final Logger LOGGER = LoggerFactory.getLogger("ExecutionFeedback")
+  private static final Logger LOGGER = LoggerFactory.getLogger("Execution Feedback")
   private static final Logger NODE_LOGGER = LoggerFactory.getLogger("Node")
   
   private static final int BACKUP_STEP = 1000
@@ -214,7 +214,6 @@ final class EthereumNode implements Runnable {
         } else {
           NODE_LOGGER.trace("no update found")
         }
-        ws.shutdown
         sleeping = true
         Thread.sleep(AVERAGE_BLOCK_TIME)
         sleeping = false
@@ -222,7 +221,6 @@ final class EthereumNode implements Runnable {
           NODE_LOGGER.trace("still copying, waiting...")
           Thread.sleep(50)
         }
-        ws = new WorldState("node")
       }
     } catch (InterruptedException e) {
       Thread.currentThread.interrupt

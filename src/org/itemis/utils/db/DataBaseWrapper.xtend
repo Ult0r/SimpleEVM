@@ -193,6 +193,7 @@ final class DataBaseWrapper {
   }
   
   def ResultSet copyDB(DataBaseID dbType, String dbName, String newName) {
+    LOGGER.info(String.format("copying %s.%s to %s.%s", DataBaseID.STATE, dbName, DataBaseID.STATE, newName))
     query(dbType, dbName, String.format("BACKUP DATABASE TO '%s/' BLOCKING AS FILES", getLocation(dbType, newName).absolutePath.replace("\\", "/")))
   }
 }
