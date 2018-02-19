@@ -37,7 +37,7 @@ class ExecutionTest {
       new WorldState("testExecution").delete      
       
       val newestBlock = eth_blockNumber
-//      val newestBlock = new EVMWord(46147)
+//      val newestBlock = new EVMWord(49000)
       LOGGER.trace(String.format("newest Block: %d", newestBlock.intValue))
       var mostRecentBackup = (newestBlock.intValue / BACKUP_STEP) * BACKUP_STEP
       

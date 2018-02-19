@@ -31,6 +31,7 @@ import org.itemis.evm.utils.EVMUtils
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
+import org.apache.commons.lang3.StringUtils
 
 final class EVMRuntime {
   extension EVMUtils e = new EVMUtils
@@ -255,7 +256,7 @@ final class EVMRuntime {
       EXECUTION_LOGGER.info(org.itemis.evm.EVMRuntime.GSON.toJson(executionFeedback))
       return true
     } catch (EVMRuntimeException e) {
-      if (e.toString.contains("out of gas")) {
+      if (StringUtils.containsIgnoreCase(e.toString, "out of gas") || StringUtils.containsIgnoreCase(e.stackTrace.map[toString].join("\n"), "SystemOperations.INVALID")) {
         LOGGER.trace(String.format("exception: %s", e.message))
       } else {
         LOGGER.error(String.format("exception: %s", e.message))

@@ -80,8 +80,10 @@ class WorldState {
         filename.startsWith(name + "_storageTrie")
       }
     })) {
+      println(storageTrie)
       val addr = new Address(storageTrie.split("_").last.fromHex)
       this.storageTries.put(addr, new MerklePatriciaTrie(storageTrie))
+      println(this.storageTries.get(addr).trieRoot)
     }
     
     this.accountDB = new TwoLevelDBCache<Address, Long>(
@@ -302,14 +304,14 @@ class WorldState {
     accountTrie.trieRoot
   }
   
-  private def getStorageTrie(Address address) {
-    var trie = storageTries.get(address)
-    if (trie === null) {
-      trie = new MerklePatriciaTrie(name + "_storageTrie_" + address.toHexString)
-      storageTries.put(address, trie)
-    }
-    trie
-  }
+//  private def getStorageTrie(Address address) {
+//    var trie = storageTries.get(address)
+//    if (trie === null) {
+//      trie = new MerklePatriciaTrie(name + "_storageTrie_" + address.toHexString)
+//      storageTries.put(address, trie)
+//    }
+//    trie
+//  }
   
   def UnsignedByteList getCodeAt(Address address) {
     codeDB.lookUp(address) ?: new UnsignedByteList(newByteArrayOfSize(0))
@@ -328,51 +330,63 @@ class WorldState {
   }
   
   def Map<EVMWord, EVMWord> getStorage(Address address) {
-    val trie = address.storageTrie
+    val trie = storageTries.get(address)
     
-    try {
-      val result = newHashMap
-      trie.root.getNodes(trie).entrySet.forEach[{
-        val _key = new EVMWord(key.toUnsignedBytes)
-        val _value = new EVMWord(value)
-        
-        result.put(_key, _value)
-      }]
-      result
-    } catch (Exception e) {
-      null
+    if (trie === null) {
+      return newHashMap
+    } else {
+      try {
+        val result = newHashMap
+        trie.root.getNodes(trie).entrySet.forEach[{
+          val _key = new EVMWord(key.toUnsignedBytes)
+          val _value = new EVMWord(value)
+          
+          result.put(_key, _value)
+        }]
+        result
+      } catch (Exception e) {
+        null
+      }
     }
   }
   
   def EVMWord getStorageAt(Address address, EVMWord offset) {
-    storageCache.getIfPresent(Pair.of(address, offset)) ?: getStorageAt(address.storageTrie.trieRoot, address, offset)
+    storageCache.getIfPresent(Pair.of(address, offset)) ?:
+    getStorageAt(if (storageTries.get(address) === null) MerklePatriciaTrie.EMPTY_TRIE_HASH else storageTries.get(address).trieRoot, address, offset)
   }
   
   def EVMWord getStorageAt(Hash256 rootHash, Address address, EVMWord offset) {
-    val trie = address.storageTrie
+    val trie = storageTries.get(address)
     
-    try {
-      val nodeValue = (trie.getNode(new UnsignedByteList(rootHash.toUnsignedByteArray)).getNode(trie, new NibbleList(offset)) as Leaf).value
-      val tree = reverseRLP(nodeValue)
-      val value = new EVMWord(tree.children.get(0).data)
-      storageCache.put(Pair.of(address, offset), value)
-      value
-    } catch (Exception e) {
-      if (e.toString.contains("ResultSet is empty") || e instanceof NullPointerException) {
-        EVMWord.ZERO
-      } else {
-        throw e
+    if (trie === null) {
+      return EVMWord.ZERO
+    } else {
+      try {
+        val nodeValue = (trie.getNode(new UnsignedByteList(rootHash.toUnsignedByteArray)).getNode(trie, new NibbleList(offset)) as Leaf).value
+        val tree = reverseRLP(nodeValue)
+        val value = new EVMWord(tree.children.get(0).data)
+        storageCache.put(Pair.of(address, offset), value)
+        value
+      } catch (Exception e) {
+        if (e.toString.contains("ResultSet is empty") || e instanceof NullPointerException) {
+          EVMWord.ZERO
+        } else {
+          throw e
+        }
       }
     }
   }
   
   def void setStorageAt(Address address, EVMWord offset, EVMWord value) {
-    var trie = address.storageTrie
-    trie.putElement(new NibbleList(offset.toByteArray.keccak256.toByteArray), value.trimTrailingZerosAndReverse.rlp)
+    var trie = storageTries.get(address)
     
-    val acc = getAccount(address)
-    acc.storageRoot = trie.trieRoot
-    acc.insertIntoTrie(accountTrie, address)
+    if (!value.equals(EVMWord.ZERO) || trie !== null) {
+      trie = if (trie === null) new MerklePatriciaTrie(name + "_storageTrie_" + address.toHexString) else trie
+      trie.putElement(new NibbleList(offset.toByteArray.keccak256.toByteArray), value.trimTrailingZerosAndReverse.rlp)
+      val acc = getAccount(address)
+      acc.storageRoot = trie.trieRoot
+      acc.insertIntoTrie(accountTrie, address)
+    }
     
     storageCache.put(Pair.of(address, offset), value)
   }
@@ -397,6 +411,8 @@ class WorldState {
     copyDB(DataBaseID.STATE, this.name, name)
     
     for (storageTrie: storageTries.entrySet.map[value]) {
+      println(String.format("%s_%s", name, storageTrie.location.toPath.fileName.toString.split("_").tail.join("_")))
+      println(storageTrie.trieRoot)
       storageTrie.copyTo(String.format("%s_%s", name, storageTrie.location.toPath.fileName.toString.split("_").tail.join("_")))
     }
   }

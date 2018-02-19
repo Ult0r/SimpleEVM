@@ -78,6 +78,7 @@ final class DataBaseWrapper {
   }
 
   def static void closeAllConnections() {
+    LOGGER.info("closing all connections")
     val list = connections.entrySet.toList.map[key].toList
     for (conn : list) {
       closeConnection(conn.key, conn.value)
@@ -87,7 +88,7 @@ final class DataBaseWrapper {
 
   def static void closeConnection(DataBaseID db, String dbName) {
     val conn = connections.get(Pair.of(db, dbName))
-    LOGGER.debug("closing '" + dbName + "' of type " + db.toString)
+    LOGGER.info("closing '" + dbName + "' of type " + db.toString)
     if(conn !== null) {
       try {
         conn.createStatement().execute("SHUTDOWN")
@@ -188,12 +189,14 @@ final class DataBaseWrapper {
   }
   
   def void deleteDB(DataBaseID dbType, String dbName) {
+    LOGGER.info(String.format("deleting %s.%s", dbType, dbName))
     closeConnection(dbType, dbName)
     FileUtils.deleteDirectory(getLocation(dbType, dbName))
   }
   
   def ResultSet copyDB(DataBaseID dbType, String dbName, String newName) {
     LOGGER.info(String.format("copying %s.%s to %s.%s", DataBaseID.STATE, dbName, DataBaseID.STATE, newName))
+    deleteDB(dbType, newName)
     query(dbType, dbName, String.format("BACKUP DATABASE TO '%s/' BLOCKING AS FILES", getLocation(dbType, newName).absolutePath.replace("\\", "/")))
   }
 }

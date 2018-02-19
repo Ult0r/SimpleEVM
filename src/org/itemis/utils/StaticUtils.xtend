@@ -38,8 +38,6 @@ abstract class StaticUtils {
     toHex(new UnsignedByte(n.value))
   }
 
-  //TODO add to Util
-  //TODO remove usages of toHex(UnsignedByte(b))
   def static String toHex(UnsignedByte b) {
     switch b.value as int {
       case 0,

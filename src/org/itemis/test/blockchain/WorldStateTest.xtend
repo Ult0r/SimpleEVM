@@ -100,7 +100,18 @@ class WorldStateTest {
   }
   
   @Test
+  def void testCopyFull() {
+    WorldState.copy("49000", "testCopyFull")
+  }
+  
+  @Test
+  def void testOpenClose() {
+    new WorldState("49000")
+  }
+  
+  @Test
   def void testFirstBlock() {
+    new WorldState("testFirstBlock").delete
     val ws = new WorldState("testFirstBlock")
     ws.loadGenesisState(false)
 

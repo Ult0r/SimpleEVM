@@ -39,13 +39,4 @@ final class SessionControllerREST {
     SessionController.shutdownNode
     Response.status(Response.Status.OK).build
   }
-  
-  @POST
-  @Path("/copyNode")
-  @Produces(MediaType.APPLICATION_JSON)
-  def Response copyNode() {
-    LOGGER.warn("copying Node")
-    SessionController.copyNode("hurrdurr")
-    Response.status(Response.Status.OK).build
-  }
 }
