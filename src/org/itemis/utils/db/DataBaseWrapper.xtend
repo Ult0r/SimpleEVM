@@ -51,7 +51,7 @@ final class DataBaseWrapper {
       case ALLOC: String.format(ALLOC_LOCATION, dbName, dbName)
       case TRIE: String.format(TRIE_LOCATION, dbName, dbName)
       case CHAINDATA: String.format(CHAINDATA_LOCATION, dbName, dbName)
-    }.split(";").get(0).split('\\\\').reverseView.drop(1).toList.reverseView.join('\\\\'))
+    }.split(";").get(0).split(File.separator).reverseView.drop(1).toList.reverseView.join(File.separator))
   }
 
   def static Connection getConnection(DataBaseID db, String dbName) {
