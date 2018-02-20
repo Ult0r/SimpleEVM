@@ -25,6 +25,7 @@ import org.itemis.test.blockchain.WorldStateTest
 import org.itemis.test.ressources.MainnetAllocDataTest
 import org.itemis.test.blockchain.TransactionTest
 import org.itemis.test.blockchain.ExecutionTest
+import org.itemis.test.evm.utils.EthashTest
 
 @RunWith(Suite)
 @SuiteClasses(
@@ -33,6 +34,7 @@ import org.itemis.test.blockchain.ExecutionTest
   TransactionTest,
   WorldStateTest,
   
+  EthashTest,
   EVMUtilsTest,
   MerklePatriciaTrieTest,
   
