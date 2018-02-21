@@ -1,5 +1,10 @@
+plugins {
+  id "org.xtext.xtend" version "1.0.0"
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
+
 
 repositories {
   jcenter()
@@ -10,10 +15,11 @@ dependencies {
   compile group: 'com.google.inject', name: 'guice-parent', version: '3.0'
   compile group: 'javax.inject', name: 'javax.inject', version: '1'
   compile group: 'org.webjars.npm', name: 'xtend', version: '4.0.1'
-  compile group: 'org.eclipse.xtext', name: 'org.eclipse.xtext.xbase.lib', version: '2.12.0'
+  compile group: 'org.eclipse.xtext', name: 'org.eclipse.xtext.xbase.lib', version: '2.13.0'
+  compile group: 'org.eclipse.xtext', name: 'org.eclipse.xtext.smap', version: '2.13.0'
   compile group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.57'
   compile group: 'com.google.code.gson', name: 'gson', version: '2.8.1'
-  compile group: 'org.eclipse.xtend', name: 'org.eclipse.xtend.lib', version: '2.12.0'
+  compile group: 'org.eclipse.xtend', name: 'org.eclipse.xtend.lib', version: '2.13.0'
   compile group: 'org.hsqldb', name: 'hsqldb', version: '2.3.4'
   compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.9.0'
   compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.9.0'
@@ -23,13 +29,41 @@ dependencies {
   compile group: 'org.glassfish.jersey.core', name: 'jersey-server', version: '2.26'
   compile group: 'org.glassfish.jersey.containers', name: 'jersey-container-grizzly2-http', version: '2.26'
   compile group: 'org.glassfish.jersey.inject', name: 'jersey-hk2', version: '2.26'
-  testCompile 'junit:junit:4.12'
+  compile 'junit:junit:4.12'
+}
+
+xtend {
+  generator {
+    // whether to generate @SuppressWarnings("all"), enabled by default
+    suppressWarningsAnnotation = false
+    // whether to generate the @Generated annotation, disabled by default
+    generatedAnnotation {
+      active = true
+      includeDate = true
+      comment = "Copyright itemis AG"
+    }
+  }
+  debugger {
+    //how to install debug info into generated Java code
+    //SMAP adds Xtend debug info on top of Java
+    //PRIMARY makes Xtend the only debug info (throws away Java line numbers)
+    //default is SMAP for Java projects and PRIMARY for Android
+    sourceInstaller = 'SMAP' //or 'PRIMARY' or 'NONE'
+    //whether to hide synthetic variables in the debugger
+    hideSyntheticVariables = true
+  }
+  validator {
+    //adjust severity of issues
+    //available levels are error, warning, info and ignore
+    error 'org.eclipse.xtend.core.validation.IssueCodes.unused_private_member'
+    // These issue IDs can be found in your Eclipse project's .settings/org.eclipse.xtend.core.Xtend.prefs
+    // after enabling Project > Properties > Xtend > Errors/Warnings: [X] Enable project specific settings
+  }
 }
 
 sourceSets {
-  main {
-    java {
-      srcDirs = ["src"]
-    }
-  }
+  main.java.srcDirs = ["src", "xtend-gen"]
+  main.xtendOutputDir = 'xtend-gen'
+  test.xtendOutputDir = 'test/xtend-gen'
 }
+
